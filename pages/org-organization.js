@@ -1,5 +1,5 @@
 (function() {
-    var ws = document.getElementById('mainWorkspace'); if (!ws) return;
+    var ws = document.body;
     var el = document.createElement('div');
     el.innerHTML = `            <div class="page-content" id="organizationPage">
                 <div class="list-header">
@@ -42,7 +42,7 @@
                             <div class="input-group">
                                 <label data-i18n="org.defaultAdmin">Default Admin Account</label>
                                 <div style="display:flex;align-items:center;gap:8px;">
-                                    <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;flex-shrink:0;">A</div>
+                                    <div class="avatar avatar-md" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);flex-shrink:0;">A</div>
                                     <input type="text" id="orgAdmin" value="admin@nullus.io" style="flex:1;padding:10px 12px;border:1.5px solid #2d3748;border-radius:8px;font-size:14px;">
                                 </div>
                             </div>
@@ -62,7 +62,7 @@
                                     <div style="font-weight:600;font-size:14px;color:#e2e8f0;">devops-cluster</div>
                                     <div style="font-size:12px;color:#94a3b8;">Pipeline Cluster · Configured</div>
                                 </div>
-                                <span style="margin-left:auto;padding:2px 8px;background:rgba(16,185,129,0.15);color:#6ee7b7;border-radius:12px;font-size:11px;font-weight:600;">Connected</span>
+                                <span class="badge badge-success badge-sm" style="margin-left:auto;">Connected</span>
                             </label>
                             <label style="display:flex;align-items:center;gap:12px;padding:12px 16px;border:1.5px solid #2d3748;border-radius:8px;cursor:pointer;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#6366f1'" onmouseout="this.style.borderColor='#e5e7eb'">
                                 <input type="checkbox" style="width:16px;height:16px;accent-color:#6366f1;">
@@ -70,7 +70,7 @@
                                     <div style="font-weight:600;font-size:14px;color:#e2e8f0;">app-cluster-prod</div>
                                     <div style="font-size:12px;color:#94a3b8;">Application Cluster · Not Configured</div>
                                 </div>
-                                <span style="margin-left:auto;padding:2px 8px;background:rgba(239,68,68,0.15);color:#fca5a5;border-radius:12px;font-size:11px;font-weight:600;">Disconnected</span>
+                                <span class="badge badge-danger badge-sm" style="margin-left:auto;">Disconnected</span>
                             </label>
                         </div>
                     </div>
@@ -98,37 +98,37 @@
                             <button class="btn btn-secondary btn-sm" onclick="document.getElementById('inviteMemberRow').style.display='none'"><i class="fas fa-times"></i></button>
                         </div>
 
-                        <table style="width:100%;border-collapse:collapse;font-size:14px;">
+                        <table class="data-table">
                             <thead>
-                                <tr style="border-bottom:2px solid #f3f4f6;">
-                                    <th style="text-align:left;padding:10px 12px;color:#94a3b8;font-weight:600;" data-i18n="org.member">Member</th>
-                                    <th style="text-align:left;padding:10px 12px;color:#94a3b8;font-weight:600;" data-i18n="org.email">Email</th>
-                                    <th style="text-align:left;padding:10px 12px;color:#94a3b8;font-weight:600;" data-i18n="org.role">Role</th>
-                                    <th style="text-align:left;padding:10px 12px;color:#94a3b8;font-weight:600;" data-i18n="org.status">Status</th>
-                                    <th style="text-align:right;padding:10px 12px;color:#94a3b8;font-weight:600;" data-i18n="org.actions">Actions</th>
+                                <tr>
+                                    <th data-i18n="org.member">Member</th>
+                                    <th data-i18n="org.email">Email</th>
+                                    <th data-i18n="org.role">Role</th>
+                                    <th data-i18n="org.status">Status</th>
+                                    <th class="right" data-i18n="org.actions">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="memberTableBody">
-                                <tr style="border-bottom:1px solid #2d3748;">
-                                    <td style="padding:12px;"><div style="display:flex;align-items:center;gap:10px;"><div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:12px;">A</div><span style="font-weight:600;color:#e2e8f0;">Admin User</span></div></td>
-                                    <td style="padding:12px;color:#94a3b8;">admin@nullus.io</td>
-                                    <td style="padding:12px;"><span style="padding:3px 10px;background:#ede9fe;color:#5b21b6;border-radius:12px;font-size:12px;font-weight:600;">Admin</span></td>
-                                    <td style="padding:12px;"><span style="padding:3px 10px;background:rgba(16,185,129,0.15);color:#6ee7b7;border-radius:12px;font-size:12px;font-weight:600;">Active</span></td>
-                                    <td style="padding:12px;text-align:right;"><span style="color:#9ca3af;font-size:12px;" data-i18n="org.owner">Owner</span></td>
-                                </tr>
-                                <tr style="border-bottom:1px solid #2d3748;">
-                                    <td style="padding:12px;"><div style="display:flex;align-items:center;gap:10px;"><div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#10b981,#059669);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:12px;">K</div><span style="font-weight:600;color:#e2e8f0;">Kim DevOps</span></div></td>
-                                    <td style="padding:12px;color:#94a3b8;">kim@nullus.io</td>
-                                    <td style="padding:12px;"><select style="padding:4px 8px;border:1px solid #2d3748;border-radius:6px;font-size:12px;background:#0f1419;"><option data-i18n="userRole.admin">Admin</option><option selected data-i18n="userRole.devops">DevOps</option><option data-i18n="userRole.developer">Developer</option></select></td>
-                                    <td style="padding:12px;"><span style="padding:3px 10px;background:rgba(16,185,129,0.15);color:#6ee7b7;border-radius:12px;font-size:12px;font-weight:600;">Active</span></td>
-                                    <td style="padding:12px;text-align:right;"><button class="btn btn-secondary btn-sm"><i class="fas fa-user-slash"></i> <span data-i18n="org.deactivate">Deactivate</span></button></td>
+                                <tr>
+                                    <td><div style="display:flex;align-items:center;gap:10px;"><div class="avatar avatar-sm" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);">A</div><span class="bold">Admin User</span></div></td>
+                                    <td class="muted">admin@nullus.io</td>
+                                    <td><span class="badge badge-purple">Admin</span></td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td class="right"><span style="color:#9ca3af;font-size:12px;" data-i18n="org.owner">Owner</span></td>
                                 </tr>
                                 <tr>
-                                    <td style="padding:12px;"><div style="display:flex;align-items:center;gap:10px;"><div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:12px;">P</div><span style="font-weight:600;color:#e2e8f0;">Park Developer</span></div></td>
-                                    <td style="padding:12px;color:#94a3b8;">park@nullus.io</td>
-                                    <td style="padding:12px;"><select style="padding:4px 8px;border:1px solid #2d3748;border-radius:6px;font-size:12px;background:#0f1419;"><option data-i18n="userRole.admin">Admin</option><option data-i18n="userRole.devops">DevOps</option><option selected data-i18n="userRole.developer">Developer</option></select></td>
-                                    <td style="padding:12px;"><span style="padding:3px 10px;background:rgba(245,158,11,0.15);color:#fcd34d;border-radius:12px;font-size:12px;font-weight:600;" data-i18n="org.invited">Invited</span></td>
-                                    <td style="padding:12px;text-align:right;"><button class="btn btn-secondary btn-sm"><i class="fas fa-redo"></i> <span data-i18n="org.resend">Resend</span></button></td>
+                                    <td><div style="display:flex;align-items:center;gap:10px;"><div class="avatar avatar-sm" style="background:linear-gradient(135deg,#10b981,#059669);">K</div><span class="bold">Kim DevOps</span></div></td>
+                                    <td class="muted">kim@nullus.io</td>
+                                    <td><select style="padding:4px 8px;border:1px solid #2d3748;border-radius:6px;font-size:12px;background:#0f1419;"><option data-i18n="userRole.admin">Admin</option><option selected data-i18n="userRole.devops">DevOps</option><option data-i18n="userRole.developer">Developer</option></select></td>
+                                    <td><span class="badge badge-success">Active</span></td>
+                                    <td class="right"><button class="btn btn-secondary btn-sm"><i class="fas fa-user-slash"></i> <span data-i18n="org.deactivate">Deactivate</span></button></td>
+                                </tr>
+                                <tr>
+                                    <td><div style="display:flex;align-items:center;gap:10px;"><div class="avatar avatar-sm" style="background:linear-gradient(135deg,#f59e0b,#d97706);">P</div><span class="bold">Park Developer</span></div></td>
+                                    <td class="muted">park@nullus.io</td>
+                                    <td><select style="padding:4px 8px;border:1px solid #2d3748;border-radius:6px;font-size:12px;background:#0f1419;"><option data-i18n="userRole.admin">Admin</option><option data-i18n="userRole.devops">DevOps</option><option selected data-i18n="userRole.developer">Developer</option></select></td>
+                                    <td><span class="badge badge-warning" data-i18n="org.invited">Invited</span></td>
+                                    <td class="right"><button class="btn btn-secondary btn-sm"><i class="fas fa-redo"></i> <span data-i18n="org.resend">Resend</span></button></td>
                                 </tr>
                             </tbody>
                         </table>

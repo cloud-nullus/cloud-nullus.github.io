@@ -1,5 +1,5 @@
 (function () {
-    var ws = document.getElementById('mainWorkspace'); if (!ws) return;
+    var ws = document.body;
     var el = document.createElement('div');
     el.innerHTML = `
 <div class="page-content" id="listPage">
@@ -93,23 +93,19 @@
             </div>
 
             <!-- Detail Content -->
-            <div id="stackDetailContent" class="stack-detail-content" style="display:none;flex-direction:column;height:100%;">
+            <div id="stackDetailContent" class="stack-detail-content stack-detail-content--full" style="display:none;">
 
                 <!-- Header -->
-                <div class="stack-detail-header" style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #e5e7eb;flex-shrink:0;">
-                    <div style="display:flex;align-items:center;gap:12px;">
-                        <div id="stackDetailIconEl" style="width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-size:16px;background:linear-gradient(135deg,#8b5cf6,#6d28d9);"></div>
-                        <h3 class="stack-detail-title" id="stackDetailTitle" style="margin:0;font-size:16px;font-weight:700;"></h3>
+                <div class="stack-detail-header stack-detail-header--compact">
+                    <div class="stack-detail-header-main">
+                        <div id="stackDetailIconEl" class="stack-detail-icon"></div>
+                        <h3 class="stack-detail-title" id="stackDetailTitle"></h3>
                         <span id="stackDetailStatusBadge"></span>
                     </div>
-                    <button class="btn btn-primary" id="stackInfoSaveBtn" style="display:none;"
-                        onclick="alert('Stack 설정이 저장되었습니다.')">
-                        <i class="fas fa-save"></i> Save
-                    </button>
                 </div>
 
                 <!-- Inner Tab Bar -->
-                <div class="stack-inner-tabs" style="display:flex;gap:0;border-bottom:1px solid #e5e7eb;flex-shrink:0;">
+                <div class="stack-inner-tabs">
                     <button class="stack-inner-tab active" data-stab="info" onclick="switchStackTab(this,'info')">
                         <i class="fas fa-info-circle"></i> Info
                     </button>
@@ -752,8 +748,37 @@
                     </div>
                 </div><!-- /stackTab-version-upgrade -->
 
+                <div id="stackInfoSaveWrap" style="display:none;justify-content:flex-end;align-items:center;padding:14px 20px;border-top:1px solid #e5e7eb;flex-shrink:0;background:transparent;">
+                    <button class="btn" id="stackInfoSaveBtn"
+                        style="display:flex;align-items:center;gap:8px;background:#2563eb;color:#fff;border:1px solid #1d4ed8;padding:8px 14px;border-radius:8px;"
+                        onclick="alert('Stack 설정이 저장되었습니다.')">
+                        <i class="fas fa-save"></i> Save
+                    </button>
+                </div>
+
             </div><!-- /stackDetailContent -->
         </div><!-- /stack-detail-panel -->
+    </div>
+
+    <div id="valuesYamlModal"
+        style="display:none;position:fixed;inset:0;background:rgba(15,23,42,0.6);z-index:1200;align-items:center;justify-content:center;padding:20px;">
+        <div style="width:min(760px,100%);max-height:85vh;background:#fff;border-radius:12px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 45px rgba(15,23,42,0.35);">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid #e5e7eb;">
+                <h4 id="valuesYamlModalTitle" style="margin:0;font-size:15px;font-weight:700;color:#111827;">values.yaml 편집</h4>
+                <button type="button" onclick="closeValuesYamlEditor()"
+                    style="border:0;background:transparent;color:#6b7280;font-size:18px;cursor:pointer;line-height:1;">&times;</button>
+            </div>
+            <div style="padding:16px 18px;display:flex;flex-direction:column;gap:10px;flex:1;overflow:auto;">
+                <p style="margin:0;font-size:13px;color:#4b5563;">Helm chart values.yaml 내용을 수정한 뒤 Apply를 누르세요.</p>
+                <textarea id="valuesYamlTextarea"
+                    style="width:100%;min-height:300px;resize:vertical;border:1px solid #d1d5db;border-radius:8px;padding:12px;font-size:13px;line-height:1.6;font-family:'Consolas','Monaco',monospace;color:#111827;"></textarea>
+            </div>
+            <div style="display:flex;justify-content:flex-end;gap:8px;padding:12px 18px;border-top:1px solid #e5e7eb;background:#f9fafb;">
+                <button type="button" class="btn btn-secondary" onclick="closeValuesYamlEditor()">Cancel</button>
+                <button type="button" class="btn" onclick="applyValuesYamlEditor()"
+                    style="background:#2563eb;color:#fff;border:1px solid #1d4ed8;">Apply</button>
+            </div>
+        </div>
     </div>
 </div>
 `;
@@ -762,21 +787,18 @@
 
 // ── Stack inner tab switching ──
 function switchStackTab(btn, tabName) {
-    var tabs = document.querySelectorAll('.stack-inner-tab');
-    tabs.forEach(function (t) { t.classList.remove('active'); });
-    btn.classList.add('active');
-
-    document.querySelectorAll('.stack-tab-pane').forEach(function (p) {
-        p.style.display = 'none';
+    window.pageReuse.switchTabPane({
+        tabSelector: '.stack-inner-tab',
+        paneSelector: '.stack-tab-pane',
+        paneIdPrefix: 'stackTab-',
+        tabName: tabName,
+        activeTabButton: btn,
+        paneDisplay: 'flex',
+        paneFlexDirection: 'column'
     });
-    var pane = document.getElementById('stackTab-' + tabName);
-    if (pane) {
-        pane.style.display = 'flex';
-        pane.style.flexDirection = 'column';
-    }
-    // Save button only on Info tab
-    var saveBtn = document.getElementById('stackInfoSaveBtn');
-    if (saveBtn) saveBtn.style.display = (tabName === 'info') ? '' : 'none';
+
+    var saveWrap = document.getElementById('stackInfoSaveWrap');
+    if (saveWrap) saveWrap.style.display = (tabName === 'info') ? 'flex' : 'none';
 }
 
 // ── Stack Info sub-tab switching ──
@@ -791,35 +813,156 @@ function switchStackInfoTab(tabEl, tabName) {
 
 // ── Select stack from left list ──
 function selectStackItem(item) {
-    document.querySelectorAll('.stack-list-item').forEach(function (el) { el.classList.remove('active'); });
-    item.classList.add('active');
+    window.pageReuse.selectListItemWithDetail({
+        item: item,
+        itemSelector: '.stack-list-item',
+        titleSourceSelector: '.stack-item-name',
+        iconSourceSelector: '.stack-item-icon',
+        statusSourceSelector: '.stack-item-status',
+        placeholderId: 'stackDetailPlaceholder',
+        contentId: 'stackDetailContent',
+        titleTargetId: 'stackDetailTitle',
+        iconTargetId: 'stackDetailIconEl',
+        statusTargetId: 'stackDetailStatusBadge',
+        contentDisplay: 'flex',
+        contentFlexDirection: 'column',
+        badgeClassName: 'detail-status-badge'
+    });
 
-    var stackName = item.querySelector('.stack-item-name').textContent;
-    var iconEl = item.querySelector('.stack-item-icon');
-    var iconBg = iconEl ? iconEl.style.background : '';
-    var iconHtml = iconEl ? iconEl.innerHTML : '';
-    var statusEl = item.querySelector('.stack-item-status');
-
-    document.getElementById('stackDetailPlaceholder').style.display = 'none';
-    var content = document.getElementById('stackDetailContent');
-    content.style.display = 'flex';
-
-    document.getElementById('stackDetailTitle').textContent = stackName;
-
-    var detailIcon = document.getElementById('stackDetailIconEl');
-    if (detailIcon) { detailIcon.innerHTML = iconHtml; detailIcon.style.background = iconBg; }
-
-    var badge = document.getElementById('stackDetailStatusBadge');
-    if (badge && statusEl) {
-        badge.className = statusEl.className;
-        badge.innerHTML = statusEl.innerHTML;
-        badge.style.cssText = 'font-size:12px;padding:3px 10px;border-radius:12px;';
-    }
-
-    // Reset to Info tab
     var firstTab = document.querySelector('.stack-inner-tab[data-stab="info"]');
     if (firstTab) switchStackTab(firstTab, 'info');
 
-    var saveBtn = document.getElementById('stackInfoSaveBtn');
-    if (saveBtn) saveBtn.style.display = '';
 }
+
+var activeValuesYamlCard = null;
+
+function ensureCardResourceControls() {
+    var cards = document.querySelectorAll('.stack-info-subpanel .config-card');
+    cards.forEach(function (card) {
+        var existingBtn;
+        var docBtn;
+        var resourceRow;
+        var cpuInput;
+        var memoryInput;
+
+        if (!card.dataset.cpuValue) card.dataset.cpuValue = '500m';
+        if (!card.dataset.memoryValue) card.dataset.memoryValue = '512Mi';
+
+        var header = card.querySelector('.card-header');
+        existingBtn = card.querySelector('.values-editor-btn');
+        if (existingBtn && existingBtn.parentElement !== card) {
+            existingBtn.parentElement.removeChild(existingBtn);
+            existingBtn = null;
+        }
+
+        if (header && !existingBtn) {
+            card.style.position = 'relative';
+
+            docBtn = document.createElement('button');
+            docBtn.type = 'button';
+            docBtn.className = 'values-editor-btn';
+            docBtn.innerHTML = '<i class="fas fa-file-alt"></i> values.yaml';
+            docBtn.style.cssText = 'position:absolute;top:10px;right:12px;background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:8px;padding:5px 10px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;z-index:1;';
+            docBtn.onclick = function () { openValuesYamlEditor(card); };
+            card.appendChild(docBtn);
+        }
+
+        var cardContent = card.querySelector('.card-content');
+        if (cardContent && !cardContent.querySelector('.card-resource-row')) {
+            resourceRow = document.createElement('div');
+            resourceRow.className = 'card-resource-row';
+            resourceRow.style.cssText = 'margin-top:14px;padding:12px;border:1px solid #e5e7eb;border-radius:8px;background:#f8fafc;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;';
+            resourceRow.innerHTML = '' +
+                '<label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#475569;">CPU' +
+                '<input type="text" class="card-cpu-input" value="' + card.dataset.cpuValue + '" placeholder="예: 500m" style="padding:8px 10px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;color:#111827;background:#fff;">' +
+                '</label>' +
+                '<label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#475569;">Memory' +
+                '<input type="text" class="card-memory-input" value="' + card.dataset.memoryValue + '" placeholder="예: 512Mi" style="padding:8px 10px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;color:#111827;background:#fff;">' +
+                '</label>';
+            cardContent.appendChild(resourceRow);
+
+            cpuInput = resourceRow.querySelector('.card-cpu-input');
+            memoryInput = resourceRow.querySelector('.card-memory-input');
+            if (cpuInput) {
+                cpuInput.addEventListener('input', function (e) {
+                    card.dataset.cpuValue = e.target.value.trim() || '500m';
+                });
+            }
+            if (memoryInput) {
+                memoryInput.addEventListener('input', function (e) {
+                    card.dataset.memoryValue = e.target.value.trim() || '512Mi';
+                });
+            }
+        }
+    });
+}
+
+function openValuesYamlEditor(card) {
+    if (!card) return;
+    ensureCardResourceControls();
+    activeValuesYamlCard = card;
+
+    var cpuValue = card.dataset.cpuValue || '500m';
+    var memoryValue = card.dataset.memoryValue || '512Mi';
+    var title = card.querySelector('h4') ? card.querySelector('h4').textContent.trim() : 'Config Card';
+
+    var titleEl = document.getElementById('valuesYamlModalTitle');
+    if (titleEl) titleEl.textContent = title + ' values.yaml 편집';
+
+    var textarea = document.getElementById('valuesYamlTextarea');
+    if (textarea) {
+        textarea.value =
+            'resources:\n' +
+            '  requests:\n' +
+            '    cpu: "' + cpuValue + '"\n' +
+            '    memory: "' + memoryValue + '"\n' +
+            '  limits:\n' +
+            '    cpu: "' + cpuValue + '"\n' +
+            '    memory: "' + memoryValue + '"\n';
+    }
+
+    var modal = document.getElementById('valuesYamlModal');
+    if (modal) modal.style.display = 'flex';
+}
+
+function closeValuesYamlEditor() {
+    var modal = document.getElementById('valuesYamlModal');
+    if (modal) modal.style.display = 'none';
+    activeValuesYamlCard = null;
+}
+
+function applyValuesYamlEditor() {
+    if (!activeValuesYamlCard) return;
+
+    var textarea = document.getElementById('valuesYamlTextarea');
+    if (!textarea) return;
+
+    var cpuMatches = textarea.value.match(/cpu\s*:\s*['\"]?([^\n'\"]+)/g) || [];
+    var memoryMatches = textarea.value.match(/memory\s*:\s*['\"]?([^\n'\"]+)/g) || [];
+
+    var cpuValue = activeValuesYamlCard.dataset.cpuValue || '500m';
+    var memoryValue = activeValuesYamlCard.dataset.memoryValue || '512Mi';
+
+    if (cpuMatches[0]) cpuValue = cpuMatches[0].replace(/cpu\s*:\s*['\"]?/, '').trim();
+    if (memoryMatches[0]) memoryValue = memoryMatches[0].replace(/memory\s*:\s*['\"]?/, '').trim();
+
+    activeValuesYamlCard.dataset.cpuValue = cpuValue || '500m';
+    activeValuesYamlCard.dataset.memoryValue = memoryValue || '512Mi';
+
+    var cpuInput = activeValuesYamlCard.querySelector('.card-cpu-input');
+    var memoryInput = activeValuesYamlCard.querySelector('.card-memory-input');
+    if (cpuInput) cpuInput.value = activeValuesYamlCard.dataset.cpuValue;
+    if (memoryInput) memoryInput.value = activeValuesYamlCard.dataset.memoryValue;
+
+    closeValuesYamlEditor();
+    alert('values.yaml 변경사항이 적용되었습니다.');
+}
+
+document.addEventListener('click', function (e) {
+    var modal = document.getElementById('valuesYamlModal');
+    if (modal && e.target === modal) {
+        closeValuesYamlEditor();
+    }
+});
+
+ensureCardResourceControls();

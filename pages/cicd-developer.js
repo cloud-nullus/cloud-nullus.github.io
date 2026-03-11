@@ -1,5 +1,5 @@
 (function() {
-    var ws = document.getElementById('mainWorkspace'); if (!ws) return;
+    var ws = document.body;
     var el = document.createElement('div');
     el.innerHTML = `            <div class="page-content" id="developerPage">
                 <div class="developer-page-container">

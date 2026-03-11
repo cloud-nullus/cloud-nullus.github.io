@@ -9,26 +9,217 @@
                 <div class="install-resource-compare" id="installResourceCompare">
                     <div class="install-resource-compare-head">
                         <h3><i class="fas fa-balance-scale"></i> Resource Allocation Compare</h3>
-                        <p>현재 보유 자원과 선택한 구성의 필요 자원을 즉시 비교합니다.</p>
+                        <p>클러스터 구성, 선택한 구성 요약, 자원 할당 상태를 한 영역에서 확인합니다.</p>
                     </div>
-                    <div class="install-resource-compare-grid">
-                        <div class="compare-card available">
-                            <h4>Available</h4>
-                            <div class="compare-row"><span>CPU</span><strong id="availableCpu">32</strong></div>
-                            <div class="compare-row"><span>Memory (Gi)</span><strong id="availableMemory">128</strong></div>
-                            <div class="compare-row"><span>Storage (Gi)</span><strong id="availableStorage">1200</strong></div>
+
+                    <div class="install-resource-sections">
+                        <div class="install-section-card">
+                            <h4>Cluster Configuration</h4>
+
+                            <div class="deployment-card">
+                                <div class="card-header">
+                                    <i class="fas fa-network-wired"></i>
+                                    <h4>Cluster Configuration</h4>
+                                </div>
+                                <div class="card-content">
+                                    <div class="cluster-quick-config">
+                                        <div class="cluster-item">
+                                            <div class="cluster-label">
+                                                <i class="fas fa-cogs"></i>
+                                                <span>Pipeline Cluster</span>
+                                            </div>
+                                            <div class="cluster-status connected">
+                                                <i class="fas fa-check-circle"></i>
+                                                <span>devops-cluster</span>
+                                            </div>
+                                        </div>
+                                        <div class="cluster-item">
+                                            <div class="cluster-label">
+                                                <i class="fas fa-server"></i>
+                                                <span>Application Cluster</span>
+                                            </div>
+                                            <div class="cluster-status pending">
+                                                <i class="fas fa-clock"></i>
+                                                <span>Not configured</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-secondary btn-full" id="configureClusterBtn">
+                                        <i class="fas fa-cog"></i>
+                                        Configure Clusters
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                        <div class="compare-card required">
-                            <h4>Required</h4>
-                            <div class="compare-row"><span>CPU</span><strong id="requiredCpu">8</strong></div>
-                            <div class="compare-row"><span>Memory (Gi)</span><strong id="requiredMemory">32</strong></div>
-                            <div class="compare-row"><span>Storage (Gi)</span><strong id="requiredStorage">500</strong></div>
+
+                        <div class="install-section-card">
+                            <h4>Configuration Summary</h4>
+
+                            <div class="deployment-summary">
+                                <div class="summary-grid">
+                                    <div class="summary-item">
+                                        <span class="label">Package Registry:</span>
+                                        <span class="value" id="summaryPackageRegistry">GitLab v16.7</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="label">Source Repository:</span>
+                                        <span class="value" id="summarySourceRepo">GitLab v16.7</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="label">Container Registry:</span>
+                                        <span class="value" id="summaryImageRegistry">GitLab Container Registry v16.7</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="label">CI/CD Platform:</span>
+                                        <span class="value" id="summaryMainPipeline">GitLab CI/CD v16.7</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="label">CD Tool:</span>
+                                        <span class="value" id="summaryCdTool">Argo CD v2.9.3</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="label">Storage Backend:</span>
+                                        <span class="value" id="summaryStorage">AWS S3 latest</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="label">Monitoring Stack:</span>
+                                        <span class="value" id="summaryMonitoringStack">Prometheus v2.47, Grafana v10.2</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="label">Logging Stack:</span>
+                                        <span class="value" id="summaryLoggingStack">OpenTelemetry v1.0, OpenSearch v2.11</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="deployment-actions">
+                                <div class="action-buttons">
+                                    <button class="btn btn-secondary" id="exportConfigBtn">
+                                        <i class="fas fa-download"></i>
+                                        Export JSON
+                                    </button>
+                                    <button class="btn btn-secondary" id="previewDeployScriptBtn">
+                                        <i class="fas fa-eye"></i>
+                                        Preview Deploy Script
+                                    </button>
+                                    <button class="btn btn-primary" id="deployBtn">
+                                        <i class="fas fa-rocket"></i>
+                                        Deploy Pipeline
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="deployment-progress" id="deploymentProgress" style="display: none;">
+                                <div class="progress-container">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" id="deployProgressFill"></div>
+                                    </div>
+                                    <div class="progress-text" id="deployProgressText">Initializing deployment...</div>
+                                </div>
+                                <div class="deployment-logs">
+                                    <div class="logs-header">
+                                        <h5>Deployment Logs</h5>
+                                        <button class="btn btn-secondary btn-sm">
+                                            <i class="fas fa-download"></i>
+                                            Download
+                                        </button>
+                                    </div>
+                                    <div class="logs-content" id="deploymentLogs">
+                                        <div class="log-entry">
+                                            <span class="timestamp">[2026-02-02 19:30:01]</span>
+                                            <span class="level info">INFO</span>
+                                            <span class="message">Starting pipeline deployment...</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="compare-card remaining" id="remainingCompareCard">
-                            <h4>Remaining</h4>
-                            <div class="compare-row"><span>CPU</span><strong id="remainingCpu">24</strong></div>
-                            <div class="compare-row"><span>Memory (Gi)</span><strong id="remainingMemory">96</strong></div>
-                            <div class="compare-row"><span>Storage (Gi)</span><strong id="remainingStorage">700</strong></div>
+
+                        <div class="install-section-card resource-allocation-card" id="remainingCompareCard">
+                            <h4>Resource Allocation</h4>
+                            <div class="allocation-summary-table">
+                                <div class="allocation-summary-head">
+                                    <span>Resource</span>
+                                    <span>Required</span>
+                                    <span>Remaining</span>
+                                    <span>Available</span>
+                                </div>
+                                <div class="allocation-summary-row">
+                                    <span>Storage (Gi)</span>
+                                    <strong id="requiredStorage">500</strong>
+                                    <strong id="remainingStorage">700</strong>
+                                    <strong id="availableStorage">1200</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="install-section-card">
+                            <h4>Deploy Pipeline</h4>
+
+                            <div class="deployment-card">
+                                <div class="card-header">
+                                    <i class="fas fa-rocket"></i>
+                                    <h4>Deploy Pipeline</h4>
+                                </div>
+                                <div class="card-content">
+                                    <div class="deployment-status">
+                                        <div class="status-item">
+                                            <i class="fas fa-check text-success"></i>
+                                            <span>Artifacts configured</span>
+                                        </div>
+                                        <div class="status-item">
+                                            <i class="fas fa-check text-success"></i>
+                                            <span>Pipeline tools selected</span>
+                                        </div>
+                                        <div class="status-item">
+                                            <i class="fas fa-check text-success"></i>
+                                            <span>Resources calculated</span>
+                                        </div>
+                                        <div class="status-item">
+                                            <i class="fas fa-times text-error"></i>
+                                            <span>Application cluster not ready</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="deployment-actions-compact">
+                                        <button class="btn btn-secondary btn-full" id="previewK8sObjectsBtn">
+                                            <i class="fas fa-dharmachakra"></i>
+                                            Preview K8s Objects
+                                        </button>
+                                        <button class="btn btn-secondary btn-full" id="previewDeployScriptBtnCompact">
+                                            <i class="fas fa-eye"></i>
+                                            Preview Deploy Script
+                                        </button>
+                                        <button class="btn btn-primary btn-full" id="quickDeployBtn" disabled>
+                                            <i class="fas fa-rocket"></i>
+                                            Deploy Pipeline
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="deployment-card" id="deploymentProgressCard" style="display: none;">
+                                <div class="card-header">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <h4>Deployment Progress</h4>
+                                </div>
+                                <div class="card-content">
+                                    <div class="progress-container">
+                                        <div class="progress-bar">
+                                            <div class="progress-fill" id="sidebarProgressFill"></div>
+                                        </div>
+                                        <div class="progress-text" id="sidebarProgressText">Initializing...</div>
+                                    </div>
+                                    <div class="deployment-logs-compact">
+                                        <div class="logs-content" id="sidebarDeploymentLogs">
+                                            <div class="log-entry">
+                                                <span class="level info">INFO</span>
+                                                <span class="message">Starting deployment...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1385,198 +1576,161 @@
             </div>
             <!-- /config-section -->
 
-            <!-- Right Panel: Summary, Cluster & Deployment -->
-            <div class="deployment-section">
-                <div class="deployment-summary">
-                    <div class="summary-section">
-                        <h4>Configuration Summary</h4>
-                        <div class="summary-grid">
-                            <div class="summary-item">
-                                <span class="label">Package Registry:</span>
-                                <span class="value" id="summaryPackageRegistry">GitLab v16.7</span>
-                            </div>
-                            <div class="summary-item">
-                                <span class="label">Source Repository:</span>
-                                <span class="value" id="summarySourceRepo">GitLab v16.7</span>
-                            </div>
-                            <div class="summary-item">
-                                <span class="label">Container Registry:</span>
-                                <span class="value" id="summaryImageRegistry">GitLab Container Registry v16.7</span>
-                            </div>
-                            <div class="summary-item">
-                                <span class="label">CI/CD Platform:</span>
-                                <span class="value" id="summaryMainPipeline">GitLab CI/CD v16.7</span>
-                            </div>
-                            <div class="summary-item">
-                                <span class="label">CD Tool:</span>
-                                <span class="value" id="summaryCdTool">Argo CD v2.9.3</span>
-                            </div>
-                            <div class="summary-item">
-                                <span class="label">Storage Backend:</span>
-                                <span class="value" id="summaryStorage">AWS S3 latest</span>
-                            </div>
-                            <div class="summary-item">
-                                <span class="label">Monitoring Stack:</span>
-                                <span class="value" id="summaryMonitoringStack">Prometheus v2.47, Grafana v10.2</span>
-                            </div>
-                            <div class="summary-item">
-                                <span class="label">Logging Stack:</span>
-                                <span class="value" id="summaryLoggingStack">OpenTelemetry v1.0, OpenSearch v2.11</span>
-                            </div>
-                        </div>
+            <div id="installValuesYamlModal"
+                style="display:none;position:fixed;inset:0;background:rgba(15,23,42,0.6);z-index:1200;align-items:center;justify-content:center;padding:20px;">
+                <div style="width:min(760px,100%);max-height:85vh;background:#fff;border-radius:12px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 45px rgba(15,23,42,0.35);">
+                    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid #e5e7eb;">
+                        <h4 id="installValuesYamlModalTitle" style="margin:0;font-size:15px;font-weight:700;color:#111827;">values.yaml 편집</h4>
+                        <button type="button" onclick="closeInstallValuesYamlEditor()"
+                            style="border:0;background:transparent;color:#6b7280;font-size:18px;cursor:pointer;line-height:1;">&times;</button>
                     </div>
-
-                </div>
-
-                <div class="deployment-actions">
-                    <div class="action-buttons">
-                        <button class="btn btn-secondary" id="exportConfigBtn">
-                            <i class="fas fa-download"></i>
-                            Export JSON
-                        </button>
-                        <button class="btn btn-secondary" id="exportYamlBtn">
-                            <i class="fas fa-file-code"></i>
-                            Export YAML
-                        </button>
-                        <button class="btn btn-secondary" id="previewDeployScriptBtn">
-                            <i class="fas fa-eye"></i>
-                            Preview Deploy Script
-                        </button>
-                        <button class="btn btn-primary" id="deployBtn">
-                            <i class="fas fa-rocket"></i>
-                            Deploy Pipeline
-                        </button>
+                    <div style="padding:16px 18px;display:flex;flex-direction:column;gap:10px;flex:1;overflow:auto;">
+                        <p style="margin:0;font-size:13px;color:#4b5563;">Helm chart values.yaml 내용을 수정한 뒤 Apply를 누르세요.</p>
+                        <textarea id="installValuesYamlTextarea"
+                            style="width:100%;min-height:300px;resize:vertical;border:1px solid #d1d5db;border-radius:8px;padding:12px;font-size:13px;line-height:1.6;font-family:'Consolas','Monaco',monospace;color:#111827;"></textarea>
                     </div>
-                </div>
-
-                <div class="deployment-progress" id="deploymentProgress" style="display: none;">
-                    <div class="progress-container">
-                        <div class="progress-bar">
-                            <div class="progress-fill" id="deployProgressFill"></div>
-                        </div>
-                        <div class="progress-text" id="deployProgressText">Initializing deployment...</div>
-                    </div>
-                    <div class="deployment-logs">
-                        <div class="logs-header">
-                            <h5>Deployment Logs</h5>
-                            <button class="btn btn-secondary btn-sm">
-                                <i class="fas fa-download"></i>
-                                Download
-                            </button>
-                        </div>
-                        <div class="logs-content" id="deploymentLogs">
-                            <div class="log-entry">
-                                <span class="timestamp">[2026-02-02 19:30:01]</span>
-                                <span class="level info">INFO</span>
-                                <span class="message">Starting pipeline deployment...</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Cluster Configuration Card -->
-                <div class="deployment-card">
-                    <div class="card-header">
-                        <i class="fas fa-network-wired"></i>
-                        <h4>Cluster Configuration</h4>
-                    </div>
-                    <div class="card-content">
-                        <div class="cluster-quick-config">
-                            <div class="cluster-item">
-                                <div class="cluster-label">
-                                    <i class="fas fa-cogs"></i>
-                                    <span>Pipeline Cluster</span>
-                                </div>
-                                <div class="cluster-status connected">
-                                    <i class="fas fa-check-circle"></i>
-                                    <span>devops-cluster</span>
-                                </div>
-                            </div>
-                            <div class="cluster-item">
-                                <div class="cluster-label">
-                                    <i class="fas fa-server"></i>
-                                    <span>Application Cluster</span>
-                                </div>
-                                <div class="cluster-status pending">
-                                    <i class="fas fa-clock"></i>
-                                    <span>Not configured</span>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="btn btn-secondary btn-full" id="configureClusterBtn">
-                            <i class="fas fa-cog"></i>
-                            Configure Clusters
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Deployment Actions Card -->
-                <div class="deployment-card">
-                    <div class="card-header">
-                        <i class="fas fa-rocket"></i>
-                        <h4>Deploy Pipeline</h4>
-                    </div>
-                    <div class="card-content">
-                        <div class="deployment-status">
-                            <div class="status-item">
-                                <i class="fas fa-check text-success"></i>
-                                <span>Artifacts configured</span>
-                            </div>
-                            <div class="status-item">
-                                <i class="fas fa-check text-success"></i>
-                                <span>Pipeline tools selected</span>
-                            </div>
-                            <div class="status-item">
-                                <i class="fas fa-check text-success"></i>
-                                <span>Resources calculated</span>
-                            </div>
-                            <div class="status-item">
-                                <i class="fas fa-times text-error"></i>
-                                <span>Application cluster not ready</span>
-                            </div>
-                        </div>
-                        
-                        <div class="deployment-actions-compact">
-                            <button class="btn btn-secondary btn-full" id="previewK8sObjectsBtn">
-                                <i class="fas fa-dharmachakra"></i>
-                                Preview K8s Objects
-                            </button>
-                            <button class="btn btn-secondary btn-full" id="previewDeployScriptBtnCompact">
-                                <i class="fas fa-eye"></i>
-                                Preview Deploy Script
-                            </button>
-                            <button class="btn btn-primary btn-full" id="quickDeployBtn" disabled>
-                                <i class="fas fa-rocket"></i>
-                                Deploy Pipeline
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Deployment Progress (Hidden by default) -->
-                <div class="deployment-card" id="deploymentProgressCard" style="display: none;">
-                    <div class="card-header">
-                        <i class="fas fa-spinner fa-spin"></i>
-                        <h4>Deployment Progress</h4>
-                    </div>
-                    <div class="card-content">
-                        <div class="progress-container">
-                            <div class="progress-bar">
-                                <div class="progress-fill" id="sidebarProgressFill"></div>
-                            </div>
-                            <div class="progress-text" id="sidebarProgressText">Initializing...</div>
-                        </div>
-                        <div class="deployment-logs-compact">
-                            <div class="logs-content" id="sidebarDeploymentLogs">
-                                <div class="log-entry">
-                                    <span class="level info">INFO</span>
-                                    <span class="message">Starting deployment...</span>
-                                </div>
-                            </div>
-                        </div>
+                    <div style="display:flex;justify-content:flex-end;gap:8px;padding:12px 18px;border-top:1px solid #e5e7eb;background:#f9fafb;">
+                        <button type="button" class="btn btn-secondary" onclick="closeInstallValuesYamlEditor()">Cancel</button>
+                        <button type="button" class="btn" onclick="applyInstallValuesYamlEditor()"
+                            style="background:#2563eb;color:#fff;border:1px solid #1d4ed8;">Apply</button>
                     </div>
                 </div>
             </div>
+
 `;
     while (el.firstChild) ws.appendChild(el.firstChild);
 })();
+
+var activeInstallValuesYamlCard = null;
+
+function ensureInstallCardResourceControls() {
+    var cards = document.querySelectorAll('#installResourceCompare .deployment-card');
+    cards.forEach(function (card) {
+        var existingBtn;
+        var docBtn;
+        var resourceRow;
+        var cpuInput;
+        var memoryInput;
+
+        if (!card.dataset.cpuValue) card.dataset.cpuValue = '500m';
+        if (!card.dataset.memoryValue) card.dataset.memoryValue = '512Mi';
+
+        var header = card.querySelector('.card-header');
+        existingBtn = card.querySelector('.values-editor-btn');
+        if (existingBtn && existingBtn.parentElement !== card) {
+            existingBtn.parentElement.removeChild(existingBtn);
+            existingBtn = null;
+        }
+
+        if (header && !existingBtn) {
+            card.style.position = 'relative';
+
+            docBtn = document.createElement('button');
+            docBtn.type = 'button';
+            docBtn.className = 'values-editor-btn';
+            docBtn.innerHTML = '<i class="fas fa-file-alt"></i> values.yaml';
+            docBtn.style.cssText = 'position:absolute;top:10px;right:12px;background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:8px;padding:5px 10px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;z-index:1;';
+            docBtn.onclick = function () { openInstallValuesYamlEditor(card); };
+            card.appendChild(docBtn);
+        }
+
+        var cardContent = card.querySelector('.card-content');
+        if (cardContent && !cardContent.querySelector('.card-resource-row')) {
+            resourceRow = document.createElement('div');
+            resourceRow.className = 'card-resource-row';
+            resourceRow.style.cssText = 'margin-top:14px;padding:12px;border:1px solid #e5e7eb;border-radius:8px;background:#f8fafc;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;';
+            resourceRow.innerHTML = '' +
+                '<label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#475569;">CPU' +
+                '<input type="text" class="card-cpu-input" value="' + card.dataset.cpuValue + '" placeholder="예: 500m" style="padding:8px 10px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;color:#111827;background:#fff;">' +
+                '</label>' +
+                '<label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#475569;">Memory' +
+                '<input type="text" class="card-memory-input" value="' + card.dataset.memoryValue + '" placeholder="예: 512Mi" style="padding:8px 10px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;color:#111827;background:#fff;">' +
+                '</label>';
+            cardContent.appendChild(resourceRow);
+
+            cpuInput = resourceRow.querySelector('.card-cpu-input');
+            memoryInput = resourceRow.querySelector('.card-memory-input');
+            if (cpuInput) {
+                cpuInput.addEventListener('input', function (e) {
+                    card.dataset.cpuValue = e.target.value.trim() || '500m';
+                });
+            }
+            if (memoryInput) {
+                memoryInput.addEventListener('input', function (e) {
+                    card.dataset.memoryValue = e.target.value.trim() || '512Mi';
+                });
+            }
+        }
+    });
+}
+
+function openInstallValuesYamlEditor(card) {
+    if (!card) return;
+    ensureInstallCardResourceControls();
+    activeInstallValuesYamlCard = card;
+
+    var cpuValue = card.dataset.cpuValue || '500m';
+    var memoryValue = card.dataset.memoryValue || '512Mi';
+    var title = card.querySelector('h4') ? card.querySelector('h4').textContent.trim() : 'Config Card';
+
+    var titleEl = document.getElementById('installValuesYamlModalTitle');
+    if (titleEl) titleEl.textContent = title + ' values.yaml 편집';
+
+    var textarea = document.getElementById('installValuesYamlTextarea');
+    if (textarea) {
+        textarea.value =
+            'resources:\n' +
+            '  requests:\n' +
+            '    cpu: "' + cpuValue + '"\n' +
+            '    memory: "' + memoryValue + '"\n' +
+            '  limits:\n' +
+            '    cpu: "' + cpuValue + '"\n' +
+            '    memory: "' + memoryValue + '"\n';
+    }
+
+    var modal = document.getElementById('installValuesYamlModal');
+    if (modal) modal.style.display = 'flex';
+}
+
+function closeInstallValuesYamlEditor() {
+    var modal = document.getElementById('installValuesYamlModal');
+    if (modal) modal.style.display = 'none';
+    activeInstallValuesYamlCard = null;
+}
+
+function applyInstallValuesYamlEditor() {
+    if (!activeInstallValuesYamlCard) return;
+
+    var textarea = document.getElementById('installValuesYamlTextarea');
+    if (!textarea) return;
+
+    var cpuMatches = textarea.value.match(/cpu\s*:\s*['\"]?([^\n'\"]+)/g) || [];
+    var memoryMatches = textarea.value.match(/memory\s*:\s*['\"]?([^\n'\"]+)/g) || [];
+
+    var cpuValue = activeInstallValuesYamlCard.dataset.cpuValue || '500m';
+    var memoryValue = activeInstallValuesYamlCard.dataset.memoryValue || '512Mi';
+
+    if (cpuMatches[0]) cpuValue = cpuMatches[0].replace(/cpu\s*:\s*['\"]?/, '').trim();
+    if (memoryMatches[0]) memoryValue = memoryMatches[0].replace(/memory\s*:\s*['\"]?/, '').trim();
+
+    activeInstallValuesYamlCard.dataset.cpuValue = cpuValue || '500m';
+    activeInstallValuesYamlCard.dataset.memoryValue = memoryValue || '512Mi';
+
+    var cpuInput = activeInstallValuesYamlCard.querySelector('.card-cpu-input');
+    var memoryInput = activeInstallValuesYamlCard.querySelector('.card-memory-input');
+    if (cpuInput) cpuInput.value = activeInstallValuesYamlCard.dataset.cpuValue;
+    if (memoryInput) memoryInput.value = activeInstallValuesYamlCard.dataset.memoryValue;
+
+    closeInstallValuesYamlEditor();
+    alert('values.yaml 변경사항이 적용되었습니다.');
+}
+
+document.addEventListener('click', function (e) {
+    var modal = document.getElementById('installValuesYamlModal');
+    if (modal && e.target === modal) {
+        closeInstallValuesYamlEditor();
+    }
+});
+
+window.closeInstallValuesYamlEditor = closeInstallValuesYamlEditor;
+window.applyInstallValuesYamlEditor = applyInstallValuesYamlEditor;
