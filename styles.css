@@ -1062,6 +1062,7 @@ body.light-mode .stack-inner-tab.active {
     display: none;
     flex-direction: column;
     flex: 1;
+}
 /* ============================================================ */
 /* Theme Toggle Button */
 /* ============================================================ */

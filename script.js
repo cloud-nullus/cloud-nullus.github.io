@@ -1536,7 +1536,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 300);
     
     // Initialize DevSecOps List features
-    initializePipelineListFeatures();
+    if (typeof initializePipelineListFeatures === 'function') initializePipelineListFeatures();
     
     // Set initial page state — use URL hash if present
     const hashPage = location.hash.replace('#', '');
