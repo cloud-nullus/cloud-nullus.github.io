@@ -1,5 +1,5 @@
 (function() {
-    var ws = document.body;
+    var ws = document.getElementById('mainWorkspace'); if (!ws) return;
     var el = document.createElement('div');
     el.innerHTML = `            <div class="page-content" id="homePage">
                 <div style="padding:48px 48px 32px;">
