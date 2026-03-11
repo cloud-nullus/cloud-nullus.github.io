@@ -28,7 +28,7 @@
                         <div class="pipeline-card" style="padding:20px;border-top:4px solid #10b981;">
                             <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
                                 <div style="width:36px;height:36px;border-radius:8px;background:rgba(16,185,129,0.15);display:flex;align-items:center;justify-content:center;"><i class="fas fa-tools" style="color:#10b981;"></i></div>
-                                <div><div style="font-weight:700;color:#e2e8f0;" data-i18n="userRole.devops">DevOps</div><div style="font-size:12px;color:#94a3b8;" data-i18n="users.deployConfigure">Deploy & Configure</div></div>
+                                <div><div style="font-weight:700;color:#e2e8f0;" data-i18n="userRole.devops">DevOps</div><div style="font-size:12px;color:#94a3b8;" data-i18n="users.deployConfigure">Deploy &amp; Configure</div></div>
                             </div>
                             <ul style="margin:0;padding:0 0 0 16px;font-size:13px;color:#94a3b8;line-height:1.8;">
                                 <li>스택 설치/수정</li>
@@ -64,53 +64,53 @@
                                 </select>
                             </div>
                         </div>
-                        <table style="width:100%;border-collapse:collapse;font-size:14px;">
+                        <table class="data-table">
                             <thead>
-                                <tr style="border-bottom:2px solid #f3f4f6;">
-                                    <th style="text-align:left;padding:10px 12px;color:#94a3b8;font-weight:600;">User</th>
-                                    <th style="text-align:left;padding:10px 12px;color:#94a3b8;font-weight:600;">Email</th>
-                                    <th style="text-align:center;padding:10px 12px;color:#94a3b8;font-weight:600;">Role</th>
-                                    <th style="text-align:center;padding:10px 12px;color:#94a3b8;font-weight:600;">Status</th>
-                                    <th style="text-align:center;padding:10px 12px;color:#94a3b8;font-weight:600;">Last Login</th>
-                                    <th style="text-align:right;padding:10px 12px;color:#94a3b8;font-weight:600;">Actions</th>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Email</th>
+                                    <th class="center">Role</th>
+                                    <th class="center">Status</th>
+                                    <th class="center">Last Login</th>
+                                    <th class="right">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr style="border-bottom:1px solid #2d3748;">
-                                    <td style="padding:12px;"><div style="display:flex;align-items:center;gap:10px;"><div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;">A</div><div><div style="font-weight:600;color:#e2e8f0;">Admin User</div><div style="font-size:12px;color:#9ca3af;">Keycloak ID: admin-001</div></div></div></td>
-                                    <td style="padding:12px;color:#94a3b8;">admin@nullus.io</td>
-                                    <td style="padding:12px;text-align:center;"><span style="padding:3px 10px;background:#ede9fe;color:#5b21b6;border-radius:12px;font-size:12px;font-weight:600;">Admin</span></td>
-                                    <td style="padding:12px;text-align:center;"><span style="padding:3px 10px;background:rgba(16,185,129,0.15);color:#6ee7b7;border-radius:12px;font-size:12px;font-weight:600;">Active</span></td>
-                                    <td style="padding:12px;text-align:center;color:#94a3b8;font-size:13px;">2026-03-03 09:00</td>
-                                    <td style="padding:12px;text-align:right;"><span style="color:#9ca3af;font-size:12px;" data-i18n="org.owner">Owner</span></td>
+                                <tr>
+                                    <td><div style="display:flex;align-items:center;gap:10px;"><div class="avatar avatar-md" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);">A</div><div><div class="bold">Admin User</div><div style="font-size:12px;color:#9ca3af;">Keycloak ID: admin-001</div></div></div></td>
+                                    <td class="muted">admin@nullus.io</td>
+                                    <td class="center"><span class="badge badge-purple">Admin</span></td>
+                                    <td class="center"><span class="badge badge-success">Active</span></td>
+                                    <td class="center muted" style="font-size:13px;">2026-03-03 09:00</td>
+                                    <td class="right"><span style="color:#9ca3af;font-size:12px;" data-i18n="org.owner">Owner</span></td>
                                 </tr>
-                                <tr style="border-bottom:1px solid #2d3748;">
-                                    <td style="padding:12px;"><div style="display:flex;align-items:center;gap:10px;"><div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#10b981,#059669);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;">K</div><div><div style="font-weight:600;color:#e2e8f0;">Kim DevOps</div><div style="font-size:12px;color:#9ca3af;">Keycloak ID: kim-002</div></div></div></td>
-                                    <td style="padding:12px;color:#94a3b8;">kim@nullus.io</td>
-                                    <td style="padding:12px;text-align:center;">
+                                <tr>
+                                    <td><div style="display:flex;align-items:center;gap:10px;"><div class="avatar avatar-md" style="background:linear-gradient(135deg,#10b981,#059669);">K</div><div><div class="bold">Kim DevOps</div><div style="font-size:12px;color:#9ca3af;">Keycloak ID: kim-002</div></div></div></td>
+                                    <td class="muted">kim@nullus.io</td>
+                                    <td class="center">
                                         <select style="padding:4px 8px;border:1px solid #2d3748;border-radius:6px;font-size:12px;background:#0f1419;" onchange="updateUserRole(this,'kim-002')">
                                             <option>Admin</option>
                                             <option selected>Operator</option>
                                             <option>Viewer</option>
                                         </select>
                                     </td>
-                                    <td style="padding:12px;text-align:center;"><span style="padding:3px 10px;background:rgba(16,185,129,0.15);color:#6ee7b7;border-radius:12px;font-size:12px;font-weight:600;">Active</span></td>
-                                    <td style="padding:12px;text-align:center;color:#94a3b8;font-size:13px;">2026-03-02 16:30</td>
-                                    <td style="padding:12px;text-align:right;"><div style="display:flex;gap:6px;justify-content:flex-end;"><button class="btn btn-secondary btn-sm"><i class="fas fa-key"></i></button><button class="btn btn-secondary btn-sm" style="color:#ef4444;border-color:#fca5a5;"><i class="fas fa-user-slash"></i></button></div></td>
+                                    <td class="center"><span class="badge badge-success">Active</span></td>
+                                    <td class="center muted" style="font-size:13px;">2026-03-02 16:30</td>
+                                    <td class="right"><div style="display:flex;gap:6px;justify-content:flex-end;"><button class="btn btn-secondary btn-sm"><i class="fas fa-key"></i></button><button class="btn btn-secondary btn-sm" style="color:#ef4444;border-color:#fca5a5;"><i class="fas fa-user-slash"></i></button></div></td>
                                 </tr>
                                 <tr>
-                                    <td style="padding:12px;"><div style="display:flex;align-items:center;gap:10px;"><div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;">P</div><div><div style="font-weight:600;color:#e2e8f0;">Park Developer</div><div style="font-size:12px;color:#9ca3af;">Keycloak ID: park-003</div></div></div></td>
-                                    <td style="padding:12px;color:#94a3b8;">park@nullus.io</td>
-                                    <td style="padding:12px;text-align:center;">
+                                    <td><div style="display:flex;align-items:center;gap:10px;"><div class="avatar avatar-md" style="background:linear-gradient(135deg,#f59e0b,#d97706);">P</div><div><div class="bold">Park Developer</div><div style="font-size:12px;color:#9ca3af;">Keycloak ID: park-003</div></div></div></td>
+                                    <td class="muted">park@nullus.io</td>
+                                    <td class="center">
                                         <select style="padding:4px 8px;border:1px solid #2d3748;border-radius:6px;font-size:12px;background:#0f1419;" onchange="updateUserRole(this,'park-003')">
                                             <option>Admin</option>
                                             <option>Operator</option>
                                             <option selected>Viewer</option>
                                         </select>
                                     </td>
-                                    <td style="padding:12px;text-align:center;"><span style="padding:3px 10px;background:rgba(245,158,11,0.15);color:#fcd34d;border-radius:12px;font-size:12px;font-weight:600;" data-i18n="org.invited">Invited</span></td>
-                                    <td style="padding:12px;text-align:center;color:#94a3b8;font-size:13px;">—</td>
-                                    <td style="padding:12px;text-align:right;"><div style="display:flex;gap:6px;justify-content:flex-end;"><button class="btn btn-secondary btn-sm"><i class="fas fa-redo"></i> <span data-i18n="org.resend">Resend</span></button><button class="btn btn-secondary btn-sm" style="color:#ef4444;border-color:#fca5a5;"><i class="fas fa-trash"></i></button></div></td>
+                                    <td class="center"><span class="badge badge-warning" data-i18n="org.invited">Invited</span></td>
+                                    <td class="center muted" style="font-size:13px;">—</td>
+                                    <td class="right"><div style="display:flex;gap:6px;justify-content:flex-end;"><button class="btn btn-secondary btn-sm"><i class="fas fa-redo"></i> <span data-i18n="org.resend">Resend</span></button><button class="btn btn-secondary btn-sm" style="color:#ef4444;border-color:#fca5a5;"><i class="fas fa-trash"></i></button></div></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -118,15 +118,15 @@
                 </div>
 
                 <!-- Add User Modal -->
-                <div id="addUserModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;">
-                    <div style="background:#0f1419;border-radius:12px;width:480px;padding:24px;">
+                <div class="inline-modal" id="addUserModal">
+                    <div class="inline-modal-box" style="width:480px;">
                         <h3 style="margin:0 0 20px;color:#e2e8f0;"><i class="fas fa-user-plus" style="color:#6366f1;"></i> Add New User</h3>
                         <div style="display:flex;flex-direction:column;gap:14px;">
                             <div><label style="font-size:13px;font-weight:600;color:#cbd5e1;display:block;margin-bottom:6px;">Name</label><input type="text" placeholder="Full name" style="width:100%;padding:10px 12px;border:1.5px solid #2d3748;border-radius:8px;font-size:14px;box-sizing:border-box;"></div>
                             <div><label style="font-size:13px;font-weight:600;color:#cbd5e1;display:block;margin-bottom:6px;">Email <span style="color:#ef4444;">*</span></label><input type="email" placeholder="user@company.com" style="width:100%;padding:10px 12px;border:1.5px solid #2d3748;border-radius:8px;font-size:14px;box-sizing:border-box;"></div>
                             <div><label style="font-size:13px;font-weight:600;color:#cbd5e1;display:block;margin-bottom:6px;">Role <span style="color:#ef4444;">*</span></label><select style="width:100%;padding:10px 12px;border:1.5px solid #2d3748;border-radius:8px;font-size:14px;background:#0f1419;"><option data-i18n="userRole.admin">Admin</option><option selected data-i18n="userRole.devops">DevOps</option><option data-i18n="userRole.developer">Developer</option></select></div>
                         </div>
-                        <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:20px;">
+                        <div class="inline-modal-footer">
                             <button class="btn btn-secondary" onclick="document.getElementById('addUserModal').style.display='none'">Cancel</button>
                             <button class="btn btn-primary"><i class="fas fa-paper-plane"></i> Send Invitation</button>
                         </div>

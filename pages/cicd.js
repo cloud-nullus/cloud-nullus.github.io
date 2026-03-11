@@ -9,7 +9,7 @@
         <div class="stack-list-panel">
             <div class="list-header">
                 <h3 class="panel-title">CI/CD 목록</h3>
-                <button class="btn btn-primary btn-sm" onclick="alert('새 CI/CD Pipeline 생성\\n\\n1. 템플릿 선택\\n2. 파라미터 입력\\n3. Pipeline 자동 생성')">
+                <button class="btn btn-primary btn-sm" onclick="switchPage('cicd-template')">
                     <i class="fas fa-plus"></i> New Pipeline
                 </button>
             </div>
@@ -70,26 +70,26 @@
             </div>
 
             <!-- Detail Content -->
-            <div id="cicdDetailContent" class="stack-detail-content" style="display:none;flex-direction:column;height:100%;">
+            <div id="cicdDetailContent" class="stack-detail-content stack-detail-content--full" style="display:none;">
 
                 <!-- Header -->
-                <div class="stack-detail-header" style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #e5e7eb;flex-shrink:0;">
-                    <div style="display:flex;align-items:center;gap:12px;">
-                        <div id="cicdDetailIconEl" style="width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-size:16px;background:linear-gradient(135deg,#3b82f6,#2563eb);"></div>
-                        <div>
-                            <h3 id="cicdDetailTitle" style="margin:0;font-size:16px;font-weight:700;"></h3>
-                            <div id="cicdDetailMeta" style="font-size:12px;color:#94a3b8;margin-top:2px;"></div>
+                <div class="stack-detail-header stack-detail-header--compact">
+                    <div class="stack-detail-header-main">
+                        <div id="cicdDetailIconEl" class="stack-detail-icon"></div>
+                        <div class="stack-detail-title-wrap">
+                            <h3 id="cicdDetailTitle" class="stack-detail-title"></h3>
+                            <div id="cicdDetailMeta" class="stack-detail-meta"></div>
                         </div>
                         <span id="cicdDetailStatusBadge"></span>
                     </div>
-                    <div style="display:flex;gap:8px;">
+                    <div class="stack-detail-header-actions">
                         <button class="btn btn-secondary btn-sm" id="cicdLogsBtn" onclick="alert('Pipeline Logs 보기')"><i class="fas fa-terminal"></i> Logs</button>
                         <button class="btn btn-primary btn-sm" id="cicdDeployBtn" onclick="alert('파이프라인 재실행')"><i class="fas fa-rocket"></i> Run</button>
                     </div>
                 </div>
 
                 <!-- Inner Tab Bar -->
-                <div class="stack-inner-tabs" style="display:flex;gap:0;border-bottom:1px solid #e5e7eb;flex-shrink:0;">
+                <div class="stack-inner-tabs">
                     <button class="stack-inner-tab active" data-ctab="info" onclick="switchCicdTab(this,'info')">
                         <i class="fas fa-info-circle"></i> Info
                     </button>
@@ -355,52 +355,50 @@
 
 // ── CI/CD inner tab switching ──
 function switchCicdTab(btn, tabName) {
-    document.querySelectorAll('.stack-inner-tab[data-ctab]').forEach(function (t) { t.classList.remove('active'); });
-    btn.classList.add('active');
-    document.querySelectorAll('.cicd-tab-pane').forEach(function (p) { p.style.display = 'none'; });
-    var pane = document.getElementById('cicdTab-' + tabName);
-    if (pane) { pane.style.display = 'flex'; pane.style.flexDirection = 'column'; }
+    window.pageReuse.switchTabPane({
+        tabSelector: '.stack-inner-tab[data-ctab]',
+        paneSelector: '.cicd-tab-pane',
+        paneIdPrefix: 'cicdTab-',
+        tabName: tabName,
+        activeTabButton: btn,
+        paneDisplay: 'flex',
+        paneFlexDirection: 'column'
+    });
 }
 
 // ── Filter CI/CD sidebar list ──
 function filterCicdListSidebar(query) {
-    var q = (query || document.getElementById('cicdListSearch').value || '').toLowerCase();
-    var status = (document.getElementById('cicdListStatusFilter2') || {}).value || 'all';
-    document.querySelectorAll('#cicdListItems .stack-list-item').forEach(function (item) {
-        var nameMatch = !q || item.getAttribute('data-name').toLowerCase().includes(q);
-        var statusMatch = status === 'all' || item.getAttribute('data-status') === status;
-        item.style.display = (nameMatch && statusMatch) ? '' : 'none';
+    window.pageReuse.filterListByQueryAndStatus({
+        query: query,
+        queryInputId: 'cicdListSearch',
+        statusInputId: 'cicdListStatusFilter2',
+        itemSelector: '#cicdListItems .stack-list-item',
+        nameAttr: 'data-name',
+        statusAttr: 'data-status',
+        defaultStatus: 'all'
     });
 }
 
 // ── Select CI/CD item ──
 function selectCicdItem(item) {
-    document.querySelectorAll('#cicdListItems .stack-list-item').forEach(function (el) { el.classList.remove('active'); });
-    item.classList.add('active');
+    window.pageReuse.selectListItemWithDetail({
+        item: item,
+        itemSelector: '#cicdListItems .stack-list-item',
+        titleSourceSelector: '.stack-item-name',
+        metaSourceSelector: '.stack-item-meta',
+        iconSourceSelector: '.stack-item-icon',
+        statusSourceSelector: '.stack-item-status',
+        placeholderId: 'cicdDetailPlaceholder',
+        contentId: 'cicdDetailContent',
+        titleTargetId: 'cicdDetailTitle',
+        metaTargetId: 'cicdDetailMeta',
+        iconTargetId: 'cicdDetailIconEl',
+        statusTargetId: 'cicdDetailStatusBadge',
+        contentDisplay: 'flex',
+        contentFlexDirection: 'column',
+        badgeClassName: 'detail-status-badge'
+    });
 
-    var name = item.querySelector('.stack-item-name').textContent;
-    var meta = item.querySelector('.stack-item-meta').textContent;
-    var iconEl = item.querySelector('.stack-item-icon');
-    var statusEl = item.querySelector('.stack-item-status');
-
-    document.getElementById('cicdDetailPlaceholder').style.display = 'none';
-    var content = document.getElementById('cicdDetailContent');
-    content.style.display = 'flex';
-
-    document.getElementById('cicdDetailTitle').textContent = name;
-    document.getElementById('cicdDetailMeta').textContent = meta;
-
-    var detailIcon = document.getElementById('cicdDetailIconEl');
-    if (detailIcon && iconEl) { detailIcon.innerHTML = iconEl.innerHTML; detailIcon.style.background = iconEl.style.background; }
-
-    var badge = document.getElementById('cicdDetailStatusBadge');
-    if (badge && statusEl) {
-        badge.className = statusEl.className;
-        badge.innerHTML = statusEl.innerHTML;
-        badge.style.cssText = 'font-size:12px;padding:3px 10px;border-radius:12px;';
-    }
-
-    // Reset to Info tab
-    var firstTab = document.querySelector('.stack-inner-tab[data-ctab="info"]');
-    if (firstTab) switchCicdTab(firstTab, 'info');
+    var defaultTab = document.querySelector('.stack-inner-tab[data-ctab="info"]');
+    if (defaultTab) switchCicdTab(defaultTab, 'info');
 }
