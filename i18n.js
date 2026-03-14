@@ -4,6 +4,7 @@
  */
 const i18n = {
     locale: localStorage.getItem('nullus_locale') || 'ko',
+    autoIndex: null,
     t: function(key) {
         const keys = key.split('.');
         let val = this.messages[this.locale];
@@ -26,7 +27,16 @@ const i18n = {
             if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
                 if (el.placeholder !== undefined) el.placeholder = val;
             } else {
-                el.textContent = val;
+                const textNodes = Array.from(el.childNodes).filter(node => node.nodeType === Node.TEXT_NODE);
+                if (textNodes.length === 0) {
+                    el.textContent = val;
+                } else {
+                    const targetNode = textNodes.find(node => node.textContent && node.textContent.trim().length > 0) || textNodes[0];
+                    const original = targetNode.textContent || '';
+                    const leading = (original.match(/^\s*/) || [''])[0];
+                    const trailing = (original.match(/\s*$/) || [''])[0];
+                    targetNode.textContent = `${leading}${val}${trailing}`;
+                }
             }
         });
         document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
@@ -34,6 +44,53 @@ const i18n = {
         });
         document.querySelectorAll('[data-i18n-title]').forEach(el => {
             el.title = this.t(el.getAttribute('data-i18n-title'));
+        });
+        this.applyAutoLabels();
+    },
+    buildAutoIndex: function() {
+        const index = new Map();
+        const walk = (obj, path, locale) => {
+            if (!obj || typeof obj !== 'object') return;
+            Object.keys(obj).forEach(key => {
+                const value = obj[key];
+                const nextPath = path ? `${path}.${key}` : key;
+                if (value && typeof value === 'object') {
+                    walk(value, nextPath, locale);
+                    return;
+                }
+                if (typeof value !== 'string') return;
+                const normalized = value.trim().replace(/\s+/g, ' ');
+                if (!normalized) return;
+                if (!index.has(normalized)) {
+                    index.set(normalized, nextPath);
+                }
+            });
+        };
+        ['en', 'ko', 'zh'].forEach(locale => {
+            walk(this.messages[locale], '', locale);
+        });
+        return index;
+    },
+    applyAutoLabels: function() {
+        if (!this.autoIndex) {
+            this.autoIndex = this.buildAutoIndex();
+        }
+        const excludedTags = new Set(['SCRIPT', 'STYLE', 'CODE', 'PRE', 'SELECT', 'OPTION', 'INPUT', 'TEXTAREA']);
+        document.querySelectorAll('body *').forEach(el => {
+            if (excludedTags.has(el.tagName)) return;
+            if (el.hasAttribute('data-i18n') || el.hasAttribute('data-i18n-placeholder')) return;
+            if (el.closest('select')) return;
+            el.childNodes.forEach(node => {
+                if (node.nodeType !== Node.TEXT_NODE) return;
+                const raw = node.textContent || '';
+                const text = raw.trim().replace(/\s+/g, ' ');
+                if (!text) return;
+                const key = this.autoIndex.get(text);
+                if (!key) return;
+                const translated = this.t(key);
+                if (!translated || translated === key) return;
+                node.textContent = raw.replace(raw.trim(), translated);
+            });
         });
     },
     messages: {
@@ -58,7 +115,9 @@ const i18n = {
                 userManagement: 'User Management',
                 clusterManagement: 'Cluster Management',
                 user: 'User',
-                logout: 'Log out'
+                logout: 'Log out',
+                appDeploy: 'App Deploy',
+                deployAutomation: 'Deploy Automation'
             },
             role: { admin: 'Admin', devops: 'DevOps', developer: 'Developer' },
             userRole: { admin: 'Admin', devops: 'DevOps', developer: 'Developer' },
@@ -75,7 +134,16 @@ const i18n = {
                 allStatus: 'All Status',
                 active: 'Active',
                 history: 'History',
-                monitor: 'Monitor'
+                monitor: 'Monitor',
+                back: 'Back',
+                copyToClipboard: 'Copy to Clipboard',
+                download: 'Download',
+                inactive: 'Inactive',
+                apply: 'Apply',
+                all: 'All',
+                langKorean: 'Korean',
+                langEnglish: 'English',
+                langChinese: 'Chinese'
             },
             cluster: {
                 title: 'Cluster Management',
@@ -98,7 +166,10 @@ const i18n = {
                 connect: 'Connect',
                 configuration: 'Cluster Configuration',
                 saveConfig: 'Save Configuration',
-                uploadConfig: 'Upload Config'
+                uploadConfig: 'Upload Config',
+                pipelineClusterMeta: 'Pipeline · nullus-system',
+                appClusterMeta: 'Application · Not Configured',
+                authMethod: 'Auth Method'
             },
             stack: {
                 list: 'Stack List',
@@ -122,7 +193,20 @@ const i18n = {
                 severity: 'Severity',
                 message: 'Message',
                 config: 'Alert Config',
-                configuration: 'Alert Configuration'
+                configuration: 'Alert Configuration',
+                rulesDesc: 'Configure alert conditions and delivery channels (Slack, Email, etc.).',
+                slack: 'Slack',
+                email: 'Email',
+                thresholds: 'Alert Thresholds',
+                historyDesc: 'View triggered alert history.',
+                highCpuUsage: 'High CPU Usage',
+                critical: 'Critical',
+                highCpuUsageMsg: 'CPU usage exceeded 85% on prod-k8s',
+                pipelineFailed: 'Pipeline Failed',
+                warning: 'Warning',
+                pipelineFailedMsg: 'Build #142 failed on development-stack',
+                memoryThreshold: 'Memory Threshold',
+                memoryThresholdMsg: 'Memory usage 82% on staging-k8s'
             },
             org: {
                 basicInfo: 'Basic Information',
@@ -143,7 +227,11 @@ const i18n = {
                 deactivate: 'Deactivate',
                 resend: 'Resend',
                 invited: 'Invited',
-                sendInvite: 'Send Invite'
+                sendInvite: 'Send Invite',
+                saveChanges: 'Save Changes',
+                pipelineClusterConfigured: 'Pipeline Cluster · Configured',
+                applicationClusterNotConfigured: 'Application Cluster · Not Configured',
+                emailAddress: 'Email address'
             },
             home: {
                 title: 'Home',
@@ -229,7 +317,30 @@ const i18n = {
                 addUser: 'Add User',
                 fullAccess: 'Full access',
                 deployConfigure: 'Deploy & Configure',
-                readOnly: 'Read only'
+                readOnly: 'Read only',
+                adminPermOrg: 'Manage organization',
+                adminPermCluster: 'Register/delete clusters',
+                adminPermStack: 'Install/delete stacks',
+                adminPermUser: 'Manage user permissions',
+                devopsPermStack: 'Install/update stacks',
+                devopsPermPipeline: 'Deploy pipelines',
+                devopsPermCluster: 'View clusters',
+                devopsPermHistory: 'View history',
+                developerPermStackPipeline: 'View stacks/pipelines',
+                developerPermMonitoring: 'View monitoring',
+                developerPermHistory: 'View history',
+                usersCount: 'Users (3)',
+                searchUsers: 'Search users...',
+                allRoles: 'All Roles',
+                user: 'User',
+                lastLogin: 'Last Login',
+                addNewUser: 'Add New User',
+                name: 'Name',
+                fullName: 'Full name',
+                emailRequired: 'Email *',
+                emailPlaceholder: 'user@company.com',
+                roleRequired: 'Role *',
+                sendInvitation: 'Send Invitation'
             },
             install: {
                 title: 'DevSecOps Stack Install',
@@ -248,7 +359,194 @@ const i18n = {
                 resources: 'Resources',
                 clusterConfig: 'Cluster Configurations',
                 quickStart: 'Quick Start Templates',
-                selectPreset: 'Select a preset to auto-configure your pipeline'
+                selectPreset: 'Select a preset to auto-configure your pipeline',
+                resourceAllocationCompare: 'Resource Allocation Compare',
+                resourceAllocationCompareDesc: 'Review cluster setup, selected configuration summary, and resource allocation in one place.',
+                clusterConfiguration: 'Cluster Configuration',
+                configureClusters: 'Configure Clusters',
+                configurationSummary: 'Configuration Summary',
+                exportJson: 'Export JSON',
+                deployPipeline: 'Deploy Pipeline',
+                resourceAllocation: 'Resource Allocation',
+                artifactsConfigured: 'Artifacts configured',
+                pipelineToolsSelected: 'Pipeline tools selected',
+                resourcesCalculated: 'Resources calculated',
+                appClusterNotReady: 'Application cluster not ready',
+                previewK8sObjects: 'Preview K8s Objects'
+            },
+            pageTitle: {
+                stackList: 'DevSecOps Stack List',
+                stackTemplate: 'DevSecOps Stack Template',
+                developerDeploy: 'Developer Self-Service Deploy',
+                clusterManagement: 'Cluster Management',
+                organization: 'Organization',
+                monitoring: 'Monitoring Dashboard',
+                stackVersion: 'DevSecOps Stack Version Management',
+                cicdTemplate: 'CI/CD Template',
+                cicdList: 'CI/CD List',
+                cicdHistory: 'CI/CD History',
+                userManagement: 'User Management'
+            },
+            modal: {
+                previewDeployScript: 'Preview Deploy Script',
+                previewDeployScriptDesc: 'Generated script to deploy the configured DevSecOps stack to your cluster.',
+                k8sObjectPreview: 'K8s Object Preview',
+                k8sObjectPreviewDesc: 'Auto-generated Kubernetes manifests based on your current configuration.',
+                k8sDeployments: 'Deployments',
+                k8sServices: 'Services',
+                k8sIngress: 'Ingress'
+            },
+            editor: {
+                editPipelineConfiguration: 'Edit Pipeline Configuration',
+                variables: 'Variables',
+                templates: 'Templates',
+                undo: 'Undo',
+                redo: 'Redo',
+                find: 'Find',
+                validate: 'Validate',
+                pipelineVariables: 'Pipeline Variables',
+                addVariable: 'Add Variable',
+                pipelineTemplates: 'Pipeline Templates',
+                templateNodejs: 'Node.js',
+                templateNodejsDesc: 'Standard Node.js CI/CD pipeline',
+                templateDocker: 'Docker',
+                templateDockerDesc: 'Docker build and push pipeline',
+                templateKubernetes: 'Kubernetes',
+                templateKubernetesDesc: 'K8s deployment pipeline',
+                templatePython: 'Python',
+                templatePythonDesc: 'Python testing and deployment',
+                saveConfiguration: 'Save Configuration'
+            },
+            stackVersion: {
+                lastUpdated: 'Last updated: 2026-03-01',
+                verifiedOnlyNotice: 'Only tested version combinations are shown. A warning appears for unverified combinations.',
+                verifiedCombinations: 'Verified Combinations',
+                verified: 'Verified',
+                recommended: 'Recommended',
+                partial: 'Partial',
+                notSupported: 'Not Supported',
+                githubCombinations: 'GitHub Actions + Argo CD Combinations'
+            },
+            stackTemplate: {
+                search: 'Search DevSecOps templates...',
+                newTemplate: '+ New Template',
+                banner: 'Select a DevSecOps stack template to move to Stack Install and start deployment setup immediately.',
+                standardCicdTitle: 'Standard CI/CD',
+                standardCicdDesc: 'Default DevSecOps template with GitLab CI + ArgoCD + Prometheus + Grafana.',
+                default: 'Default',
+                includedTools: 'Included Tools',
+                recommendedFor: 'Recommended For',
+                securityLogging: 'Security/Logging',
+                fullDevSecopsTitle: 'Full DevSecOps',
+                fullDevSecopsDesc: 'Integrated DevSecOps template including CI/CD + monitoring + logging + security.',
+                security: 'Security',
+                minimalPipelineTitle: 'Minimal Pipeline',
+                minimalPipelineDesc: 'Lightweight DevSecOps template focused on fast core deployment.',
+                lean: 'Lean'
+            },
+            cicdTemplate: {
+                webFrontend: 'Web Frontend',
+                webFrontendStack: 'React / Next.js',
+                stable: 'STABLE',
+                webFrontendDesc: 'Standard CI/CD pipeline for React/Next.js frontend apps. Deploys to ArgoCD after Docker build.',
+                backendApi: 'Backend API',
+                backendApiStack: 'Spring Boot / FastAPI',
+                backendApiDesc: 'Pipeline for REST API backend services including security scan (Trivy) and Kubernetes deployment.',
+                batchJob: 'Batch Job',
+                batchJobStack: 'Python Batch / Spring Batch',
+                batchJobDesc: 'Pipeline for scheduled batch jobs. Deploys as Kubernetes CronJob and records execution results.',
+                dockerBuild: 'Docker Build',
+                argocdDeploy: 'ArgoCD Deploy',
+                imageName: 'Image Name',
+                cronjobDeploy: 'CronJob Deploy',
+                cronSchedule: 'Cron Schedule'
+            },
+            cicdList: {
+                newPipeline: 'New Pipeline',
+                searchPipeline: 'Search pipelines...',
+                pipelineDetail: 'CI/CD Pipeline Details',
+                selectPipeline: 'Select a pipeline from the list',
+                run: 'Run',
+                ciConfiguration: 'CI Configuration',
+                cdConfiguration: 'CD Configuration',
+                platform: 'Platform',
+                branch: 'Branch',
+                configFile: 'Config File',
+                runner: 'Runner',
+                trigger: 'Trigger',
+                syncPolicy: 'Sync Policy',
+                image: 'Image',
+                package: 'Package'
+            },
+            stackList: {
+                info: 'Info',
+                versionUpgrade: 'Version Upgrade',
+                artifactConfiguration: 'Artifact Configuration',
+                artifactConfigurationDesc: 'Artifact repositories configured in the current stack',
+                pipelineTools: 'Pipeline Tools',
+                pipelineToolsDesc: 'Current stack CI/CD pipeline tool configuration',
+                monitoringTools: 'Monitoring Tools',
+                monitoringToolsDesc: 'Current stack monitoring tool configuration',
+                loggingTools: 'Logging Tools',
+                loggingToolsDesc: 'Current stack logging tool configuration',
+                resourcesDesc: 'Current stack resource allocation status',
+                editValuesYaml: 'Edit values.yaml',
+                valuesYamlHelp: 'Edit Helm chart values.yaml and click Apply.'
+            },
+            developer: {
+                workflowDesc: 'Backstage-style developer workflow: choose a template and deploy to target cluster/namespace.',
+                categoryWeb: 'Web',
+                categoryBackend: 'Backend',
+                categoryBatch: 'Batch',
+                deployWizard: 'Deploy Wizard',
+                previewManifest: 'Preview Manifest',
+                deployToCluster: 'Deploy to Cluster',
+                templateReactSpa: 'React SPA',
+                templateReactSpaDesc: 'TypeScript + Vite + Nginx deployment template for frontend teams.',
+                templateNextSsr: 'Next.js SSR',
+                templateNextSsrDesc: 'Server-side rendering with Next.js, optimized for production K8s.',
+                templateJavaSpringApi: 'Java Spring Boot API',
+                templateJavaSpringApiDesc: 'REST API starter with Actuator health checks and container best practices.',
+                templatePythonFastapi: 'Python FastAPI',
+                templatePythonFastapiDesc: 'FastAPI starter with uvicorn, OpenAPI docs, and production Docker setup.',
+                templateGoMicroservice: 'Go Microservice',
+                templateGoMicroserviceDesc: 'Go HTTP service with health probes, metrics endpoint, and small image footprint.',
+                templatePythonBatch: 'Python Batch Job',
+                templatePythonBatchDesc: 'Kubernetes CronJob template for scheduled Python batch processing.',
+                templateSpringBatch: 'Spring Batch Job',
+                templateSpringBatchDesc: 'Spring Batch on Kubernetes with Job/CronJob scheduling and retry logic.',
+                step1: '1. App Config',
+                step2: '2. Cluster & Namespace',
+                step3: '3. Resources',
+                step4: '4. Env & Secrets',
+                step5: '5. Review & Deploy',
+                selectedTemplate: 'Selected Template',
+                appName: 'App Name',
+                repositoryUrl: 'Repository URL',
+                targetCluster: 'Target Cluster',
+                enablePostgresDb: 'PostgreSQL DB',
+                enableRedisCache: 'Redis Cache',
+                enableMessageQueue: 'Message Queue',
+                cpuRequest: 'CPU Request (m)',
+                memoryRequest: 'Memory Request (Mi)',
+                environmentSecrets: 'Environment & Secrets'
+            },
+            action: {
+                githubActions: 'GitHub Actions',
+                newWorkflow: 'New Workflow',
+                searchWorkflow: 'Search workflows...',
+                running: 'Running',
+                skipped: 'Skipped',
+                selectWorkflow: 'Select a workflow',
+                runWorkflow: 'Run Workflow',
+                avgRuntime: 'Average Runtime',
+                lastRun: 'Last Run',
+                run: 'Run',
+                status: 'Status',
+                trigger: 'Trigger',
+                commit: 'Commit',
+                duration: 'Duration',
+                executedAt: 'Executed At'
             }
         },
         ko: {
@@ -272,7 +570,9 @@ const i18n = {
                 userManagement: '사용자 관리',
                 clusterManagement: '클러스터 관리',
                 user: '사용자',
-                logout: '로그아웃'
+                logout: '로그아웃',
+                appDeploy: '앱 배포',
+                deployAutomation: '배포 자동화'
             },
             role: { admin: 'Admin', devops: 'DevOps', developer: 'Developer' },
             userRole: { admin: 'Admin', devops: 'DevOps', developer: 'Developer' },
@@ -289,7 +589,16 @@ const i18n = {
                 allStatus: '전체 상태',
                 active: '활성',
                 history: '이력',
-                monitor: '모니터링'
+                monitor: '모니터링',
+                back: '뒤로',
+                copyToClipboard: '클립보드에 복사',
+                download: '다운로드',
+                inactive: '비활성',
+                apply: '적용',
+                all: '전체',
+                langKorean: '한국어',
+                langEnglish: '영어',
+                langChinese: '중국어'
             },
             cluster: {
                 title: '클러스터 관리',
@@ -312,7 +621,10 @@ const i18n = {
                 connect: '연결',
                 configuration: '클러스터 설정',
                 saveConfig: '설정 저장',
-                uploadConfig: '설정 업로드'
+                uploadConfig: '설정 업로드',
+                pipelineClusterMeta: '파이프라인 · nullus-system',
+                appClusterMeta: '애플리케이션 · 미설정',
+                authMethod: '인증 방식'
             },
             stack: {
                 list: '스택 목록',
@@ -336,7 +648,20 @@ const i18n = {
                 severity: '심각도',
                 message: '메시지',
                 config: '알림 설정',
-                configuration: '알림 설정'
+                configuration: '알림 설정',
+                rulesDesc: '알림 발생 조건과 전송 채널(Slack, Email 등)을 설정합니다.',
+                slack: '슬랙',
+                email: '이메일',
+                thresholds: '알림 임계값',
+                historyDesc: '발생한 알림 목록을 조회합니다.',
+                highCpuUsage: 'CPU 사용량 높음',
+                critical: '심각',
+                highCpuUsageMsg: 'prod-k8s에서 CPU 사용량이 85%를 초과했습니다',
+                pipelineFailed: '파이프라인 실패',
+                warning: '경고',
+                pipelineFailedMsg: 'development-stack에서 빌드 #142가 실패했습니다',
+                memoryThreshold: '메모리 임계치',
+                memoryThresholdMsg: 'staging-k8s에서 메모리 사용량이 82%입니다'
             },
             org: {
                 basicInfo: '기본 정보',
@@ -357,7 +682,11 @@ const i18n = {
                 deactivate: '비활성화',
                 resend: '재전송',
                 invited: '초대됨',
-                sendInvite: '초대 보내기'
+                sendInvite: '초대 보내기',
+                saveChanges: '변경사항 저장',
+                pipelineClusterConfigured: '파이프라인 클러스터 · 구성됨',
+                applicationClusterNotConfigured: '애플리케이션 클러스터 · 미설정',
+                emailAddress: '이메일 주소'
             },
             home: {
                 title: '홈',
@@ -443,7 +772,30 @@ const i18n = {
                 addUser: 'Add User',
                 fullAccess: 'Full access',
                 deployConfigure: 'Deploy & Configure',
-                readOnly: 'Read only'
+                readOnly: 'Read only',
+                adminPermOrg: '조직 관리',
+                adminPermCluster: '클러스터 등록/삭제',
+                adminPermStack: '스택 설치/삭제',
+                adminPermUser: '사용자 권한 관리',
+                devopsPermStack: '스택 설치/수정',
+                devopsPermPipeline: '파이프라인 배포',
+                devopsPermCluster: '클러스터 조회',
+                devopsPermHistory: '이력 조회',
+                developerPermStackPipeline: '스택/파이프라인 조회',
+                developerPermMonitoring: '모니터링 조회',
+                developerPermHistory: '이력 조회',
+                usersCount: '사용자 (3)',
+                searchUsers: '사용자 검색...',
+                allRoles: '전체 역할',
+                user: '사용자',
+                lastLogin: '마지막 로그인',
+                addNewUser: '새 사용자 추가',
+                name: '이름',
+                fullName: '전체 이름',
+                emailRequired: '이메일 *',
+                emailPlaceholder: 'user@company.com',
+                roleRequired: '역할 *',
+                sendInvitation: '초대 보내기'
             },
             install: {
                 title: 'DevSecOps 스택 설치',
@@ -462,7 +814,194 @@ const i18n = {
                 resources: '리소스',
                 clusterConfig: '클러스터 설정',
                 quickStart: '퀵 스타트 템플릿',
-                selectPreset: '프리셋을 선택하면 파이프라인이 자동 구성됩니다'
+                selectPreset: '프리셋을 선택하면 파이프라인이 자동 구성됩니다',
+                resourceAllocationCompare: '리소스 할당 비교',
+                resourceAllocationCompareDesc: '클러스터 구성, 선택한 구성 요약, 자원 할당 상태를 한 영역에서 확인합니다.',
+                clusterConfiguration: '클러스터 구성',
+                configureClusters: '클러스터 구성하기',
+                configurationSummary: '구성 요약',
+                exportJson: 'JSON 내보내기',
+                deployPipeline: '파이프라인 배포',
+                resourceAllocation: '리소스 할당',
+                artifactsConfigured: '아티팩트 구성 완료',
+                pipelineToolsSelected: '파이프라인 도구 선택 완료',
+                resourcesCalculated: '리소스 계산 완료',
+                appClusterNotReady: '애플리케이션 클러스터 준비 안 됨',
+                previewK8sObjects: 'K8s 오브젝트 미리보기'
+            },
+            pageTitle: {
+                stackList: 'DevSecOps 스택 목록',
+                stackTemplate: 'DevSecOps 스택 템플릿',
+                developerDeploy: '개발자 셀프서비스 배포',
+                clusterManagement: '클러스터 관리',
+                organization: '조직',
+                monitoring: '모니터링 대시보드',
+                stackVersion: 'DevSecOps 스택 버전 관리',
+                cicdTemplate: 'CI/CD 템플릿',
+                cicdList: 'CI/CD 목록',
+                cicdHistory: 'CI/CD 이력',
+                userManagement: '사용자 관리'
+            },
+            modal: {
+                previewDeployScript: '배포 스크립트 미리보기',
+                previewDeployScriptDesc: '현재 구성된 DevSecOps 스택을 클러스터에 배포하기 위한 스크립트입니다.',
+                k8sObjectPreview: 'K8s 오브젝트 미리보기',
+                k8sObjectPreviewDesc: '현재 설정을 기반으로 자동 생성된 Kubernetes 매니페스트입니다.',
+                k8sDeployments: '디플로이먼트',
+                k8sServices: '서비스',
+                k8sIngress: '인그레스'
+            },
+            editor: {
+                editPipelineConfiguration: '파이프라인 설정 편집',
+                variables: '변수',
+                templates: '템플릿',
+                undo: '실행 취소',
+                redo: '다시 실행',
+                find: '찾기',
+                validate: '검증',
+                pipelineVariables: '파이프라인 변수',
+                addVariable: '변수 추가',
+                pipelineTemplates: '파이프라인 템플릿',
+                templateNodejs: 'Node.js',
+                templateNodejsDesc: '표준 Node.js CI/CD 파이프라인',
+                templateDocker: 'Docker',
+                templateDockerDesc: 'Docker 빌드 및 푸시 파이프라인',
+                templateKubernetes: 'Kubernetes',
+                templateKubernetesDesc: 'K8s 배포 파이프라인',
+                templatePython: 'Python',
+                templatePythonDesc: 'Python 테스트 및 배포',
+                saveConfiguration: '설정 저장'
+            },
+            stackVersion: {
+                lastUpdated: '최종 업데이트: 2026-03-01',
+                verifiedOnlyNotice: '테스트 완료된 버전 조합만 표시됩니다. 미검증 조합 사용 시 경고가 표시됩니다.',
+                verifiedCombinations: '검증된 조합',
+                verified: '검증됨',
+                recommended: '권장',
+                partial: '부분 검증',
+                notSupported: '미지원',
+                githubCombinations: 'GitHub Actions + Argo CD 조합'
+            },
+            stackTemplate: {
+                search: 'DevSecOps 템플릿 검색...',
+                newTemplate: '+ 새 템플릿',
+                banner: 'DevSecOps 스택 템플릿을 선택하면 Stack Install로 이동해 즉시 배포 구성을 시작합니다.',
+                standardCicdTitle: '표준 CI/CD',
+                standardCicdDesc: 'GitLab CI + ArgoCD + Prometheus + Grafana 조합의 기본 DevSecOps 템플릿',
+                default: '기본',
+                includedTools: '포함 도구',
+                recommendedFor: '추천 대상',
+                securityLogging: '보안/로깅',
+                fullDevSecopsTitle: '풀 DevSecOps',
+                fullDevSecopsDesc: 'CI/CD + 모니터링 + 로깅 + 보안까지 포함한 통합 DevSecOps 템플릿',
+                security: '보안',
+                minimalPipelineTitle: '미니멀 파이프라인',
+                minimalPipelineDesc: '핵심 배포만 빠르게 구성하는 경량 DevSecOps 템플릿',
+                lean: '경량'
+            },
+            cicdTemplate: {
+                webFrontend: '웹 프론트엔드',
+                webFrontendStack: 'React / Next.js',
+                stable: '안정',
+                webFrontendDesc: 'React/Next.js 웹 프론트엔드 앱을 위한 표준 CI/CD 파이프라인. Docker 빌드 후 ArgoCD로 배포.',
+                backendApi: '백엔드 API',
+                backendApiStack: 'Spring Boot / FastAPI',
+                backendApiDesc: 'REST API 백엔드 서비스를 위한 파이프라인. Security Scan(Trivy) 포함, Kubernetes Deployment 배포.',
+                batchJob: '배치 작업',
+                batchJobStack: 'Python Batch / Spring Batch',
+                batchJobDesc: '정기 실행 배치 잡을 위한 파이프라인. Kubernetes CronJob으로 배포, 실행 결과 자동 기록.',
+                dockerBuild: 'Docker 빌드',
+                argocdDeploy: 'ArgoCD 배포',
+                imageName: '이미지 이름',
+                cronjobDeploy: 'CronJob 배포',
+                cronSchedule: 'Cron 스케줄'
+            },
+            cicdList: {
+                newPipeline: '새 파이프라인',
+                searchPipeline: '파이프라인 검색...',
+                pipelineDetail: 'CI/CD 파이프라인 상세',
+                selectPipeline: '목록에서 파이프라인을 선택하세요',
+                run: '실행',
+                ciConfiguration: 'CI 설정',
+                cdConfiguration: 'CD 설정',
+                platform: '플랫폼',
+                branch: '브랜치',
+                configFile: '설정 파일',
+                runner: '러너',
+                trigger: '트리거',
+                syncPolicy: '동기화 정책',
+                image: '이미지',
+                package: '패키지'
+            },
+            stackList: {
+                info: '정보',
+                versionUpgrade: '버전 업그레이드',
+                artifactConfiguration: '아티팩트 구성',
+                artifactConfigurationDesc: '현재 스택에 구성된 아티팩트 저장소',
+                pipelineTools: '파이프라인 도구',
+                pipelineToolsDesc: '현재 스택의 CI/CD 파이프라인 도구 구성',
+                monitoringTools: '모니터링 도구',
+                monitoringToolsDesc: '현재 스택의 모니터링 도구 구성',
+                loggingTools: '로깅 도구',
+                loggingToolsDesc: '현재 스택의 로깅 도구 구성',
+                resourcesDesc: '현재 스택의 리소스 할당 현황',
+                editValuesYaml: 'values.yaml 편집',
+                valuesYamlHelp: 'Helm chart values.yaml 내용을 수정한 뒤 Apply를 누르세요.'
+            },
+            developer: {
+                workflowDesc: 'Backstage 스타일 개발자 워크플로우: 템플릿을 선택하고 대상 클러스터/네임스페이스로 배포하세요.',
+                categoryWeb: '웹',
+                categoryBackend: '백엔드',
+                categoryBatch: '배치',
+                deployWizard: '배포 마법사',
+                previewManifest: '매니페스트 미리보기',
+                deployToCluster: '클러스터에 배포',
+                templateReactSpa: 'React SPA',
+                templateReactSpaDesc: '프론트엔드 팀을 위한 TypeScript + Vite + Nginx 배포 템플릿',
+                templateNextSsr: 'Next.js SSR',
+                templateNextSsrDesc: '프로덕션 K8s에 최적화된 Next.js 서버사이드 렌더링 템플릿',
+                templateJavaSpringApi: 'Java Spring Boot API',
+                templateJavaSpringApiDesc: 'Actuator 헬스체크와 컨테이너 모범 사례를 포함한 REST API 스타터',
+                templatePythonFastapi: 'Python FastAPI',
+                templatePythonFastapiDesc: 'uvicorn, OpenAPI 문서, 프로덕션 Docker 구성을 포함한 FastAPI 스타터',
+                templateGoMicroservice: 'Go 마이크로서비스',
+                templateGoMicroserviceDesc: '헬스 프로브, 메트릭 엔드포인트, 경량 이미지 구성을 갖춘 Go HTTP 서비스',
+                templatePythonBatch: 'Python 배치 잡',
+                templatePythonBatchDesc: '정기 실행 Python 배치 처리를 위한 Kubernetes CronJob 템플릿',
+                templateSpringBatch: 'Spring 배치 잡',
+                templateSpringBatchDesc: 'Job/CronJob 스케줄링과 재시도 로직을 포함한 Kubernetes용 Spring Batch',
+                step1: '1. 앱 설정',
+                step2: '2. 클러스터 & 네임스페이스',
+                step3: '3. 리소스',
+                step4: '4. 환경변수 & 시크릿',
+                step5: '5. 검토 & 배포',
+                selectedTemplate: '선택된 템플릿',
+                appName: '앱 이름',
+                repositoryUrl: '저장소 URL',
+                targetCluster: '대상 클러스터',
+                enablePostgresDb: 'PostgreSQL DB',
+                enableRedisCache: 'Redis 캐시',
+                enableMessageQueue: '메시지 큐',
+                cpuRequest: 'CPU 요청량 (m)',
+                memoryRequest: '메모리 요청량 (Mi)',
+                environmentSecrets: '환경변수 & 시크릿'
+            },
+            action: {
+                githubActions: 'GitHub Actions',
+                newWorkflow: '새 워크플로우',
+                searchWorkflow: '워크플로우 검색...',
+                running: '실행 중',
+                skipped: '건너뜀',
+                selectWorkflow: '워크플로우를 선택하세요',
+                runWorkflow: '워크플로우 실행',
+                avgRuntime: '평균 실행시간',
+                lastRun: '마지막 실행',
+                run: '실행',
+                status: '상태',
+                trigger: '트리거',
+                commit: '커밋',
+                duration: '소요시간',
+                executedAt: '실행시각'
             }
         },
         zh: {
@@ -486,7 +1025,9 @@ const i18n = {
                 userManagement: '用户管理',
                 clusterManagement: '集群管理',
                 user: '用户',
-                logout: '退出登录'
+                logout: '退出登录',
+                appDeploy: '应用部署',
+                deployAutomation: '部署自动化'
             },
             role: { admin: 'Admin', devops: 'DevOps', developer: 'Developer' },
             userRole: { admin: 'Admin', devops: 'DevOps', developer: 'Developer' },
@@ -503,7 +1044,16 @@ const i18n = {
                 allStatus: '全部状态',
                 active: '活跃',
                 history: '历史',
-                monitor: '监控'
+                monitor: '监控',
+                back: '返回',
+                copyToClipboard: '复制到剪贴板',
+                download: '下载',
+                inactive: '停用',
+                apply: '应用',
+                all: '全部',
+                langKorean: '韩语',
+                langEnglish: '英语',
+                langChinese: '中文'
             },
             cluster: {
                 title: '集群管理',
@@ -526,7 +1076,10 @@ const i18n = {
                 connect: '连接',
                 configuration: '集群配置',
                 saveConfig: '保存配置',
-                uploadConfig: '上传配置'
+                uploadConfig: '上传配置',
+                pipelineClusterMeta: '流水线 · nullus-system',
+                appClusterMeta: '应用 · 未配置',
+                authMethod: '认证方式'
             },
             stack: {
                 list: '堆栈列表',
@@ -550,7 +1103,20 @@ const i18n = {
                 severity: '严重程度',
                 message: '消息',
                 config: '告警配置',
-                configuration: '告警配置'
+                configuration: '告警配置',
+                rulesDesc: '配置告警触发条件与通知渠道（Slack、Email 等）。',
+                slack: 'Slack',
+                email: '邮箱',
+                thresholds: '告警阈值',
+                historyDesc: '查看已触发的告警记录。',
+                highCpuUsage: 'CPU 使用率过高',
+                critical: '严重',
+                highCpuUsageMsg: 'prod-k8s 上 CPU 使用率超过 85%',
+                pipelineFailed: '流水线失败',
+                warning: '警告',
+                pipelineFailedMsg: 'development-stack 的构建 #142 失败',
+                memoryThreshold: '内存阈值',
+                memoryThresholdMsg: 'staging-k8s 内存使用率为 82%'
             },
             org: {
                 basicInfo: '基本信息',
@@ -571,7 +1137,11 @@ const i18n = {
                 deactivate: '停用',
                 resend: '重新发送',
                 invited: '已邀请',
-                sendInvite: '发送邀请'
+                sendInvite: '发送邀请',
+                saveChanges: '保存更改',
+                pipelineClusterConfigured: '流水线集群 · 已配置',
+                applicationClusterNotConfigured: '应用集群 · 未配置',
+                emailAddress: '邮箱地址'
             },
             home: {
                 title: '首页',
@@ -656,7 +1226,30 @@ const i18n = {
                 addUser: '添加用户',
                 fullAccess: '完全访问',
                 deployConfigure: '部署和配置',
-                readOnly: '只读'
+                readOnly: '只读',
+                adminPermOrg: '管理组织',
+                adminPermCluster: '注册/删除集群',
+                adminPermStack: '安装/删除堆栈',
+                adminPermUser: '管理用户权限',
+                devopsPermStack: '安装/修改堆栈',
+                devopsPermPipeline: '部署流水线',
+                devopsPermCluster: '查看集群',
+                devopsPermHistory: '查看历史',
+                developerPermStackPipeline: '查看堆栈/流水线',
+                developerPermMonitoring: '查看监控',
+                developerPermHistory: '查看历史',
+                usersCount: '用户 (3)',
+                searchUsers: '搜索用户...',
+                allRoles: '所有角色',
+                user: '用户',
+                lastLogin: '最后登录',
+                addNewUser: '添加新用户',
+                name: '姓名',
+                fullName: '全名',
+                emailRequired: '邮箱 *',
+                emailPlaceholder: 'user@company.com',
+                roleRequired: '角色 *',
+                sendInvitation: '发送邀请'
             },
             install: {
                 title: 'DevSecOps 堆栈安装',
@@ -675,7 +1268,194 @@ const i18n = {
                 resources: '资源',
                 clusterConfig: '集群配置',
                 quickStart: '快速入门模板',
-                selectPreset: '选择预设以自动配置流水线'
+                selectPreset: '选择预设以自动配置流水线',
+                resourceAllocationCompare: '资源分配对比',
+                resourceAllocationCompareDesc: '在一个区域中查看集群配置、所选配置摘要和资源分配状态。',
+                clusterConfiguration: '集群配置',
+                configureClusters: '配置集群',
+                configurationSummary: '配置摘要',
+                exportJson: '导出 JSON',
+                deployPipeline: '部署流水线',
+                resourceAllocation: '资源分配',
+                artifactsConfigured: '制品已配置',
+                pipelineToolsSelected: '流水线工具已选择',
+                resourcesCalculated: '资源已计算',
+                appClusterNotReady: '应用集群未就绪',
+                previewK8sObjects: '预览 K8s 对象'
+            },
+            pageTitle: {
+                stackList: 'DevSecOps 堆栈列表',
+                stackTemplate: 'DevSecOps 堆栈模板',
+                developerDeploy: '开发者自助部署',
+                clusterManagement: '集群管理',
+                organization: '组织',
+                monitoring: '监控仪表板',
+                stackVersion: 'DevSecOps 堆栈版本管理',
+                cicdTemplate: 'CI/CD 模板',
+                cicdList: 'CI/CD 列表',
+                cicdHistory: 'CI/CD 历史',
+                userManagement: '用户管理'
+            },
+            modal: {
+                previewDeployScript: '预览部署脚本',
+                previewDeployScriptDesc: '用于将当前配置的 DevSecOps 堆栈部署到集群的生成脚本。',
+                k8sObjectPreview: 'K8s 对象预览',
+                k8sObjectPreviewDesc: '根据当前配置自动生成的 Kubernetes 清单。',
+                k8sDeployments: '部署',
+                k8sServices: '服务',
+                k8sIngress: '入口'
+            },
+            editor: {
+                editPipelineConfiguration: '编辑流水线配置',
+                variables: '变量',
+                templates: '模板',
+                undo: '撤销',
+                redo: '重做',
+                find: '查找',
+                validate: '校验',
+                pipelineVariables: '流水线变量',
+                addVariable: '添加变量',
+                pipelineTemplates: '流水线模板',
+                templateNodejs: 'Node.js',
+                templateNodejsDesc: '标准 Node.js CI/CD 流水线',
+                templateDocker: 'Docker',
+                templateDockerDesc: 'Docker 构建与推送流水线',
+                templateKubernetes: 'Kubernetes',
+                templateKubernetesDesc: 'K8s 部署流水线',
+                templatePython: 'Python',
+                templatePythonDesc: 'Python 测试与部署',
+                saveConfiguration: '保存配置'
+            },
+            stackVersion: {
+                lastUpdated: '最后更新：2026-03-01',
+                verifiedOnlyNotice: '仅显示已测试通过的版本组合。使用未验证组合时会显示告警。',
+                verifiedCombinations: '已验证组合',
+                verified: '已验证',
+                recommended: '推荐',
+                partial: '部分验证',
+                notSupported: '不支持',
+                githubCombinations: 'GitHub Actions + Argo CD 组合'
+            },
+            stackTemplate: {
+                search: '搜索 DevSecOps 模板...',
+                newTemplate: '+ 新模板',
+                banner: '选择 DevSecOps 堆栈模板后将跳转到 Stack Install 并立即开始部署配置。',
+                standardCicdTitle: '标准 CI/CD',
+                standardCicdDesc: '包含 GitLab CI + ArgoCD + Prometheus + Grafana 的默认 DevSecOps 模板。',
+                default: '默认',
+                includedTools: '包含工具',
+                recommendedFor: '推荐场景',
+                securityLogging: '安全/日志',
+                fullDevSecopsTitle: '完整 DevSecOps',
+                fullDevSecopsDesc: '包含 CI/CD、监控、日志和安全能力的综合 DevSecOps 模板。',
+                security: '安全',
+                minimalPipelineTitle: '精简流水线',
+                minimalPipelineDesc: '仅聚焦核心部署能力的轻量 DevSecOps 模板。',
+                lean: '精简'
+            },
+            cicdTemplate: {
+                webFrontend: 'Web 前端',
+                webFrontendStack: 'React / Next.js',
+                stable: '稳定',
+                webFrontendDesc: '用于 React/Next.js 前端应用的标准 CI/CD 流水线。Docker 构建后通过 ArgoCD 部署。',
+                backendApi: '后端 API',
+                backendApiStack: 'Spring Boot / FastAPI',
+                backendApiDesc: '面向 REST API 后端服务的流水线，包含安全扫描（Trivy）和 Kubernetes 部署。',
+                batchJob: '批处理任务',
+                batchJobStack: 'Python Batch / Spring Batch',
+                batchJobDesc: '用于定时批处理任务的流水线。部署为 Kubernetes CronJob 并自动记录执行结果。',
+                dockerBuild: 'Docker 构建',
+                argocdDeploy: 'ArgoCD 部署',
+                imageName: '镜像名称',
+                cronjobDeploy: 'CronJob 部署',
+                cronSchedule: 'Cron 调度'
+            },
+            cicdList: {
+                newPipeline: '新建流水线',
+                searchPipeline: '搜索流水线...',
+                pipelineDetail: 'CI/CD 流水线详情',
+                selectPipeline: '请从列表中选择流水线',
+                run: '运行',
+                ciConfiguration: 'CI 配置',
+                cdConfiguration: 'CD 配置',
+                platform: '平台',
+                branch: '分支',
+                configFile: '配置文件',
+                runner: 'Runner',
+                trigger: '触发方式',
+                syncPolicy: '同步策略',
+                image: '镜像',
+                package: '打包'
+            },
+            stackList: {
+                info: '信息',
+                versionUpgrade: '版本升级',
+                artifactConfiguration: '制品配置',
+                artifactConfigurationDesc: '当前堆栈中已配置的制品仓库',
+                pipelineTools: '流水线工具',
+                pipelineToolsDesc: '当前堆栈的 CI/CD 流水线工具配置',
+                monitoringTools: '监控工具',
+                monitoringToolsDesc: '当前堆栈的监控工具配置',
+                loggingTools: '日志工具',
+                loggingToolsDesc: '当前堆栈的日志工具配置',
+                resourcesDesc: '当前堆栈资源分配情况',
+                editValuesYaml: '编辑 values.yaml',
+                valuesYamlHelp: '修改 Helm chart values.yaml 后点击 Apply。'
+            },
+            developer: {
+                workflowDesc: 'Backstage 风格开发者工作流：选择模板并部署到目标集群/命名空间。',
+                categoryWeb: 'Web',
+                categoryBackend: '后端',
+                categoryBatch: '批处理',
+                deployWizard: '部署向导',
+                previewManifest: '预览清单',
+                deployToCluster: '部署到集群',
+                templateReactSpa: 'React SPA',
+                templateReactSpaDesc: '面向前端团队的 TypeScript + Vite + Nginx 部署模板',
+                templateNextSsr: 'Next.js SSR',
+                templateNextSsrDesc: '针对生产 K8s 优化的 Next.js 服务端渲染模板',
+                templateJavaSpringApi: 'Java Spring Boot API',
+                templateJavaSpringApiDesc: '包含 Actuator 健康检查与容器最佳实践的 REST API 模板',
+                templatePythonFastapi: 'Python FastAPI',
+                templatePythonFastapiDesc: '包含 uvicorn、OpenAPI 文档和生产 Docker 配置的 FastAPI 模板',
+                templateGoMicroservice: 'Go 微服务',
+                templateGoMicroserviceDesc: '包含健康探针、指标端点和小镜像构建的 Go HTTP 服务模板',
+                templatePythonBatch: 'Python 批处理任务',
+                templatePythonBatchDesc: '用于定时 Python 批处理的 Kubernetes CronJob 模板',
+                templateSpringBatch: 'Spring 批处理任务',
+                templateSpringBatchDesc: '包含 Job/CronJob 调度与重试逻辑的 Kubernetes Spring Batch 模板',
+                step1: '1. 应用配置',
+                step2: '2. 集群与命名空间',
+                step3: '3. 资源',
+                step4: '4. 环境变量与密钥',
+                step5: '5. 审核并部署',
+                selectedTemplate: '已选模板',
+                appName: '应用名称',
+                repositoryUrl: '仓库 URL',
+                targetCluster: '目标集群',
+                enablePostgresDb: 'PostgreSQL 数据库',
+                enableRedisCache: 'Redis 缓存',
+                enableMessageQueue: '消息队列',
+                cpuRequest: 'CPU 请求 (m)',
+                memoryRequest: '内存请求 (Mi)',
+                environmentSecrets: '环境变量与密钥'
+            },
+            action: {
+                githubActions: 'GitHub Actions',
+                newWorkflow: '新工作流',
+                searchWorkflow: '搜索工作流...',
+                running: '运行中',
+                skipped: '已跳过',
+                selectWorkflow: '请选择工作流',
+                runWorkflow: '运行工作流',
+                avgRuntime: '平均耗时',
+                lastRun: '最近运行',
+                run: '运行',
+                status: '状态',
+                trigger: '触发方式',
+                commit: '提交',
+                duration: '耗时',
+                executedAt: '执行时间'
             }
         }
     }

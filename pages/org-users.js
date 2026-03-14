@@ -19,10 +19,10 @@
                                 <div><div style="font-weight:700;color:#e2e8f0;" data-i18n="userRole.admin">Admin</div><div style="font-size:12px;color:#94a3b8;" data-i18n="users.fullAccess">Full access</div></div>
                             </div>
                             <ul style="margin:0;padding:0 0 0 16px;font-size:13px;color:#94a3b8;line-height:1.8;">
-                                <li>Organization 관리</li>
-                                <li>클러스터 등록/삭제</li>
-                                <li>스택 설치/삭제</li>
-                                <li>사용자 권한 관리</li>
+                                <li data-i18n="users.adminPermOrg">Organization 관리</li>
+                                <li data-i18n="users.adminPermCluster">클러스터 등록/삭제</li>
+                                <li data-i18n="users.adminPermStack">스택 설치/삭제</li>
+                                <li data-i18n="users.adminPermUser">사용자 권한 관리</li>
                             </ul>
                         </div>
                         <div class="pipeline-card" style="padding:20px;border-top:4px solid #10b981;">
@@ -31,10 +31,10 @@
                                 <div><div style="font-weight:700;color:#e2e8f0;" data-i18n="userRole.devops">DevOps</div><div style="font-size:12px;color:#94a3b8;" data-i18n="users.deployConfigure">Deploy &amp; Configure</div></div>
                             </div>
                             <ul style="margin:0;padding:0 0 0 16px;font-size:13px;color:#94a3b8;line-height:1.8;">
-                                <li>스택 설치/수정</li>
-                                <li>파이프라인 배포</li>
-                                <li>클러스터 조회</li>
-                                <li>이력 조회</li>
+                                <li data-i18n="users.devopsPermStack">스택 설치/수정</li>
+                                <li data-i18n="users.devopsPermPipeline">파이프라인 배포</li>
+                                <li data-i18n="users.devopsPermCluster">클러스터 조회</li>
+                                <li data-i18n="users.devopsPermHistory">이력 조회</li>
                             </ul>
                         </div>
                         <div class="pipeline-card" style="padding:20px;border-top:4px solid #f59e0b;">
@@ -43,9 +43,9 @@
                                 <div><div style="font-weight:700;color:#e2e8f0;" data-i18n="userRole.developer">Developer</div><div style="font-size:12px;color:#94a3b8;" data-i18n="users.readOnly">Read only</div></div>
                             </div>
                             <ul style="margin:0;padding:0 0 0 16px;font-size:13px;color:#94a3b8;line-height:1.8;">
-                                <li>스택/파이프라인 조회</li>
-                                <li>모니터링 조회</li>
-                                <li>이력 조회</li>
+                                <li data-i18n="users.developerPermStackPipeline">스택/파이프라인 조회</li>
+                                <li data-i18n="users.developerPermMonitoring">모니터링 조회</li>
+                                <li data-i18n="users.developerPermHistory">이력 조회</li>
                             </ul>
                         </div>
                     </div>
@@ -53,11 +53,11 @@
                     <!-- User Table -->
                     <div class="pipeline-card" style="padding:24px;">
                         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-                            <h3 style="margin:0;font-size:15px;color:#e2e8f0;">Users (3)</h3>
+                            <h3 style="margin:0;font-size:15px;color:#e2e8f0;" data-i18n="users.usersCount">Users (3)</h3>
                             <div style="display:flex;gap:8px;">
-                                <input type="text" placeholder="Search users..." style="padding:8px 12px;border:1.5px solid #2d3748;border-radius:8px;font-size:14px;">
+                                <input type="text" data-i18n-placeholder="users.searchUsers" placeholder="Search users..." style="padding:8px 12px;border:1.5px solid #2d3748;border-radius:8px;font-size:14px;">
                                 <select style="padding:8px 12px;border:1.5px solid #2d3748;border-radius:8px;font-size:14px;background:#0f1419;">
-                                    <option>All Roles</option>
+                                    <option data-i18n="users.allRoles">All Roles</option>
                                     <option data-i18n="userRole.admin">Admin</option>
                                     <option data-i18n="userRole.devops">DevOps</option>
                                     <option data-i18n="userRole.developer">Developer</option>
@@ -67,20 +67,20 @@
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>User</th>
-                                    <th>Email</th>
-                                    <th class="center">Role</th>
-                                    <th class="center">Status</th>
-                                    <th class="center">Last Login</th>
-                                    <th class="right">Actions</th>
+                                    <th data-i18n="users.user">User</th>
+                                    <th data-i18n="org.email">Email</th>
+                                    <th class="center" data-i18n="org.role">Role</th>
+                                    <th class="center" data-i18n="org.status">Status</th>
+                                    <th class="center" data-i18n="users.lastLogin">Last Login</th>
+                                    <th class="right" data-i18n="org.actions">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
                                     <td><div style="display:flex;align-items:center;gap:10px;"><div class="avatar avatar-md" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);">A</div><div><div class="bold">Admin User</div><div style="font-size:12px;color:#9ca3af;">Keycloak ID: admin-001</div></div></div></td>
                                     <td class="muted">admin@nullus.io</td>
-                                    <td class="center"><span class="badge badge-purple">Admin</span></td>
-                                    <td class="center"><span class="badge badge-success">Active</span></td>
+                                    <td class="center"><span class="badge badge-purple" data-i18n="userRole.admin">Admin</span></td>
+                                    <td class="center"><span class="badge badge-success" data-i18n="common.active">Active</span></td>
                                     <td class="center muted" style="font-size:13px;">2026-03-03 09:00</td>
                                     <td class="right"><span style="color:#9ca3af;font-size:12px;" data-i18n="org.owner">Owner</span></td>
                                 </tr>
@@ -89,12 +89,12 @@
                                     <td class="muted">kim@nullus.io</td>
                                     <td class="center">
                                         <select style="padding:4px 8px;border:1px solid #2d3748;border-radius:6px;font-size:12px;background:#0f1419;" onchange="updateUserRole(this,'kim-002')">
-                                            <option>Admin</option>
-                                            <option selected>Operator</option>
-                                            <option>Viewer</option>
+                                            <option data-i18n="userRole.admin">Admin</option>
+                                            <option selected data-i18n="userRole.devops">DevOps</option>
+                                            <option data-i18n="userRole.developer">Developer</option>
                                         </select>
                                     </td>
-                                    <td class="center"><span class="badge badge-success">Active</span></td>
+                                    <td class="center"><span class="badge badge-success" data-i18n="common.active">Active</span></td>
                                     <td class="center muted" style="font-size:13px;">2026-03-02 16:30</td>
                                     <td class="right"><div style="display:flex;gap:6px;justify-content:flex-end;"><button class="btn btn-secondary btn-sm"><i class="fas fa-key"></i></button><button class="btn btn-secondary btn-sm" style="color:#ef4444;border-color:#fca5a5;"><i class="fas fa-user-slash"></i></button></div></td>
                                 </tr>
@@ -103,9 +103,9 @@
                                     <td class="muted">park@nullus.io</td>
                                     <td class="center">
                                         <select style="padding:4px 8px;border:1px solid #2d3748;border-radius:6px;font-size:12px;background:#0f1419;" onchange="updateUserRole(this,'park-003')">
-                                            <option>Admin</option>
-                                            <option>Operator</option>
-                                            <option selected>Viewer</option>
+                                            <option data-i18n="userRole.admin">Admin</option>
+                                            <option data-i18n="userRole.devops">DevOps</option>
+                                            <option selected data-i18n="userRole.developer">Developer</option>
                                         </select>
                                     </td>
                                     <td class="center"><span class="badge badge-warning" data-i18n="org.invited">Invited</span></td>
@@ -120,15 +120,15 @@
                 <!-- Add User Modal -->
                 <div class="inline-modal" id="addUserModal">
                     <div class="inline-modal-box" style="width:480px;">
-                        <h3 style="margin:0 0 20px;color:#e2e8f0;"><i class="fas fa-user-plus" style="color:#6366f1;"></i> Add New User</h3>
+                        <h3 style="margin:0 0 20px;color:#e2e8f0;" data-i18n="users.addNewUser"><i class="fas fa-user-plus" style="color:#6366f1;"></i> Add New User</h3>
                         <div style="display:flex;flex-direction:column;gap:14px;">
-                            <div><label style="font-size:13px;font-weight:600;color:#cbd5e1;display:block;margin-bottom:6px;">Name</label><input type="text" placeholder="Full name" style="width:100%;padding:10px 12px;border:1.5px solid #2d3748;border-radius:8px;font-size:14px;box-sizing:border-box;"></div>
-                            <div><label style="font-size:13px;font-weight:600;color:#cbd5e1;display:block;margin-bottom:6px;">Email <span style="color:#ef4444;">*</span></label><input type="email" placeholder="user@company.com" style="width:100%;padding:10px 12px;border:1.5px solid #2d3748;border-radius:8px;font-size:14px;box-sizing:border-box;"></div>
-                            <div><label style="font-size:13px;font-weight:600;color:#cbd5e1;display:block;margin-bottom:6px;">Role <span style="color:#ef4444;">*</span></label><select style="width:100%;padding:10px 12px;border:1.5px solid #2d3748;border-radius:8px;font-size:14px;background:#0f1419;"><option data-i18n="userRole.admin">Admin</option><option selected data-i18n="userRole.devops">DevOps</option><option data-i18n="userRole.developer">Developer</option></select></div>
+                             <div><label style="font-size:13px;font-weight:600;color:#cbd5e1;display:block;margin-bottom:6px;" data-i18n="users.name">Name</label><input type="text" data-i18n-placeholder="users.fullName" placeholder="Full name" style="width:100%;padding:10px 12px;border:1.5px solid #2d3748;border-radius:8px;font-size:14px;box-sizing:border-box;"></div>
+                             <div><label style="font-size:13px;font-weight:600;color:#cbd5e1;display:block;margin-bottom:6px;" data-i18n="users.emailRequired">Email *</label><input type="email" data-i18n-placeholder="users.emailPlaceholder" placeholder="user@company.com" style="width:100%;padding:10px 12px;border:1.5px solid #2d3748;border-radius:8px;font-size:14px;box-sizing:border-box;"></div>
+                             <div><label style="font-size:13px;font-weight:600;color:#cbd5e1;display:block;margin-bottom:6px;" data-i18n="users.roleRequired">Role *</label><select style="width:100%;padding:10px 12px;border:1.5px solid #2d3748;border-radius:8px;font-size:14px;background:#0f1419;"><option data-i18n="userRole.admin">Admin</option><option selected data-i18n="userRole.devops">DevOps</option><option data-i18n="userRole.developer">Developer</option></select></div>
                         </div>
                         <div class="inline-modal-footer">
-                            <button class="btn btn-secondary" onclick="document.getElementById('addUserModal').style.display='none'">Cancel</button>
-                            <button class="btn btn-primary"><i class="fas fa-paper-plane"></i> Send Invitation</button>
+                             <button class="btn btn-secondary" onclick="document.getElementById('addUserModal').style.display='none'" data-i18n="common.cancel">Cancel</button>
+                             <button class="btn btn-primary"><i class="fas fa-paper-plane"></i> <span data-i18n="users.sendInvitation">Send Invitation</span></button>
                         </div>
                     </div>
                 </div>

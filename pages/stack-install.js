@@ -8,13 +8,13 @@
                 <!-- Resource Allocation Compare (moved to top) -->
                 <div class="install-resource-compare" id="installResourceCompare">
                     <div class="install-resource-compare-head">
-                        <h3><i class="fas fa-balance-scale"></i> Resource Allocation Compare</h3>
-                        <p>클러스터 구성, 선택한 구성 요약, 자원 할당 상태를 한 영역에서 확인합니다.</p>
+                        <h3 data-i18n="install.resourceAllocationCompare"><i class="fas fa-balance-scale"></i> Resource Allocation Compare</h3>
+                        <p data-i18n="install.resourceAllocationCompareDesc">클러스터 구성, 선택한 구성 요약, 자원 할당 상태를 한 영역에서 확인합니다.</p>
                     </div>
 
                     <div class="install-resource-sections">
                         <div class="install-section-card">
-                            <h4>Cluster Configuration</h4>
+                            <h4 data-i18n="install.clusterConfiguration">Cluster Configuration</h4>
 
                             <div class="deployment-card">
                                 <div class="card-header">
@@ -26,7 +26,7 @@
                                         <div class="cluster-item">
                                             <div class="cluster-label">
                                                 <i class="fas fa-cogs"></i>
-                                                <span>Pipeline Cluster</span>
+                                                <span data-i18n="cluster.pipelineCluster">Pipeline Cluster</span>
                                             </div>
                                             <div class="cluster-status connected">
                                                 <i class="fas fa-check-circle"></i>
@@ -36,24 +36,24 @@
                                         <div class="cluster-item">
                                             <div class="cluster-label">
                                                 <i class="fas fa-server"></i>
-                                                <span>Application Cluster</span>
+                                                <span data-i18n="cluster.appCluster">Application Cluster</span>
                                             </div>
                                             <div class="cluster-status pending">
                                                 <i class="fas fa-clock"></i>
-                                                <span>Not configured</span>
+                                                <span data-i18n="cluster.notConfigured">Not configured</span>
                                             </div>
                                         </div>
                                     </div>
                                     <button class="btn btn-secondary btn-full" id="configureClusterBtn">
                                         <i class="fas fa-cog"></i>
-                                        Configure Clusters
+                                        <span data-i18n="install.configureClusters">Configure Clusters</span>
                                     </button>
                                 </div>
                             </div>
                         </div>
 
                         <div class="install-section-card">
-                            <h4>Configuration Summary</h4>
+                            <h4 data-i18n="install.configurationSummary">Configuration Summary</h4>
 
                             <div class="deployment-summary">
                                 <div class="summary-grid">
@@ -96,15 +96,15 @@
                                 <div class="action-buttons">
                                     <button class="btn btn-secondary" id="exportConfigBtn">
                                         <i class="fas fa-download"></i>
-                                        Export JSON
+                                        <span data-i18n="install.exportJson">Export JSON</span>
                                     </button>
                                     <button class="btn btn-secondary" id="previewDeployScriptBtn">
                                         <i class="fas fa-eye"></i>
-                                        Preview Deploy Script
+                                        <span data-i18n="modal.previewDeployScript">Preview Deploy Script</span>
                                     </button>
                                     <button class="btn btn-primary" id="deployBtn">
                                         <i class="fas fa-rocket"></i>
-                                        Deploy Pipeline
+                                        <span data-i18n="install.deployPipeline">Deploy Pipeline</span>
                                     </button>
                                 </div>
                             </div>
@@ -136,7 +136,7 @@
                         </div>
 
                         <div class="install-section-card resource-allocation-card" id="remainingCompareCard">
-                            <h4>Resource Allocation</h4>
+                            <h4 data-i18n="install.resourceAllocation">Resource Allocation</h4>
                             <div class="allocation-summary-table">
                                 <div class="allocation-summary-head">
                                     <span>Resource</span>
@@ -154,7 +154,7 @@
                         </div>
 
                         <div class="install-section-card">
-                            <h4>Deploy Pipeline</h4>
+                            <h4 data-i18n="install.deployPipeline">Deploy Pipeline</h4>
 
                             <div class="deployment-card">
                                 <div class="card-header">
@@ -165,34 +165,34 @@
                                     <div class="deployment-status">
                                         <div class="status-item">
                                             <i class="fas fa-check text-success"></i>
-                                            <span>Artifacts configured</span>
+                                             <span data-i18n="install.artifactsConfigured">Artifacts configured</span>
                                         </div>
                                         <div class="status-item">
                                             <i class="fas fa-check text-success"></i>
-                                            <span>Pipeline tools selected</span>
+                                             <span data-i18n="install.pipelineToolsSelected">Pipeline tools selected</span>
                                         </div>
                                         <div class="status-item">
                                             <i class="fas fa-check text-success"></i>
-                                            <span>Resources calculated</span>
+                                             <span data-i18n="install.resourcesCalculated">Resources calculated</span>
                                         </div>
                                         <div class="status-item">
                                             <i class="fas fa-times text-error"></i>
-                                            <span>Application cluster not ready</span>
+                                             <span data-i18n="install.appClusterNotReady">Application cluster not ready</span>
                                         </div>
                                     </div>
 
                                     <div class="deployment-actions-compact">
                                         <button class="btn btn-secondary btn-full" id="previewK8sObjectsBtn">
                                             <i class="fas fa-dharmachakra"></i>
-                                            Preview K8s Objects
+                                            <span data-i18n="install.previewK8sObjects">Preview K8s Objects</span>
                                         </button>
                                         <button class="btn btn-secondary btn-full" id="previewDeployScriptBtnCompact">
                                             <i class="fas fa-eye"></i>
-                                            Preview Deploy Script
+                                            <span data-i18n="modal.previewDeployScript">Preview Deploy Script</span>
                                         </button>
                                         <button class="btn btn-primary btn-full" id="quickDeployBtn" disabled>
                                             <i class="fas fa-rocket"></i>
-                                            Deploy Pipeline
+                                            <span data-i18n="install.deployPipeline">Deploy Pipeline</span>
                                         </button>
                                     </div>
                                 </div>
@@ -229,27 +229,27 @@
                 <div class="config-tabs">
                     <div class="tab active" data-tab="artifacts">
                         <i class="fas fa-box"></i>
-                        <span>Artifacts</span>
+                        <span data-i18n="install.artifacts">Artifacts</span>
                     </div>
                     <div class="tab" data-tab="pipeline">
                         <i class="fas fa-project-diagram"></i>
-                        <span>Pipeline Tools</span>
+                        <span data-i18n="install.pipelineTools">Pipeline Tools</span>
                     </div>
                     <div class="tab" data-tab="monitoring">
                         <i class="fas fa-chart-line"></i>
-                        <span>Monitoring Tools</span>
+                        <span data-i18n="install.monitoringTools">Monitoring Tools</span>
                     </div>
                     <div class="tab" data-tab="logging">
                         <i class="fas fa-file-alt"></i>
-                        <span>Logging Tools</span>
+                        <span data-i18n="install.loggingTools">Logging Tools</span>
                     </div>
                     <div class="tab" data-tab="resources">
                         <i class="fas fa-server"></i>
-                        <span>Resources</span>
+                        <span data-i18n="install.resources">Resources</span>
                     </div>
                     <div class="tab" data-tab="clusters">
                         <i class="fas fa-network-wired"></i>
-                        <span>Cluster Configurations</span>
+                        <span data-i18n="install.clusterConfig">Cluster Configurations</span>
                     </div>
                 </div>
 

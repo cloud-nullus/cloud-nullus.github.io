@@ -8,16 +8,16 @@
         <!-- ── Left: CI/CD Pipeline List ── -->
         <div class="stack-list-panel">
             <div class="list-header">
-                <h3 class="panel-title">CI/CD 목록</h3>
+                <h3 class="panel-title" data-i18n="nav.cicdList">CI/CD 목록</h3>
                 <button class="btn btn-primary btn-sm" onclick="switchPage('cicd-template')">
-                    <i class="fas fa-plus"></i> New Pipeline
+                    <i class="fas fa-plus"></i> <span data-i18n="cicdList.newPipeline">New Pipeline</span>
                 </button>
             </div>
             <div class="stack-list-filters">
                 <input type="text" id="cicdListSearch" class="stack-search-input"
-                    placeholder="파이프라인 검색..." oninput="filterCicdListSidebar(this.value)">
+                    data-i18n-placeholder="cicdList.searchPipeline" placeholder="파이프라인 검색..." oninput="filterCicdListSidebar(this.value)">
                 <select id="cicdListStatusFilter2" class="stack-status-filter" onchange="filterCicdListSidebar()">
-                    <option value="all">All Status</option>
+                    <option value="all" data-i18n="common.allStatus">All Status</option>
                     <option value="active">Active</option>
                     <option value="building">Building</option>
                     <option value="failed">Failed</option>
@@ -65,8 +65,8 @@
             <!-- Placeholder -->
             <div id="cicdDetailPlaceholder" class="stack-detail-placeholder">
                 <i class="fas fa-project-diagram"></i>
-                <p>CI/CD 파이프라인 상세</p>
-                <span>목록에서 파이프라인을 선택하세요</span>
+                <p data-i18n="cicdList.pipelineDetail">CI/CD 파이프라인 상세</p>
+                <span data-i18n="cicdList.selectPipeline">목록에서 파이프라인을 선택하세요</span>
             </div>
 
             <!-- Detail Content -->
@@ -83,8 +83,8 @@
                         <span id="cicdDetailStatusBadge"></span>
                     </div>
                     <div class="stack-detail-header-actions">
-                        <button class="btn btn-secondary btn-sm" id="cicdLogsBtn" onclick="alert('Pipeline Logs 보기')"><i class="fas fa-terminal"></i> Logs</button>
-                        <button class="btn btn-primary btn-sm" id="cicdDeployBtn" onclick="alert('파이프라인 재실행')"><i class="fas fa-rocket"></i> Run</button>
+                        <button class="btn btn-secondary btn-sm" id="cicdLogsBtn" onclick="alert('Pipeline Logs 보기')"><i class="fas fa-terminal"></i> <span data-i18n="history.logs">Logs</span></button>
+                        <button class="btn btn-primary btn-sm" id="cicdDeployBtn" onclick="alert('파이프라인 재실행')"><i class="fas fa-rocket"></i> <span data-i18n="cicdList.run">Run</span></button>
                     </div>
                 </div>
 
@@ -97,7 +97,7 @@
                         <i class="fas fa-chart-bar"></i> Monitoring
                     </button>
                     <button class="stack-inner-tab" data-ctab="history" onclick="switchCicdTab(this,'history')">
-                        <i class="fas fa-history"></i> History
+                        <i class="fas fa-history"></i> <span data-i18n="common.history">History</span>
                     </button>
                 </div>
 
@@ -106,57 +106,57 @@
                     <div style="padding:20px;">
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
                             <div style="background:#fffff;border:1px solid #e5e7eb;border-radius:8px;padding:16px;">
-                                <div style="font-size:12px;color:#e5e7eb;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;"><i class="fas fa-code-branch"></i> CI Configuration</div>
+                                <div style="font-size:12px;color:#e5e7eb;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;"><i class="fas fa-code-branch"></i> <span data-i18n="cicdList.ciConfiguration">CI Configuration</span></div>
                                 <div style="display:flex;flex-direction:column;gap:8px;font-size:13px;">
-                                    <div style="display:flex;justify-content:space-between;"><span style="color:#e5e7eb;">Platform</span><span style="font-weight:600;color:#374151;">GitLab CI/CD</span></div>
-                                    <div style="display:flex;justify-content:space-between;"><span style="color:#e5e7eb;">Branch</span><code style="background:#e5e7eb;padding:2px 6px;border-radius:4px;font-size:12px;">main</code></div>
-                                    <div style="display:flex;justify-content:space-between;"><span style="color:#e5e7eb;">Config File</span><code style="background:#e5e7eb;padding:2px 6px;border-radius:4px;font-size:12px;">.gitlab-ci.yml</code></div>
-                                    <div style="display:flex;justify-content:space-between;"><span style="color:#e5e7eb;">Runner</span><span style="font-weight:600;color:#374151;">k8s-runner-01</span></div>
-                                    <div style="display:flex;justify-content:space-between;"><span style="color:#e5e7eb;">Trigger</span><span style="font-weight:600;color:#374151;">Push / MR</span></div>
+                                    <div style="display:flex;justify-content:space-between;"><span style="color:#e5e7eb;" data-i18n="cicdList.platform">Platform</span><span style="font-weight:600;color:#374151;">GitLab CI/CD</span></div>
+                                    <div style="display:flex;justify-content:space-between;"><span style="color:#e5e7eb;" data-i18n="cicdList.branch">Branch</span><code style="background:#e5e7eb;padding:2px 6px;border-radius:4px;font-size:12px;">main</code></div>
+                                    <div style="display:flex;justify-content:space-between;"><span style="color:#e5e7eb;" data-i18n="cicdList.configFile">Config File</span><code style="background:#e5e7eb;padding:2px 6px;border-radius:4px;font-size:12px;">.gitlab-ci.yml</code></div>
+                                    <div style="display:flex;justify-content:space-between;"><span style="color:#e5e7eb;" data-i18n="cicdList.runner">Runner</span><span style="font-weight:600;color:#374151;">k8s-runner-01</span></div>
+                                    <div style="display:flex;justify-content:space-between;"><span style="color:#e5e7eb;" data-i18n="cicdList.trigger">Trigger</span><span style="font-weight:600;color:#374151;">Push / MR</span></div>
                                 </div>
                             </div>
                             <div style="background:#fffff;border:1px solid #e5e7eb;border-radius:8px;padding:16px;">
-                                <div style="font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;"><i class="fas fa-rocket"></i> CD Configuration</div>
+                                <div style="font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;"><i class="fas fa-rocket"></i> <span data-i18n="cicdList.cdConfiguration">CD Configuration</span></div>
                                 <div style="display:flex;flex-direction:column;gap:8px;font-size:13px;">
-                                    <div style="display:flex;justify-content:space-between;"><span style="color:#e5e7eb;">Platform</span><span style="font-weight:600;color:#374151;">Argo CD</span></div>
-                                    <div style="display:flex;justify-content:space-between;"><span style="color:#e5e7eb;">Cluster</span><span style="font-weight:600;color:#374151;">prod-k8s</span></div>
-                                    <div style="display:flex;justify-content:space-between;"><span style="color:#e5e7eb;">Namespace</span><code style="background:#e5e7eb;padding:2px 6px;border-radius:4px;font-size:12px;">production</code></div>
-                                    <div style="display:flex;justify-content:space-between;"><span style="color:#e5e7eb;">Sync Policy</span><span style="font-weight:600;color:#374151;">Auto Sync</span></div>
-                                    <div style="display:flex;justify-content:space-between;"><span style="color:#e5e7eb;">Image</span><code style="background:#e5e7eb;padding:2px 6px;border-radius:4px;font-size:11px;">registry/frontend-web:v1.2.3</code></div>
+                                    <div style="display:flex;justify-content:space-between;"><span style="color:#e5e7eb;" data-i18n="cicdList.platform">Platform</span><span style="font-weight:600;color:#374151;">Argo CD</span></div>
+                                    <div style="display:flex;justify-content:space-between;"><span style="color:#e5e7eb;" data-i18n="stack.cluster">Cluster</span><span style="font-weight:600;color:#374151;">prod-k8s</span></div>
+                                    <div style="display:flex;justify-content:space-between;"><span style="color:#e5e7eb;" data-i18n="cluster.namespace">Namespace</span><code style="background:#e5e7eb;padding:2px 6px;border-radius:4px;font-size:12px;">production</code></div>
+                                    <div style="display:flex;justify-content:space-between;"><span style="color:#e5e7eb;" data-i18n="cicdList.syncPolicy">Sync Policy</span><span style="font-weight:600;color:#374151;">Auto Sync</span></div>
+                                    <div style="display:flex;justify-content:space-between;"><span style="color:#e5e7eb;" data-i18n="cicdList.image">Image</span><code style="background:#e5e7eb;padding:2px 6px;border-radius:4px;font-size:11px;">registry/frontend-web:v1.2.3</code></div>
                                 </div>
                             </div>
                         </div>
 
                         <div style="background:#fffff;border:1px solid #e5e7eb;border-radius:8px;padding:16px;margin-bottom:20px;">
-                            <div style="font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;"><i class="fas fa-layer-group"></i> Pipeline Stages</div>
+                            <div style="font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;"><i class="fas fa-layer-group"></i> <span data-i18n="cicd.pipelineStages">Pipeline Stages</span></div>
                             <div style="display:flex;align-items:center;gap:0;">
                                 <div style="display:flex;flex-direction:column;align-items:center;flex:1;">
                                     <div style="width:36px;height:36px;border-radius:50%;background:#6366f1;display:flex;align-items:center;justify-content:center;color:white;font-size:13px;"><i class="fas fa-hammer"></i></div>
-                                    <div style="font-size:11px;color:#374151;margin-top:4px;font-weight:600;">build</div>
+                                    <div style="font-size:11px;color:#374151;margin-top:4px;font-weight:600;" data-i18n="install.build">build</div>
                                     <div style="font-size:10px;color:#6ee7b7;">✓ 1m 12s</div>
                                 </div>
                                 <div style="flex:1;height:2px;background:#6366f1;margin-bottom:20px;"></div>
                                 <div style="display:flex;flex-direction:column;align-items:center;flex:1;">
                                     <div style="width:36px;height:36px;border-radius:50%;background:#6366f1;display:flex;align-items:center;justify-content:center;color:white;font-size:13px;"><i class="fas fa-vial"></i></div>
-                                    <div style="font-size:11px;color:#374151;margin-top:4px;font-weight:600;">test</div>
+                                    <div style="font-size:11px;color:#374151;margin-top:4px;font-weight:600;" data-i18n="install.test">test</div>
                                     <div style="font-size:10px;color:#6ee7b7;">✓ 45s</div>
                                 </div>
                                 <div style="flex:1;height:2px;background:#6366f1;margin-bottom:20px;"></div>
                                 <div style="display:flex;flex-direction:column;align-items:center;flex:1;">
                                     <div style="width:36px;height:36px;border-radius:50%;background:#6366f1;display:flex;align-items:center;justify-content:center;color:white;font-size:13px;"><i class="fas fa-shield-alt"></i></div>
-                                    <div style="font-size:11px;color:#374151;margin-top:4px;font-weight:600;">security</div>
+                                    <div style="font-size:11px;color:#374151;margin-top:4px;font-weight:600;" data-i18n="install.security">security</div>
                                     <div style="font-size:10px;color:#6ee7b7;">✓ 2m 10s</div>
                                 </div>
                                 <div style="flex:1;height:2px;background:#6366f1;margin-bottom:20px;"></div>
                                 <div style="display:flex;flex-direction:column;align-items:center;flex:1;">
                                     <div style="width:36px;height:36px;border-radius:50%;background:#6366f1;display:flex;align-items:center;justify-content:center;color:white;font-size:13px;"><i class="fab fa-docker"></i></div>
-                                    <div style="font-size:11px;color:#374151;margin-top:4px;font-weight:600;">package</div>
+                                    <div style="font-size:11px;color:#374151;margin-top:4px;font-weight:600;" data-i18n="cicdList.package">package</div>
                                     <div style="font-size:10px;color:#6ee7b7;">✓ 37s</div>
                                 </div>
                                 <div style="flex:1;height:2px;background:#6366f1;margin-bottom:20px;"></div>
                                 <div style="display:flex;flex-direction:column;align-items:center;flex:1;">
                                     <div style="width:36px;height:36px;border-radius:50%;background:#059669;display:flex;align-items:center;justify-content:center;color:white;font-size:13px;"><i class="fas fa-rocket"></i></div>
-                                    <div style="font-size:11px;color:#374151;margin-top:4px;font-weight:600;">deploy</div>
+                                    <div style="font-size:11px;color:#374151;margin-top:4px;font-weight:600;" data-i18n="install.deploy">deploy</div>
                                     <div style="font-size:10px;color:#6ee7b7;">✓ 45s</div>
                                 </div>
                             </div>
@@ -164,8 +164,8 @@
 
                         <div style="background:#fffff;border:1px solid #e5e7eb;border-radius:8px;padding:16px;">
                             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-                                <div style="font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;"><i class="fas fa-cog"></i> Pipeline Variables</div>
-                                <button class="btn btn-secondary btn-sm"><i class="fas fa-plus"></i> Add Variable</button>
+                                <div style="font-size:12px;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;"><i class="fas fa-cog"></i> <span data-i18n="editor.pipelineVariables">Pipeline Variables</span></div>
+                                <button class="btn btn-secondary btn-sm"><i class="fas fa-plus"></i> <span data-i18n="editor.addVariable">Add Variable</span></button>
                             </div>
                             <div style="display:flex;flex-direction:column;gap:8px;font-size:13px;">
                                 <div style="display:grid;grid-template-columns:1fr 1fr 80px;gap:8px;padding:8px 10px;background:#fffff;border:1px solid #e5e7eb;border-radius:6px;">

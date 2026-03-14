@@ -8,19 +8,19 @@
         <!-- ── Left: Workflow List ── -->
         <div class="stack-list-panel">
             <div class="list-header">
-                <h3 class="panel-title"><i class="fab fa-github" style="margin-right:6px;"></i>GitHub Actions</h3>
+                <h3 class="panel-title" data-i18n="action.githubActions"><i class="fab fa-github" style="margin-right:6px;"></i>GitHub Actions</h3>
                 <button class="btn btn-primary btn-sm" onclick="alert('워크플로우 파일(.github/workflows/)을 저장소에 추가하면 자동으로 등록됩니다.')">
-                    <i class="fas fa-plus"></i> New Workflow
+                    <i class="fas fa-plus"></i> <span data-i18n="action.newWorkflow">New Workflow</span>
                 </button>
             </div>
             <div class="stack-list-filters">
-                <input type="text" id="actionSearch" class="stack-search-input" placeholder="워크플로우 검색..." oninput="filterActionList(this.value)">
+                <input type="text" id="actionSearch" class="stack-search-input" data-i18n-placeholder="action.searchWorkflow" placeholder="워크플로우 검색..." oninput="filterActionList(this.value)">
                 <select id="actionStatusFilter" class="stack-status-filter" onchange="filterActionList()">
-                    <option value="all">All Status</option>
-                    <option value="success">Success</option>
-                    <option value="running">Running</option>
-                    <option value="failed">Failed</option>
-                    <option value="skipped">Skipped</option>
+                    <option value="all" data-i18n="common.allStatus">All Status</option>
+                    <option value="success" data-i18n="monitoring.success">Success</option>
+                    <option value="running" data-i18n="action.running">Running</option>
+                    <option value="failed" data-i18n="monitoring.failed">Failed</option>
+                    <option value="skipped" data-i18n="action.skipped">Skipped</option>
                 </select>
             </div>
             <div class="stack-list-items" id="actionListItems">
@@ -79,7 +79,7 @@
         <div class="stack-detail-panel">
             <div id="actionDetailPlaceholder" style="display:none; height:100%; align-items:center; justify-content:center; flex-direction:column; gap:12px; color:#475569;">
                 <i class="fab fa-github" style="font-size:48px; opacity:0.3;"></i>
-                <p style="font-size:14px;">워크플로우를 선택하세요</p>
+                <p style="font-size:14px;" data-i18n="action.selectWorkflow">워크플로우를 선택하세요</p>
             </div>
             <div id="actionDetailContent" style="padding:28px; overflow-y:auto; height:100%;">
 
@@ -95,8 +95,8 @@
                         </div>
                     </div>
                     <div style="display:flex;gap:8px;flex-shrink:0;">
-                        <button class="btn btn-primary btn-sm" onclick="triggerWorkflow()"><i class="fas fa-play"></i> Run Workflow</button>
-                        <button class="btn btn-secondary btn-sm" onclick="alert('GitHub 저장소에서 워크플로우 파일을 편집하세요.')"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="btn btn-primary btn-sm" onclick="triggerWorkflow()"><i class="fas fa-play"></i> <span data-i18n="action.runWorkflow">Run Workflow</span></button>
+                        <button class="btn btn-secondary btn-sm" onclick="alert('GitHub 저장소에서 워크플로우 파일을 편집하세요.')"><i class="fas fa-edit"></i> <span data-i18n="common.edit">Edit</span></button>
                     </div>
                 </div>
 
@@ -104,19 +104,19 @@
                 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;">
                     <div style="background:#0f1419;border:1px solid #2d3748;border-radius:10px;padding:14px;text-align:center;">
                         <div style="font-size:22px;font-weight:700;color:#10b981;" id="actionStatSuccess">47</div>
-                        <div style="font-size:11px;color:#64748b;margin-top:2px;">성공</div>
+                        <div style="font-size:11px;color:#64748b;margin-top:2px;" data-i18n="monitoring.success">성공</div>
                     </div>
                     <div style="background:#0f1419;border:1px solid #2d3748;border-radius:10px;padding:14px;text-align:center;">
                         <div style="font-size:22px;font-weight:700;color:#ef4444;" id="actionStatFailed">3</div>
-                        <div style="font-size:11px;color:#64748b;margin-top:2px;">실패</div>
+                        <div style="font-size:11px;color:#64748b;margin-top:2px;" data-i18n="monitoring.failed">실패</div>
                     </div>
                     <div style="background:#0f1419;border:1px solid #2d3748;border-radius:10px;padding:14px;text-align:center;">
                         <div style="font-size:22px;font-weight:700;color:#f1f5f9;" id="actionStatAvgTime">2m 34s</div>
-                        <div style="font-size:11px;color:#64748b;margin-top:2px;">평균 실행시간</div>
+                        <div style="font-size:11px;color:#64748b;margin-top:2px;" data-i18n="action.avgRuntime">평균 실행시간</div>
                     </div>
                     <div style="background:#0f1419;border:1px solid #2d3748;border-radius:10px;padding:14px;text-align:center;">
                         <div style="font-size:22px;font-weight:700;color:#f1f5f9;" id="actionStatLast">5분 전</div>
-                        <div style="font-size:11px;color:#64748b;margin-top:2px;">마지막 실행</div>
+                        <div style="font-size:11px;color:#64748b;margin-top:2px;" data-i18n="action.lastRun">마지막 실행</div>
                     </div>
                 </div>
 
@@ -163,17 +163,17 @@
                 <!-- Run History -->
                 <div style="background:#0f1419;border:1px solid #2d3748;border-radius:12px;padding:18px;">
                     <div style="font-size:13px;font-weight:700;color:#f1f5f9;margin-bottom:14px;display:flex;align-items:center;gap:8px;">
-                        <i class="fas fa-history" style="color:#6366f1;"></i> 실행 이력
+                        <i class="fas fa-history" style="color:#6366f1;"></i> <span data-i18n="common.history">실행 이력</span>
                     </div>
                     <table style="width:100%;border-collapse:collapse;font-size:12px;">
                         <thead>
                             <tr style="color:#64748b;border-bottom:1px solid #2d3748;">
-                                <th style="text-align:left;padding:6px 8px;font-weight:600;">Run</th>
-                                <th style="text-align:left;padding:6px 8px;font-weight:600;">상태</th>
-                                <th style="text-align:left;padding:6px 8px;font-weight:600;">트리거</th>
-                                <th style="text-align:left;padding:6px 8px;font-weight:600;">커밋</th>
-                                <th style="text-align:left;padding:6px 8px;font-weight:600;">소요시간</th>
-                                <th style="text-align:left;padding:6px 8px;font-weight:600;">실행시각</th>
+                                <th style="text-align:left;padding:6px 8px;font-weight:600;" data-i18n="action.run">Run</th>
+                                <th style="text-align:left;padding:6px 8px;font-weight:600;" data-i18n="action.status">상태</th>
+                                <th style="text-align:left;padding:6px 8px;font-weight:600;" data-i18n="action.trigger">트리거</th>
+                                <th style="text-align:left;padding:6px 8px;font-weight:600;" data-i18n="action.commit">커밋</th>
+                                <th style="text-align:left;padding:6px 8px;font-weight:600;" data-i18n="action.duration">소요시간</th>
+                                <th style="text-align:left;padding:6px 8px;font-weight:600;" data-i18n="action.executedAt">실행시각</th>
                             </tr>
                         </thead>
                         <tbody id="actionRunHistory">

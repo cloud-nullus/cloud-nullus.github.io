@@ -24,24 +24,24 @@
                                         <i class="fab fa-react" style="color:#fff;"></i>
                                     </div>
                                     <div>
-                                        <div style="font-size:15px;font-weight:700;color:#f1f5f9;">Web Frontend</div>
-                                        <div style="font-size:12px;color:#64748b;">React / Next.js</div>
+                                        <div style="font-size:15px;font-weight:700;color:#f1f5f9;" data-i18n="cicdTemplate.webFrontend">Web Frontend</div>
+                                        <div style="font-size:12px;color:#64748b;" data-i18n="cicdTemplate.webFrontendStack">React / Next.js</div>
                                     </div>
                                 </div>
-                                <span class="badge badge-success">STABLE</span>
+                                <span class="badge badge-success" data-i18n="cicdTemplate.stable">STABLE</span>
                             </div>
                             <div style="font-size:13px;color:#94a3b8;margin-bottom:16px;line-height:1.5;">
-                                React/Next.js 웹 프론트엔드 앱을 위한 표준 CI/CD 파이프라인. Docker 빌드 후 ArgoCD로 배포.
+                                <span data-i18n="cicdTemplate.webFrontendDesc">React/Next.js 웹 프론트엔드 앱을 위한 표준 CI/CD 파이프라인. Docker 빌드 후 ArgoCD로 배포.</span>
                             </div>
 
                             <!-- Pipeline Stages -->
                             <div style="margin-bottom:16px;">
                                 <div class="template-section-label" data-i18n="cicd.pipelineStages">PIPELINE STAGES</div>
                                 <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                                    <span class="template-stage-pill"><i class="fas fa-cube" style="color:#3b82f6;margin-right:4px;"></i>Build</span>
-                                    <span class="template-stage-pill"><i class="fas fa-vial" style="color:#8b5cf6;margin-right:4px;"></i>Test</span>
-                                    <span class="template-stage-pill"><i class="fab fa-docker" style="color:#0ea5e9;margin-right:4px;"></i>Docker Build</span>
-                                    <span class="template-stage-pill"><i class="fas fa-rocket" style="color:#10b981;margin-right:4px;"></i>ArgoCD Deploy</span>
+                                    <span class="template-stage-pill"><i class="fas fa-cube" style="color:#3b82f6;margin-right:4px;"></i><span data-i18n="install.build">Build</span></span>
+                                    <span class="template-stage-pill"><i class="fas fa-vial" style="color:#8b5cf6;margin-right:4px;"></i><span data-i18n="install.test">Test</span></span>
+                                    <span class="template-stage-pill"><i class="fab fa-docker" style="color:#0ea5e9;margin-right:4px;"></i><span data-i18n="cicdTemplate.dockerBuild">Docker Build</span></span>
+                                    <span class="template-stage-pill"><i class="fas fa-rocket" style="color:#10b981;margin-right:4px;"></i><span data-i18n="cicdTemplate.argocdDeploy">ArgoCD Deploy</span></span>
                                 </div>
                             </div>
 
@@ -50,13 +50,13 @@
                                 <div class="template-section-label" data-i18n="cicd.requiredParams">REQUIRED PARAMETERS</div>
                                 <div style="display:flex;flex-direction:column;gap:6px;">
                                     <div class="template-param-row">
-                                        <span class="param-label">Repository URL</span><span class="param-value">gitlab.nullus.io/&lt;project&gt;</span>
+                                        <span class="param-label" data-i18n="developer.repositoryUrl">Repository URL</span><span class="param-value">gitlab.nullus.io/&lt;project&gt;</span>
                                     </div>
                                     <div class="template-param-row">
-                                        <span class="param-label">Image Name</span><span class="param-value">registry/&lt;app-name&gt;</span>
+                                        <span class="param-label" data-i18n="cicdTemplate.imageName">Image Name</span><span class="param-value">registry/&lt;app-name&gt;</span>
                                     </div>
                                     <div class="template-param-row">
-                                        <span class="param-label">Namespace</span><span class="param-value">production / staging</span>
+                                        <span class="param-label" data-i18n="cluster.namespace">Namespace</span><span class="param-value">production / staging</span>
                                     </div>
                                 </div>
                             </div>
@@ -73,36 +73,36 @@
                                         <i class="fas fa-server" style="color:#fff;"></i>
                                     </div>
                                     <div>
-                                        <div style="font-size:15px;font-weight:700;color:#f1f5f9;">Backend API</div>
-                                        <div style="font-size:12px;color:#64748b;">Spring Boot / FastAPI</div>
+                                        <div style="font-size:15px;font-weight:700;color:#f1f5f9;" data-i18n="cicdTemplate.backendApi">Backend API</div>
+                                        <div style="font-size:12px;color:#64748b;" data-i18n="cicdTemplate.backendApiStack">Spring Boot / FastAPI</div>
                                     </div>
                                 </div>
-                                <span class="badge badge-success">STABLE</span>
+                                <span class="badge badge-success" data-i18n="cicdTemplate.stable">STABLE</span>
                             </div>
                             <div style="font-size:13px;color:#94a3b8;margin-bottom:16px;line-height:1.5;">
-                                REST API 백엔드 서비스를 위한 파이프라인. Security Scan(Trivy) 포함, Kubernetes Deployment 배포.
+                                <span data-i18n="cicdTemplate.backendApiDesc">REST API 백엔드 서비스를 위한 파이프라인. Security Scan(Trivy) 포함, Kubernetes Deployment 배포.</span>
                             </div>
                             <div style="margin-bottom:16px;">
                                 <div class="template-section-label" data-i18n="cicd.pipelineStages">PIPELINE STAGES</div>
                                 <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                                    <span class="template-stage-pill"><i class="fas fa-cube" style="color:#3b82f6;margin-right:4px;"></i>Build</span>
-                                    <span class="template-stage-pill"><i class="fas fa-vial" style="color:#8b5cf6;margin-right:4px;"></i>Test</span>
-                                    <span class="template-stage-pill"><i class="fas fa-shield-alt" style="color:#f59e0b;margin-right:4px;"></i>Security Scan</span>
-                                    <span class="template-stage-pill"><i class="fab fa-docker" style="color:#0ea5e9;margin-right:4px;"></i>Docker Build</span>
-                                    <span class="template-stage-pill"><i class="fas fa-rocket" style="color:#10b981;margin-right:4px;"></i>ArgoCD Deploy</span>
+                                    <span class="template-stage-pill"><i class="fas fa-cube" style="color:#3b82f6;margin-right:4px;"></i><span data-i18n="install.build">Build</span></span>
+                                    <span class="template-stage-pill"><i class="fas fa-vial" style="color:#8b5cf6;margin-right:4px;"></i><span data-i18n="install.test">Test</span></span>
+                                    <span class="template-stage-pill"><i class="fas fa-shield-alt" style="color:#f59e0b;margin-right:4px;"></i><span data-i18n="install.security">Security</span></span>
+                                    <span class="template-stage-pill"><i class="fab fa-docker" style="color:#0ea5e9;margin-right:4px;"></i><span data-i18n="cicdTemplate.dockerBuild">Docker Build</span></span>
+                                    <span class="template-stage-pill"><i class="fas fa-rocket" style="color:#10b981;margin-right:4px;"></i><span data-i18n="cicdTemplate.argocdDeploy">ArgoCD Deploy</span></span>
                                 </div>
                             </div>
                             <div style="margin-bottom:16px;">
                                 <div class="template-section-label" data-i18n="cicd.requiredParams">REQUIRED PARAMETERS</div>
                                 <div style="display:flex;flex-direction:column;gap:6px;">
                                     <div class="template-param-row">
-                                        <span class="param-label">Repository URL</span><span class="param-value">gitlab.nullus.io/&lt;project&gt;</span>
+                                        <span class="param-label" data-i18n="developer.repositoryUrl">Repository URL</span><span class="param-value">gitlab.nullus.io/&lt;project&gt;</span>
                                     </div>
                                     <div class="template-param-row">
-                                        <span class="param-label">Image Name</span><span class="param-value">registry/&lt;app-name&gt;</span>
+                                        <span class="param-label" data-i18n="cicdTemplate.imageName">Image Name</span><span class="param-value">registry/&lt;app-name&gt;</span>
                                     </div>
                                     <div class="template-param-row">
-                                        <span class="param-label">Namespace</span><span class="param-value">production / staging</span>
+                                        <span class="param-label" data-i18n="cluster.namespace">Namespace</span><span class="param-value">production / staging</span>
                                     </div>
                                 </div>
                             </div>
@@ -119,35 +119,35 @@
                                         <i class="fas fa-tasks" style="color:#fff;"></i>
                                     </div>
                                     <div>
-                                        <div style="font-size:15px;font-weight:700;color:#f1f5f9;">Batch Job</div>
-                                        <div style="font-size:12px;color:#64748b;">Python Batch / Spring Batch</div>
+                                        <div style="font-size:15px;font-weight:700;color:#f1f5f9;" data-i18n="cicdTemplate.batchJob">Batch Job</div>
+                                        <div style="font-size:12px;color:#64748b;" data-i18n="cicdTemplate.batchJobStack">Python Batch / Spring Batch</div>
                                     </div>
                                 </div>
-                                <span class="badge badge-success">STABLE</span>
+                                <span class="badge badge-success" data-i18n="cicdTemplate.stable">STABLE</span>
                             </div>
                             <div style="font-size:13px;color:#94a3b8;margin-bottom:16px;line-height:1.5;">
-                                정기 실행 배치 잡을 위한 파이프라인. Kubernetes CronJob으로 배포, 실행 결과 자동 기록.
+                                <span data-i18n="cicdTemplate.batchJobDesc">정기 실행 배치 잡을 위한 파이프라인. Kubernetes CronJob으로 배포, 실행 결과 자동 기록.</span>
                             </div>
                             <div style="margin-bottom:16px;">
                                 <div class="template-section-label" data-i18n="cicd.pipelineStages">PIPELINE STAGES</div>
                                 <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                                    <span class="template-stage-pill"><i class="fas fa-cube" style="color:#3b82f6;margin-right:4px;"></i>Build</span>
-                                    <span class="template-stage-pill"><i class="fas fa-vial" style="color:#8b5cf6;margin-right:4px;"></i>Test</span>
-                                    <span class="template-stage-pill"><i class="fab fa-docker" style="color:#0ea5e9;margin-right:4px;"></i>Docker Build</span>
-                                    <span class="template-stage-pill"><i class="fas fa-clock" style="color:#f59e0b;margin-right:4px;"></i>CronJob Deploy</span>
+                                    <span class="template-stage-pill"><i class="fas fa-cube" style="color:#3b82f6;margin-right:4px;"></i><span data-i18n="install.build">Build</span></span>
+                                    <span class="template-stage-pill"><i class="fas fa-vial" style="color:#8b5cf6;margin-right:4px;"></i><span data-i18n="install.test">Test</span></span>
+                                    <span class="template-stage-pill"><i class="fab fa-docker" style="color:#0ea5e9;margin-right:4px;"></i><span data-i18n="cicdTemplate.dockerBuild">Docker Build</span></span>
+                                    <span class="template-stage-pill"><i class="fas fa-clock" style="color:#f59e0b;margin-right:4px;"></i><span data-i18n="cicdTemplate.cronjobDeploy">CronJob Deploy</span></span>
                                 </div>
                             </div>
                             <div style="margin-bottom:16px;">
                                 <div class="template-section-label" data-i18n="cicd.requiredParams">REQUIRED PARAMETERS</div>
                                 <div style="display:flex;flex-direction:column;gap:6px;">
                                     <div class="template-param-row">
-                                        <span class="param-label">Repository URL</span><span class="param-value">gitlab.nullus.io/&lt;project&gt;</span>
+                                        <span class="param-label" data-i18n="developer.repositoryUrl">Repository URL</span><span class="param-value">gitlab.nullus.io/&lt;project&gt;</span>
                                     </div>
                                     <div class="template-param-row">
-                                        <span class="param-label">Cron Schedule</span><span class="param-value">0 2 * * * (daily 02:00)</span>
+                                        <span class="param-label" data-i18n="cicdTemplate.cronSchedule">Cron Schedule</span><span class="param-value">0 2 * * * (daily 02:00)</span>
                                     </div>
                                     <div class="template-param-row">
-                                        <span class="param-label">Namespace</span><span class="param-value">batch / production</span>
+                                        <span class="param-label" data-i18n="cluster.namespace">Namespace</span><span class="param-value">batch / production</span>
                                     </div>
                                 </div>
                             </div>

@@ -16,7 +16,7 @@
                                 <div class="cluster-item-icon"><i class="fas fa-cogs"></i></div>
                                 <div class="cluster-item-info">
                                     <div class="cluster-item-name">devops-cluster</div>
-                                    <div class="cluster-item-meta">Pipeline · nullus-system</div>
+                                    <div class="cluster-item-meta" data-i18n="cluster.pipelineClusterMeta">Pipeline · nullus-system</div>
                                 </div>
                                 <span class="cluster-item-status status-connected"><i class="fas fa-check-circle"></i></span>
                             </div>
@@ -24,7 +24,7 @@
                                 <div class="cluster-item-icon"><i class="fas fa-server"></i></div>
                                 <div class="cluster-item-info">
                                     <div class="cluster-item-name">app-cluster-prod</div>
-                                    <div class="cluster-item-meta">Application · Not Configured</div>
+                                    <div class="cluster-item-meta" data-i18n="cluster.appClusterMeta">Application · Not Configured</div>
                                 </div>
                                 <span class="cluster-item-status status-disconnected"><i class="fas fa-clock"></i></span>
                             </div>
@@ -63,7 +63,7 @@
                                     <input type="text" id="clusterPageEndpoint" readonly>
                                 </div>
                                 <div class="input-group">
-                                    <label>Auth Method</label>
+                                    <label data-i18n="cluster.authMethod">Auth Method</label>
                                     <input type="text" id="clusterPageAuth" value="Kubeconfig (ServiceAccount)" readonly>
                                 </div>
                                 <div class="input-group">

@@ -6,7 +6,7 @@
                     <h3 class="page-title" data-i18n="alert.history">알림 이력</h3>
                 </div>
                 <div style="padding:24px;">
-                    <p style="color:#94a3b8;margin-bottom:20px;font-size:14px;">발생한 알림 목록을 조회합니다.</p>
+                    <p style="color:#94a3b8;margin-bottom:20px;font-size:14px;" data-i18n="alert.historyDesc">발생한 알림 목록을 조회합니다.</p>
                     <div class="pipeline-card" style="padding:24px;">
                         <table class="data-table">
                             <thead>
@@ -20,21 +20,21 @@
                             <tbody>
                                 <tr>
                                     <td class="muted">2026-03-08 14:32:15</td>
-                                    <td class="bold">High CPU Usage</td>
-                                    <td><span class="badge badge-danger">Critical</span></td>
-                                    <td class="muted">CPU usage exceeded 85% on prod-k8s</td>
+                                    <td class="bold" data-i18n="alert.highCpuUsage">High CPU Usage</td>
+                                    <td><span class="badge badge-danger" data-i18n="alert.critical">Critical</span></td>
+                                    <td class="muted" data-i18n="alert.highCpuUsageMsg">CPU usage exceeded 85% on prod-k8s</td>
                                 </tr>
                                 <tr>
                                     <td class="muted">2026-03-08 10:15:22</td>
-                                    <td class="bold">Pipeline Failed</td>
-                                    <td><span class="badge badge-warning">Warning</span></td>
-                                    <td class="muted">Build #142 failed on development-stack</td>
+                                    <td class="bold" data-i18n="alert.pipelineFailed">Pipeline Failed</td>
+                                    <td><span class="badge badge-warning" data-i18n="alert.warning">Warning</span></td>
+                                    <td class="muted" data-i18n="alert.pipelineFailedMsg">Build #142 failed on development-stack</td>
                                 </tr>
                                 <tr>
                                     <td class="muted">2026-03-07 18:45:00</td>
-                                    <td class="bold">Memory Threshold</td>
-                                    <td><span class="badge badge-warning">Warning</span></td>
-                                    <td class="muted">Memory usage 82% on staging-k8s</td>
+                                    <td class="bold" data-i18n="alert.memoryThreshold">Memory Threshold</td>
+                                    <td><span class="badge badge-warning" data-i18n="alert.warning">Warning</span></td>
+                                    <td class="muted" data-i18n="alert.memoryThresholdMsg">Memory usage 82% on staging-k8s</td>
                                 </tr>
                             </tbody>
                         </table>

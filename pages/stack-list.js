@@ -107,16 +107,16 @@
                 <!-- Inner Tab Bar -->
                 <div class="stack-inner-tabs">
                     <button class="stack-inner-tab active" data-stab="info" onclick="switchStackTab(this,'info')">
-                        <i class="fas fa-info-circle"></i> Info
+                        <i class="fas fa-info-circle"></i> <span data-i18n="stackList.info">Info</span>
                     </button>
                     <button class="stack-inner-tab" data-stab="monitoring" onclick="switchStackTab(this,'monitoring')">
-                        <i class="fas fa-chart-bar"></i> Monitoring
+                        <i class="fas fa-chart-bar"></i> <span data-i18n="common.monitor">Monitoring</span>
                     </button>
                     <button class="stack-inner-tab" data-stab="history" onclick="switchStackTab(this,'history')">
-                        <i class="fas fa-history"></i> History
+                        <i class="fas fa-history"></i> <span data-i18n="common.history">History</span>
                     </button>
                     <button class="stack-inner-tab" data-stab="version-upgrade" onclick="switchStackTab(this,'version-upgrade')">
-                        <i class="fas fa-arrow-circle-up"></i> Version Upgrade
+                        <i class="fas fa-arrow-circle-up"></i> <span data-i18n="stackList.versionUpgrade">Version Upgrade</span>
                     </button>
                 </div>
 
@@ -144,8 +144,8 @@
                     <!-- Artifacts -->
                     <div class="panel stack-info-subpanel" id="sinfo-artifacts" style="overflow-y:auto;flex:1;display:block;">
                         <div class="panel-header">
-                            <h3>Artifact Configuration</h3>
-                            <p>현재 스택에 구성된 아티팩트 저장소</p>
+                            <h3 data-i18n="stackList.artifactConfiguration">Artifact Configuration</h3>
+                            <p data-i18n="stackList.artifactConfigurationDesc">현재 스택에 구성된 아티팩트 저장소</p>
                         </div>
                         <div class="config-grid">
                             <div class="config-card">
@@ -282,7 +282,7 @@
 
                     <!-- Pipeline Tools -->
                     <div class="panel stack-info-subpanel" id="sinfo-pipeline-tools" style="display:none;overflow-y:auto;flex:1;">
-                        <div class="panel-header"><h3>Pipeline Tools</h3><p>현재 스택의 CI/CD 파이프라인 도구 구성</p></div>
+                        <div class="panel-header"><h3 data-i18n="stackList.pipelineTools">Pipeline Tools</h3><p data-i18n="stackList.pipelineToolsDesc">현재 스택의 CI/CD 파이프라인 도구 구성</p></div>
                         <div class="config-grid">
                             <div class="config-card">
                                 <div class="card-header"><i class="fas fa-project-diagram"></i><h4>CI/CD Platform</h4></div>
@@ -365,7 +365,7 @@
 
                     <!-- Monitoring Tools -->
                     <div class="panel stack-info-subpanel" id="sinfo-monitoring-tools" style="display:none;overflow-y:auto;flex:1;">
-                        <div class="panel-header"><h3>Monitoring Tools</h3><p>현재 스택의 모니터링 도구 구성</p></div>
+                        <div class="panel-header"><h3 data-i18n="stackList.monitoringTools">Monitoring Tools</h3><p data-i18n="stackList.monitoringToolsDesc">현재 스택의 모니터링 도구 구성</p></div>
                         <div class="config-grid">
                             <div class="config-card">
                                 <div class="card-header"><i class="fas fa-chart-line"></i><h4>Metrics Collection</h4></div>
@@ -448,7 +448,7 @@
 
                     <!-- Logging Tools -->
                     <div class="panel stack-info-subpanel" id="sinfo-logging-tools" style="display:none;overflow-y:auto;flex:1;">
-                        <div class="panel-header"><h3>Logging Tools</h3><p>현재 스택의 로깅 도구 구성</p></div>
+                        <div class="panel-header"><h3 data-i18n="stackList.loggingTools">Logging Tools</h3><p data-i18n="stackList.loggingToolsDesc">현재 스택의 로깅 도구 구성</p></div>
                         <div class="config-grid">
                             <div class="config-card">
                                 <div class="card-header"><i class="fas fa-file-alt"></i><h4>Log Collection</h4></div>
@@ -493,7 +493,7 @@
 
                     <!-- Resources -->
                     <div class="panel stack-info-subpanel" id="sinfo-resources" style="display:none;overflow-y:auto;flex:1;">
-                        <div class="panel-header"><h3>Resources</h3><p>현재 스택의 리소스 할당 현황</p></div>
+                        <div class="panel-header"><h3 data-i18n="install.resources">Resources</h3><p data-i18n="stackList.resourcesDesc">현재 스택의 리소스 할당 현황</p></div>
                         <div style="padding:20px;">
                             <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;">
                                 <div class="compare-card available" style="padding:20px;text-align:center;">
@@ -752,7 +752,7 @@
                     <button class="btn" id="stackInfoSaveBtn"
                         style="display:flex;align-items:center;gap:8px;background:#2563eb;color:#fff;border:1px solid #1d4ed8;padding:8px 14px;border-radius:8px;"
                         onclick="alert('Stack 설정이 저장되었습니다.')">
-                        <i class="fas fa-save"></i> Save
+                        <i class="fas fa-save"></i> <span data-i18n="common.save">Save</span>
                     </button>
                 </div>
 
@@ -764,18 +764,18 @@
         style="display:none;position:fixed;inset:0;background:rgba(15,23,42,0.6);z-index:1200;align-items:center;justify-content:center;padding:20px;">
         <div style="width:min(760px,100%);max-height:85vh;background:#fff;border-radius:12px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 45px rgba(15,23,42,0.35);">
             <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid #e5e7eb;">
-                <h4 id="valuesYamlModalTitle" style="margin:0;font-size:15px;font-weight:700;color:#111827;">values.yaml 편집</h4>
+                <h4 id="valuesYamlModalTitle" style="margin:0;font-size:15px;font-weight:700;color:#111827;" data-i18n="stackList.editValuesYaml">values.yaml 편집</h4>
                 <button type="button" onclick="closeValuesYamlEditor()"
                     style="border:0;background:transparent;color:#6b7280;font-size:18px;cursor:pointer;line-height:1;">&times;</button>
             </div>
             <div style="padding:16px 18px;display:flex;flex-direction:column;gap:10px;flex:1;overflow:auto;">
-                <p style="margin:0;font-size:13px;color:#4b5563;">Helm chart values.yaml 내용을 수정한 뒤 Apply를 누르세요.</p>
+                <p style="margin:0;font-size:13px;color:#4b5563;" data-i18n="stackList.valuesYamlHelp">Helm chart values.yaml 내용을 수정한 뒤 Apply를 누르세요.</p>
                 <textarea id="valuesYamlTextarea"
                     style="width:100%;min-height:300px;resize:vertical;border:1px solid #d1d5db;border-radius:8px;padding:12px;font-size:13px;line-height:1.6;font-family:'Consolas','Monaco',monospace;color:#111827;"></textarea>
             </div>
             <div style="display:flex;justify-content:flex-end;gap:8px;padding:12px 18px;border-top:1px solid #e5e7eb;background:#f9fafb;">
-                <button type="button" class="btn btn-secondary" onclick="closeValuesYamlEditor()">Cancel</button>
-                <button type="button" class="btn" onclick="applyValuesYamlEditor()"
+                <button type="button" class="btn btn-secondary" onclick="closeValuesYamlEditor()" data-i18n="common.cancel">Cancel</button>
+                <button type="button" class="btn" onclick="applyValuesYamlEditor()" data-i18n="common.apply"
                     style="background:#2563eb;color:#fff;border:1px solid #1d4ed8;">Apply</button>
             </div>
         </div>

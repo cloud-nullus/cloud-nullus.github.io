@@ -9,7 +9,7 @@
                             <option selected data-i18n="monitoring.last24h">Last 24 hours</option>
                             <option data-i18n="monitoring.last7d">Last 7 days</option>
                         </select>
-                        <button class="btn btn-secondary" style="margin-left:8px;"><i class="fas fa-bell"></i> Alert Config</button>
+                        <button class="btn btn-secondary" style="margin-left:8px;"><i class="fas fa-bell"></i> <span data-i18n="alert.config">Alert Config</span></button>
                     </div>
                 </div>
 
@@ -100,18 +100,18 @@
 
                         <!-- Alert Config -->
                         <div class="pipeline-card" style="padding:24px;">
-                            <h3 style="margin:0 0 16px;font-size:15px;color:#e2e8f0;">Alert Configuration</h3>
+                            <h3 style="margin:0 0 16px;font-size:15px;color:#e2e8f0;" data-i18n="alert.configuration">Alert Configuration</h3>
                             <div style="display:flex;flex-direction:column;gap:12px;">
                                 <label class="alert-channel-item">
-                                    <div><div class="channel-title">Slack</div><div class="channel-desc">#devops-alerts</div></div>
+                                    <div><div class="channel-title" data-i18n="alert.slack">Slack</div><div class="channel-desc">#devops-alerts</div></div>
                                     <div style="position:relative;width:44px;height:24px;"><input type="checkbox" checked style="opacity:0;width:0;height:0;" id="slackToggle"><label for="slackToggle" style="position:absolute;inset:0;background:#6366f1;border-radius:12px;cursor:pointer;"></label><span style="position:absolute;top:4px;right:4px;width:16px;height:16px;background:#0f1419;border-radius:50%;"></span></div>
                                 </label>
                                 <label class="alert-channel-item">
-                                    <div><div class="channel-title">Email</div><div class="channel-desc">admin@nullus.io</div></div>
+                                    <div><div class="channel-title" data-i18n="alert.email">Email</div><div class="channel-desc">admin@nullus.io</div></div>
                                     <div style="position:relative;width:44px;height:24px;"><input type="checkbox" style="opacity:0;width:0;height:0;" id="emailToggle"><label for="emailToggle" style="position:absolute;inset:0;background:#e5e7eb;border-radius:12px;cursor:pointer;"></label><span style="position:absolute;top:4px;left:4px;width:16px;height:16px;background:#0f1419;border-radius:50%;"></span></div>
                                 </label>
                                 <div class="alert-threshold-box">
-                                    <div class="alert-threshold-title">Alert Thresholds</div>
+                                    <div class="alert-threshold-title" data-i18n="alert.thresholds">Alert Thresholds</div>
                                     <div style="display:flex;flex-direction:column;gap:8px;">
                                         <div class="alert-threshold-row"><span style="color:#94a3b8;">CPU &gt;</span><input type="number" value="80" style="width:60px;padding:4px 8px;border:1px solid #2d3748;border-radius:6px;font-size:13px;text-align:center;"><span style="color:#94a3b8;">%</span></div>
                                         <div class="alert-threshold-row"><span style="color:#94a3b8;">Memory &gt;</span><input type="number" value="85" style="width:60px;padding:4px 8px;border:1px solid #2d3748;border-radius:6px;font-size:13px;text-align:center;"><span style="color:#94a3b8;">%</span></div>
@@ -129,7 +129,7 @@
                             <thead>
                                 <tr>
                                     <th data-i18n="monitoring.app">App</th>
-                                    <th>Namespace</th>
+                                    <th data-i18n="cluster.namespace">Namespace</th>
                                     <th class="center">CPU</th>
                                     <th class="center">Memory</th>
                                     <th class="center" data-i18n="monitoring.pods">Pods</th>
