@@ -1,0 +1,30 @@
+
+body.developer-page .developer-page-title-bar {
+    display: flex !important;
+}
+
+/* Light mode: Deploy (developer) page */
+body.light-mode #developerPage {
+    background: #f4f8fe;
+    color: #111111;
+}
+
+body.light-mode #developerPage .template-category-btn {
+    background: #eef2f7;
+    border-color: #d6dee9;
+    color: #1f2937;
+}
+
+body.light-mode #developerPage .template-category-btn.active {
+    background: #dbeafe;
+    border-color: #60a5fa;
+    color: #1d4ed8;
+}
+
+body.light-mode #developerPage input,
+body.light-mode #developerPage select,
+body.light-mode #developerPage textarea {
+    background: #ffffff;
+    border-color: #cfd8e3;
+    color: #111111;
+}

@@ -1,0 +1,99 @@
+
+.instance-config {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(99, 102, 241, 0.05);
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.instance-btn {
+    width: 24px;
+    height: 24px;
+    border: 1px solid #d1d5db;
+    background: #f9fafb;
+    color: #6b7280;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s ease;
+}
+
+.instance-btn:hover {
+    background: #6366f1;
+    color: white;
+    border-color: #6366f1;
+}
+
+.instance-count {
+    width: 45px;
+    height: 24px;
+    text-align: center;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    font-size: 12px;
+    padding: 0;
+    margin: 0 2px;
+}
+
+.radio-option input[type="radio"] {
+    margin-top: 2px;
+    accent-color: #3b82f6;
+}
+
+.radio-option:has(input[type="radio"]:checked) {
+    border-color: #3b82f6;
+    background: #1e3a8a;
+}
+
+.tool-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    background: #1e293b;
+    border: 1px solid #374151;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.tool-option:hover {
+    border-color: #ffd700;
+    background: #1e2a3a;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.1);
+}
+
+.tool-option:has(input[type="checkbox"]:checked) {
+    border-color: #ffd700;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.05));
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+}
+
+.tool-checkbox input[type="checkbox"] {
+    margin-top: 2px;
+    accent-color: #ffd700;
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.5));
+}
+
+.tool-option:has(input[type="checkbox"]:checked) .version-dropdown {
+    background: linear-gradient(135deg, #ffd700, #ffed4a);
+    border-color: #ffd700;
+    color: #000;
+    font-weight: 600;
+}
+
+.tool-option:has(input[type="checkbox"]:checked) .version-dropdown:disabled {
+    background: #374151;
+    border-color: #4b5563;
+    color: #9ca3af;
+}
+
+.file-upload input[type="file"] {
+    display: none;
+}

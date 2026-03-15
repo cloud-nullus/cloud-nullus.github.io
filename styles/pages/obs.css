@@ -1,0 +1,12 @@
+
+body.monitoring-page .monitoring-page-title-bar {
+    display: flex !important;
+}
+
+body.alertlist-page .alertlist-page-title-bar {
+    display: flex !important;
+}
+
+body.alerthistory-page .alerthistory-page-title-bar {
+    display: flex !important;
+}

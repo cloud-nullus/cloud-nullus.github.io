@@ -1,0 +1,56 @@
+
+.allocation-summary-table {
+    border: 1px solid #334155;
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(15, 23, 42, 0.7);
+}
+
+/* ── Data Table ── */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.data-table thead tr {
+    border-bottom: 2px solid #334155;
+}
+
+.data-table th {
+    text-align: left;
+    padding: 10px 12px;
+    color: #94a3b8;
+    font-weight: 600;
+}
+
+.data-table th.center,
+.data-table td.center {
+    text-align: center;
+}
+
+.data-table th.right,
+.data-table td.right {
+    text-align: right;
+}
+
+.data-table tbody tr {
+    border-bottom: 1px solid #2d3748;
+}
+
+.data-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.data-table td {
+    padding: 12px;
+}
+
+.data-table td.muted {
+    color: #94a3b8;
+}
+
+.data-table td.bold {
+    font-weight: 600;
+    color: #e2e8f0;
+}

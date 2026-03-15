@@ -1,0 +1,9 @@
+
+body.home-page .home-page-title-bar {
+    display: flex !important;
+}
+
+/* Home page: hidden by default (outside main-workspace so needs explicit hide) */
+#homePage {
+    display: none;
+}
