@@ -1,257 +1,254 @@
-(function() {
-    var ws = document.getElementById('mainWorkspace');
-    if (!ws) return;
-    var el = document.createElement('div');
-    el.innerHTML = `            <div class="page-content active" id="installPage">
-                <!-- Left Panel: Configuration -->
-                <div class="config-section">
-                <!-- Resource Allocation Compare (moved to top) -->
-                <div class="install-resource-compare" id="installResourceCompare">
-                    <div class="install-resource-compare-head">
-                        <h3 data-i18n="install.resourceAllocationCompare"><i class="fas fa-balance-scale"></i> Resource Allocation Compare</h3>
-                        <p data-i18n="install.resourceAllocationCompareDesc">클러스터 구성, 선택한 구성 요약, 자원 할당 상태를 한 영역에서 확인합니다.</p>
+<div class="page-content active" id="installPage">
+    <!-- Left Panel: Configuration -->
+    <div class="config-section">
+        <!-- Resource Allocation Compare (moved to top) -->
+        <div class="install-resource-compare" id="installResourceCompare">
+            <div class="install-resource-compare-head">
+                <h3 data-i18n="install.resourceAllocationCompare"><i class="fas fa-balance-scale"></i> Resource
+                    Allocation Compare</h3>
+                <p data-i18n="install.resourceAllocationCompareDesc">클러스터 구성, 선택한 구성 요약, 자원 할당 상태를 한 영역에서 확인합니다.</p>
+            </div>
+
+            <div class="install-resource-sections">
+                <div class="install-section-card">
+                    <h4 data-i18n="install.clusterConfiguration">Cluster Configuration</h4>
+
+                    <div class="deployment-card">
+                        <div class="card-header">
+                            <i class="fas fa-network-wired"></i>
+                            <h4>Cluster Configuration</h4>
+                        </div>
+                        <div class="card-content">
+                            <div class="cluster-quick-config">
+                                <div class="cluster-item">
+                                    <div class="cluster-label">
+                                        <i class="fas fa-cogs"></i>
+                                        <span data-i18n="cluster.pipelineCluster">Pipeline Cluster</span>
+                                    </div>
+                                    <div class="cluster-status connected">
+                                        <i class="fas fa-check-circle"></i>
+                                        <span>devops-cluster</span>
+                                    </div>
+                                </div>
+                                <div class="cluster-item">
+                                    <div class="cluster-label">
+                                        <i class="fas fa-server"></i>
+                                        <span data-i18n="cluster.appCluster">Application Cluster</span>
+                                    </div>
+                                    <div class="cluster-status pending">
+                                        <i class="fas fa-clock"></i>
+                                        <span data-i18n="cluster.notConfigured">Not configured</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-secondary btn-full" id="configureClusterBtn">
+                                <i class="fas fa-cog"></i>
+                                <span data-i18n="install.configureClusters">Configure Clusters</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="install-section-card">
+                    <h4 data-i18n="install.configurationSummary">Configuration Summary</h4>
+
+                    <div class="deployment-summary">
+                        <div class="summary-grid">
+                            <div class="summary-item">
+                                <span class="label">Package Registry:</span>
+                                <span class="value" id="summaryPackageRegistry">GitLab v16.7</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="label">Source Repository:</span>
+                                <span class="value" id="summarySourceRepo">GitLab v16.7</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="label">Container Registry:</span>
+                                <span class="value" id="summaryImageRegistry">GitLab Container Registry v16.7</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="label">CI/CD Platform:</span>
+                                <span class="value" id="summaryMainPipeline">GitLab CI/CD v16.7</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="label">CD Tool:</span>
+                                <span class="value" id="summaryCdTool">Argo CD v2.9.3</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="label">Storage Backend:</span>
+                                <span class="value" id="summaryStorage">AWS S3 latest</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="label">Monitoring Stack:</span>
+                                <span class="value" id="summaryMonitoringStack">Prometheus v2.47, Grafana v10.2</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="label">Logging Stack:</span>
+                                <span class="value" id="summaryLoggingStack">OpenTelemetry v1.0, OpenSearch v2.11</span>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="install-resource-sections">
-                        <div class="install-section-card">
-                            <h4 data-i18n="install.clusterConfiguration">Cluster Configuration</h4>
+                    <div class="deployment-actions">
+                        <div class="action-buttons">
+                            <button class="btn btn-secondary" id="exportConfigBtn">
+                                <i class="fas fa-download"></i>
+                                <span data-i18n="install.exportJson">Export JSON</span>
+                            </button>
+                            <button class="btn btn-secondary" id="previewDeployScriptBtn">
+                                <i class="fas fa-eye"></i>
+                                <span data-i18n="modal.previewDeployScript">Preview Deploy Script</span>
+                            </button>
+                            <button class="btn btn-primary" id="deployBtn">
+                                <i class="fas fa-rocket"></i>
+                                <span data-i18n="install.deployPipeline">Deploy Pipeline</span>
+                            </button>
+                        </div>
+                    </div>
 
-                            <div class="deployment-card">
-                                <div class="card-header">
-                                    <i class="fas fa-network-wired"></i>
-                                    <h4>Cluster Configuration</h4>
-                                </div>
-                                <div class="card-content">
-                                    <div class="cluster-quick-config">
-                                        <div class="cluster-item">
-                                            <div class="cluster-label">
-                                                <i class="fas fa-cogs"></i>
-                                                <span data-i18n="cluster.pipelineCluster">Pipeline Cluster</span>
-                                            </div>
-                                            <div class="cluster-status connected">
-                                                <i class="fas fa-check-circle"></i>
-                                                <span>devops-cluster</span>
-                                            </div>
-                                        </div>
-                                        <div class="cluster-item">
-                                            <div class="cluster-label">
-                                                <i class="fas fa-server"></i>
-                                                <span data-i18n="cluster.appCluster">Application Cluster</span>
-                                            </div>
-                                            <div class="cluster-status pending">
-                                                <i class="fas fa-clock"></i>
-                                                <span data-i18n="cluster.notConfigured">Not configured</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <button class="btn btn-secondary btn-full" id="configureClusterBtn">
-                                        <i class="fas fa-cog"></i>
-                                        <span data-i18n="install.configureClusters">Configure Clusters</span>
-                                    </button>
+                    <div class="deployment-progress" id="deploymentProgress" style="display: none;">
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="deployProgressFill"></div>
+                            </div>
+                            <div class="progress-text" id="deployProgressText">Initializing deployment...</div>
+                        </div>
+                        <div class="deployment-logs">
+                            <div class="logs-header">
+                                <h5>Deployment Logs</h5>
+                                <button class="btn btn-secondary btn-sm">
+                                    <i class="fas fa-download"></i>
+                                    Download
+                                </button>
+                            </div>
+                            <div class="logs-content" id="deploymentLogs">
+                                <div class="log-entry">
+                                    <span class="timestamp">[2026-02-02 19:30:01]</span>
+                                    <span class="level info">INFO</span>
+                                    <span class="message">Starting pipeline deployment...</span>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
 
-                        <div class="install-section-card">
-                            <h4 data-i18n="install.configurationSummary">Configuration Summary</h4>
-
-                            <div class="deployment-summary">
-                                <div class="summary-grid">
-                                    <div class="summary-item">
-                                        <span class="label">Package Registry:</span>
-                                        <span class="value" id="summaryPackageRegistry">GitLab v16.7</span>
-                                    </div>
-                                    <div class="summary-item">
-                                        <span class="label">Source Repository:</span>
-                                        <span class="value" id="summarySourceRepo">GitLab v16.7</span>
-                                    </div>
-                                    <div class="summary-item">
-                                        <span class="label">Container Registry:</span>
-                                        <span class="value" id="summaryImageRegistry">GitLab Container Registry v16.7</span>
-                                    </div>
-                                    <div class="summary-item">
-                                        <span class="label">CI/CD Platform:</span>
-                                        <span class="value" id="summaryMainPipeline">GitLab CI/CD v16.7</span>
-                                    </div>
-                                    <div class="summary-item">
-                                        <span class="label">CD Tool:</span>
-                                        <span class="value" id="summaryCdTool">Argo CD v2.9.3</span>
-                                    </div>
-                                    <div class="summary-item">
-                                        <span class="label">Storage Backend:</span>
-                                        <span class="value" id="summaryStorage">AWS S3 latest</span>
-                                    </div>
-                                    <div class="summary-item">
-                                        <span class="label">Monitoring Stack:</span>
-                                        <span class="value" id="summaryMonitoringStack">Prometheus v2.47, Grafana v10.2</span>
-                                    </div>
-                                    <div class="summary-item">
-                                        <span class="label">Logging Stack:</span>
-                                        <span class="value" id="summaryLoggingStack">OpenTelemetry v1.0, OpenSearch v2.11</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="deployment-actions">
-                                <div class="action-buttons">
-                                    <button class="btn btn-secondary" id="exportConfigBtn">
-                                        <i class="fas fa-download"></i>
-                                        <span data-i18n="install.exportJson">Export JSON</span>
-                                    </button>
-                                    <button class="btn btn-secondary" id="previewDeployScriptBtn">
-                                        <i class="fas fa-eye"></i>
-                                        <span data-i18n="modal.previewDeployScript">Preview Deploy Script</span>
-                                    </button>
-                                    <button class="btn btn-primary" id="deployBtn">
-                                        <i class="fas fa-rocket"></i>
-                                        <span data-i18n="install.deployPipeline">Deploy Pipeline</span>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="deployment-progress" id="deploymentProgress" style="display: none;">
-                                <div class="progress-container">
-                                    <div class="progress-bar">
-                                        <div class="progress-fill" id="deployProgressFill"></div>
-                                    </div>
-                                    <div class="progress-text" id="deployProgressText">Initializing deployment...</div>
-                                </div>
-                                <div class="deployment-logs">
-                                    <div class="logs-header">
-                                        <h5>Deployment Logs</h5>
-                                        <button class="btn btn-secondary btn-sm">
-                                            <i class="fas fa-download"></i>
-                                            Download
-                                        </button>
-                                    </div>
-                                    <div class="logs-content" id="deploymentLogs">
-                                        <div class="log-entry">
-                                            <span class="timestamp">[2026-02-02 19:30:01]</span>
-                                            <span class="level info">INFO</span>
-                                            <span class="message">Starting pipeline deployment...</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                <div class="install-section-card resource-allocation-card" id="remainingCompareCard">
+                    <h4 data-i18n="install.resourceAllocation">Resource Allocation</h4>
+                    <div class="allocation-summary-table">
+                        <div class="allocation-summary-head">
+                            <span>Resource</span>
+                            <span>Required</span>
+                            <span>Remaining</span>
+                            <span>Available</span>
                         </div>
+                        <div class="allocation-summary-row">
+                            <span>Storage (Gi)</span>
+                            <strong id="requiredStorage">500</strong>
+                            <strong id="remainingStorage">700</strong>
+                            <strong id="availableStorage">1200</strong>
+                        </div>
+                    </div>
+                </div>
 
-                        <div class="install-section-card resource-allocation-card" id="remainingCompareCard">
-                            <h4 data-i18n="install.resourceAllocation">Resource Allocation</h4>
-                            <div class="allocation-summary-table">
-                                <div class="allocation-summary-head">
-                                    <span>Resource</span>
-                                    <span>Required</span>
-                                    <span>Remaining</span>
-                                    <span>Available</span>
+                <div class="install-section-card">
+                    <h4 data-i18n="install.deployPipeline">Deploy Pipeline</h4>
+
+                    <div class="deployment-card">
+                        <div class="card-header">
+                            <i class="fas fa-rocket"></i>
+                            <h4>Deploy Pipeline</h4>
+                        </div>
+                        <div class="card-content">
+                            <div class="deployment-status">
+                                <div class="status-item">
+                                    <i class="fas fa-check text-success"></i>
+                                    <span data-i18n="install.artifactsConfigured">Artifacts configured</span>
                                 </div>
-                                <div class="allocation-summary-row">
-                                    <span>Storage (Gi)</span>
-                                    <strong id="requiredStorage">500</strong>
-                                    <strong id="remainingStorage">700</strong>
-                                    <strong id="availableStorage">1200</strong>
+                                <div class="status-item">
+                                    <i class="fas fa-check text-success"></i>
+                                    <span data-i18n="install.pipelineToolsSelected">Pipeline tools selected</span>
+                                </div>
+                                <div class="status-item">
+                                    <i class="fas fa-check text-success"></i>
+                                    <span data-i18n="install.resourcesCalculated">Resources calculated</span>
+                                </div>
+                                <div class="status-item">
+                                    <i class="fas fa-times text-error"></i>
+                                    <span data-i18n="install.appClusterNotReady">Application cluster not ready</span>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="install-section-card">
-                            <h4 data-i18n="install.deployPipeline">Deploy Pipeline</h4>
-
-                            <div class="deployment-card">
-                                <div class="card-header">
+                            <div class="deployment-actions-compact">
+                                <button class="btn btn-secondary btn-full" id="previewK8sObjectsBtn">
+                                    <i class="fas fa-dharmachakra"></i>
+                                    <span data-i18n="install.previewK8sObjects">Preview K8s Objects</span>
+                                </button>
+                                <button class="btn btn-secondary btn-full" id="previewDeployScriptBtnCompact">
+                                    <i class="fas fa-eye"></i>
+                                    <span data-i18n="modal.previewDeployScript">Preview Deploy Script</span>
+                                </button>
+                                <button class="btn btn-primary btn-full" id="quickDeployBtn" disabled>
                                     <i class="fas fa-rocket"></i>
-                                    <h4>Deploy Pipeline</h4>
-                                </div>
-                                <div class="card-content">
-                                    <div class="deployment-status">
-                                        <div class="status-item">
-                                            <i class="fas fa-check text-success"></i>
-                                             <span data-i18n="install.artifactsConfigured">Artifacts configured</span>
-                                        </div>
-                                        <div class="status-item">
-                                            <i class="fas fa-check text-success"></i>
-                                             <span data-i18n="install.pipelineToolsSelected">Pipeline tools selected</span>
-                                        </div>
-                                        <div class="status-item">
-                                            <i class="fas fa-check text-success"></i>
-                                             <span data-i18n="install.resourcesCalculated">Resources calculated</span>
-                                        </div>
-                                        <div class="status-item">
-                                            <i class="fas fa-times text-error"></i>
-                                             <span data-i18n="install.appClusterNotReady">Application cluster not ready</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="deployment-actions-compact">
-                                        <button class="btn btn-secondary btn-full" id="previewK8sObjectsBtn">
-                                            <i class="fas fa-dharmachakra"></i>
-                                            <span data-i18n="install.previewK8sObjects">Preview K8s Objects</span>
-                                        </button>
-                                        <button class="btn btn-secondary btn-full" id="previewDeployScriptBtnCompact">
-                                            <i class="fas fa-eye"></i>
-                                            <span data-i18n="modal.previewDeployScript">Preview Deploy Script</span>
-                                        </button>
-                                        <button class="btn btn-primary btn-full" id="quickDeployBtn" disabled>
-                                            <i class="fas fa-rocket"></i>
-                                            <span data-i18n="install.deployPipeline">Deploy Pipeline</span>
-                                        </button>
-                                    </div>
-                                </div>
+                                    <span data-i18n="install.deployPipeline">Deploy Pipeline</span>
+                                </button>
                             </div>
+                        </div>
+                    </div>
 
-                            <div class="deployment-card" id="deploymentProgressCard" style="display: none;">
-                                <div class="card-header">
-                                    <i class="fas fa-spinner fa-spin"></i>
-                                    <h4>Deployment Progress</h4>
+                    <div class="deployment-card" id="deploymentProgressCard" style="display: none;">
+                        <div class="card-header">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <h4>Deployment Progress</h4>
+                        </div>
+                        <div class="card-content">
+                            <div class="progress-container">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="sidebarProgressFill"></div>
                                 </div>
-                                <div class="card-content">
-                                    <div class="progress-container">
-                                        <div class="progress-bar">
-                                            <div class="progress-fill" id="sidebarProgressFill"></div>
-                                        </div>
-                                        <div class="progress-text" id="sidebarProgressText">Initializing...</div>
-                                    </div>
-                                    <div class="deployment-logs-compact">
-                                        <div class="logs-content" id="sidebarDeploymentLogs">
-                                            <div class="log-entry">
-                                                <span class="level info">INFO</span>
-                                                <span class="message">Starting deployment...</span>
-                                            </div>
-                                        </div>
+                                <div class="progress-text" id="sidebarProgressText">Initializing...</div>
+                            </div>
+                            <div class="deployment-logs-compact">
+                                <div class="logs-content" id="sidebarDeploymentLogs">
+                                    <div class="log-entry">
+                                        <span class="level info">INFO</span>
+                                        <span class="message">Starting deployment...</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <!-- Configuration Tabs -->
+        <!-- Configuration Tabs -->
 
-                <div class="config-tabs">
-                    <div class="tab active" data-tab="artifacts">
-                        <i class="fas fa-box"></i>
-                        <span data-i18n="install.artifacts">Artifacts</span>
-                    </div>
-                    <div class="tab" data-tab="pipeline">
-                        <i class="fas fa-project-diagram"></i>
-                        <span data-i18n="install.pipelineTools">Pipeline Tools</span>
-                    </div>
-                    <div class="tab" data-tab="monitoring">
-                        <i class="fas fa-chart-line"></i>
-                        <span data-i18n="install.monitoringTools">Monitoring Tools</span>
-                    </div>
-                    <div class="tab" data-tab="logging">
-                        <i class="fas fa-file-alt"></i>
-                        <span data-i18n="install.loggingTools">Logging Tools</span>
-                    </div>
-                    <div class="tab" data-tab="resources">
-                        <i class="fas fa-server"></i>
-                        <span data-i18n="install.resources">Resources</span>
-                    </div>
-                    <div class="tab" data-tab="clusters">
-                        <i class="fas fa-network-wired"></i>
-                        <span data-i18n="install.clusterConfig">Cluster Configurations</span>
-                    </div>
-                </div>
+        <div class="config-tabs">
+            <div class="tab active" data-tab="artifacts">
+                <i class="fas fa-box"></i>
+                <span data-i18n="install.artifacts">Artifacts</span>
+            </div>
+            <div class="tab" data-tab="pipeline">
+                <i class="fas fa-project-diagram"></i>
+                <span data-i18n="install.pipelineTools">Pipeline Tools</span>
+            </div>
+            <div class="tab" data-tab="monitoring">
+                <i class="fas fa-chart-line"></i>
+                <span data-i18n="install.monitoringTools">Monitoring Tools</span>
+            </div>
+            <div class="tab" data-tab="logging">
+                <i class="fas fa-file-alt"></i>
+                <span data-i18n="install.loggingTools">Logging Tools</span>
+            </div>
+            <div class="tab" data-tab="resources">
+                <i class="fas fa-server"></i>
+                <span data-i18n="install.resources">Resources</span>
+            </div>
+            <div class="tab" data-tab="clusters">
+                <i class="fas fa-network-wired"></i>
+                <span data-i18n="install.clusterConfig">Cluster Configurations</span>
+            </div>
+        </div>
 
         <!-- Configuration Panels -->
         <div class="config-panels">
@@ -261,7 +258,7 @@
                     <h3>Artifact Configuration</h3>
                     <p>Configure your artifact repositories and storage backends</p>
                 </div>
-                
+
                 <div class="config-grid">
                     <div class="config-card">
                         <div class="card-header">
@@ -290,17 +287,21 @@
                                         <div class="instance-config">
                                             <label class="instance-label">Instances:</label>
                                             <div class="instance-controls">
-                                                <button type="button" class="instance-btn decrease" data-tool="gitlab-registry">-</button>
-                                                <input type="number" class="instance-count" data-tool="gitlab-registry" value="1" min="1" max="3">
-                                                <button type="button" class="instance-btn increase" data-tool="gitlab-registry">+</button>
+                                                <button type="button" class="instance-btn decrease"
+                                                    data-tool="gitlab-registry">-</button>
+                                                <input type="number" class="instance-count" data-tool="gitlab-registry"
+                                                    value="1" min="1" max="3">
+                                                <button type="button" class="instance-btn increase"
+                                                    data-tool="gitlab-registry">+</button>
                                             </div>
                                             <div class="instance-info">
-                                                <i class="fas fa-info-circle" data-tooltip="Use multiple instances for different environments or package types"></i>
+                                                <i class="fas fa-info-circle"
+                                                    data-tooltip="Use multiple instances for different environments or package types"></i>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="tool-option">
                                     <label class="tool-checkbox">
                                         <input type="checkbox" name="packageRegistry" value="nexus">
@@ -320,17 +321,21 @@
                                         <div class="instance-config">
                                             <label class="instance-label">Instances:</label>
                                             <div class="instance-controls">
-                                                <button type="button" class="instance-btn decrease" data-tool="nexus">-</button>
-                                                <input type="number" class="instance-count" data-tool="nexus" value="1" min="1" max="5">
-                                                <button type="button" class="instance-btn increase" data-tool="nexus">+</button>
+                                                <button type="button" class="instance-btn decrease"
+                                                    data-tool="nexus">-</button>
+                                                <input type="number" class="instance-count" data-tool="nexus" value="1"
+                                                    min="1" max="5">
+                                                <button type="button" class="instance-btn increase"
+                                                    data-tool="nexus">+</button>
                                             </div>
                                             <div class="instance-info">
-                                                <i class="fas fa-info-circle" data-tooltip="Use multiple instances for different artifact types or environments (Maven, NPM, Docker repositories)"></i>
+                                                <i class="fas fa-info-circle"
+                                                    data-tooltip="Use multiple instances for different artifact types or environments (Maven, NPM, Docker repositories)"></i>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="tool-option">
                                     <label class="tool-checkbox">
                                         <input type="checkbox" name="packageRegistry" value="jfrog">
@@ -350,17 +355,21 @@
                                         <div class="instance-config">
                                             <label class="instance-label">Instances:</label>
                                             <div class="instance-controls">
-                                                <button type="button" class="instance-btn decrease" data-tool="jfrog">-</button>
-                                                <input type="number" class="instance-count" data-tool="jfrog" value="1" min="1" max="3">
-                                                <button type="button" class="instance-btn increase" data-tool="jfrog">+</button>
+                                                <button type="button" class="instance-btn decrease"
+                                                    data-tool="jfrog">-</button>
+                                                <input type="number" class="instance-count" data-tool="jfrog" value="1"
+                                                    min="1" max="3">
+                                                <button type="button" class="instance-btn increase"
+                                                    data-tool="jfrog">+</button>
                                             </div>
                                             <div class="instance-info">
-                                                <i class="fas fa-info-circle" data-tooltip="Use multiple instances for different teams or geographic regions"></i>
+                                                <i class="fas fa-info-circle"
+                                                    data-tooltip="Use multiple instances for different teams or geographic regions"></i>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="tool-option">
                                     <label class="tool-checkbox">
                                         <input type="checkbox" name="packageRegistry" value="harbor">
@@ -380,12 +389,16 @@
                                         <div class="instance-config">
                                             <label class="instance-label">Instances:</label>
                                             <div class="instance-controls">
-                                                <button type="button" class="instance-btn decrease" data-tool="harbor">-</button>
-                                                <input type="number" class="instance-count" data-tool="harbor" value="1" min="1" max="5">
-                                                <button type="button" class="instance-btn increase" data-tool="harbor">+</button>
+                                                <button type="button" class="instance-btn decrease"
+                                                    data-tool="harbor">-</button>
+                                                <input type="number" class="instance-count" data-tool="harbor" value="1"
+                                                    min="1" max="5">
+                                                <button type="button" class="instance-btn increase"
+                                                    data-tool="harbor">+</button>
                                             </div>
                                             <div class="instance-info">
-                                                <i class="fas fa-info-circle" data-tooltip="Use multiple instances for HA setup or different security policies"></i>
+                                                <i class="fas fa-info-circle"
+                                                    data-tooltip="Use multiple instances for HA setup or different security policies"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -417,7 +430,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                
+
                                 <div class="tool-option">
                                     <label class="tool-checkbox">
                                         <input type="checkbox" name="sourceRepo" value="github">
@@ -433,7 +446,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                
+
                                 <div class="tool-option">
                                     <label class="tool-checkbox">
                                         <input type="checkbox" name="sourceRepo" value="gitea">
@@ -453,17 +466,21 @@
                                         <div class="instance-config">
                                             <label class="instance-label">Instances:</label>
                                             <div class="instance-controls">
-                                                <button type="button" class="instance-btn decrease" data-tool="gitea">-</button>
-                                                <input type="number" class="instance-count" data-tool="gitea" value="1" min="1" max="3">
-                                                <button type="button" class="instance-btn increase" data-tool="gitea">+</button>
+                                                <button type="button" class="instance-btn decrease"
+                                                    data-tool="gitea">-</button>
+                                                <input type="number" class="instance-count" data-tool="gitea" value="1"
+                                                    min="1" max="3">
+                                                <button type="button" class="instance-btn increase"
+                                                    data-tool="gitea">+</button>
                                             </div>
                                             <div class="instance-info">
-                                                <i class="fas fa-info-circle" data-tooltip="Use multiple instances for different organizations or environments"></i>
+                                                <i class="fas fa-info-circle"
+                                                    data-tooltip="Use multiple instances for different organizations or environments"></i>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="tool-option">
                                     <label class="tool-checkbox">
                                         <input type="checkbox" name="sourceRepo" value="bitbucket">
@@ -507,7 +524,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                
+
                                 <div class="tool-option">
                                     <label class="tool-checkbox">
                                         <input type="checkbox" name="imageRegistry" value="harbor">
@@ -527,17 +544,21 @@
                                         <div class="instance-config">
                                             <label class="instance-label">Instances:</label>
                                             <div class="instance-controls">
-                                                <button type="button" class="instance-btn decrease" data-tool="harbor-registry">-</button>
-                                                <input type="number" class="instance-count" data-tool="harbor-registry" value="1" min="1" max="5">
-                                                <button type="button" class="instance-btn increase" data-tool="harbor-registry">+</button>
+                                                <button type="button" class="instance-btn decrease"
+                                                    data-tool="harbor-registry">-</button>
+                                                <input type="number" class="instance-count" data-tool="harbor-registry"
+                                                    value="1" min="1" max="5">
+                                                <button type="button" class="instance-btn increase"
+                                                    data-tool="harbor-registry">+</button>
                                             </div>
                                             <div class="instance-info">
-                                                <i class="fas fa-info-circle" data-tooltip="Use multiple instances for different environments or security zones"></i>
+                                                <i class="fas fa-info-circle"
+                                                    data-tooltip="Use multiple instances for different environments or security zones"></i>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="tool-option">
                                     <label class="tool-checkbox">
                                         <input type="checkbox" name="imageRegistry" value="dockerhub">
@@ -552,7 +573,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                
+
                                 <div class="tool-option">
                                     <label class="tool-checkbox">
                                         <input type="checkbox" name="imageRegistry" value="ecr">
@@ -593,7 +614,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                
+
                                 <div class="tool-option">
                                     <label class="tool-checkbox">
                                         <input type="checkbox" name="storage" value="minio">
@@ -613,17 +634,21 @@
                                         <div class="instance-config">
                                             <label class="instance-label">Instances:</label>
                                             <div class="instance-controls">
-                                                <button type="button" class="instance-btn decrease" data-tool="minio">-</button>
-                                                <input type="number" class="instance-count" data-tool="minio" value="1" min="1" max="8">
-                                                <button type="button" class="instance-btn increase" data-tool="minio">+</button>
+                                                <button type="button" class="instance-btn decrease"
+                                                    data-tool="minio">-</button>
+                                                <input type="number" class="instance-count" data-tool="minio" value="1"
+                                                    min="1" max="8">
+                                                <button type="button" class="instance-btn increase"
+                                                    data-tool="minio">+</button>
                                             </div>
                                             <div class="instance-info">
-                                                <i class="fas fa-info-circle" data-tooltip="Use multiple instances for distributed setup or different storage tiers"></i>
+                                                <i class="fas fa-info-circle"
+                                                    data-tooltip="Use multiple instances for distributed setup or different storage tiers"></i>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="tool-option">
                                     <label class="tool-checkbox">
                                         <input type="checkbox" name="storage" value="gcs">
@@ -638,7 +663,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                
+
                                 <div class="tool-option">
                                     <label class="tool-checkbox">
                                         <input type="checkbox" name="storage" value="azure">
@@ -666,7 +691,7 @@
                     <h3>Pipeline Tools Configuration</h3>
                     <p>Configure your CI/CD pipeline and deployment tools</p>
                 </div>
-                
+
                 <div class="config-grid">
                     <div class="config-card">
                         <div class="card-header">
@@ -680,7 +705,8 @@
                                         <input type="checkbox" name="mainPipeline" value="gitlab" checked>
                                         <div class="tool-info">
                                             <span class="tool-title">GitLab CI/CD</span>
-                                            <span class="tool-desc">Integrated DevOps platform with built-in CI/CD</span>
+                                            <span class="tool-desc">Integrated DevOps platform with built-in
+                                                CI/CD</span>
                                         </div>
                                     </label>
                                     <div class="tool-config-row">
@@ -694,17 +720,21 @@
                                         <div class="instance-config">
                                             <label class="instance-label">Instances:</label>
                                             <div class="instance-controls">
-                                                <button type="button" class="instance-btn decrease" data-tool="gitlab-ci">-</button>
-                                                <input type="number" class="instance-count" data-tool="gitlab-ci" value="1" min="1" max="4">
-                                                <button type="button" class="instance-btn increase" data-tool="gitlab-ci">+</button>
+                                                <button type="button" class="instance-btn decrease"
+                                                    data-tool="gitlab-ci">-</button>
+                                                <input type="number" class="instance-count" data-tool="gitlab-ci"
+                                                    value="1" min="1" max="4">
+                                                <button type="button" class="instance-btn increase"
+                                                    data-tool="gitlab-ci">+</button>
                                             </div>
                                             <div class="instance-info">
-                                                <i class="fas fa-info-circle" data-tooltip="Use multiple instances for different organizations or high-availability setup"></i>
+                                                <i class="fas fa-info-circle"
+                                                    data-tooltip="Use multiple instances for different organizations or high-availability setup"></i>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="tool-option">
                                     <label class="tool-checkbox">
                                         <input type="checkbox" name="mainPipeline" value="github">
@@ -723,17 +753,21 @@
                                         <div class="instance-config">
                                             <label class="instance-label">Runners:</label>
                                             <div class="instance-controls">
-                                                <button type="button" class="instance-btn decrease" data-tool="github-actions">-</button>
-                                                <input type="number" class="instance-count" data-tool="github-actions" value="1" min="1" max="10">
-                                                <button type="button" class="instance-btn increase" data-tool="github-actions">+</button>
+                                                <button type="button" class="instance-btn decrease"
+                                                    data-tool="github-actions">-</button>
+                                                <input type="number" class="instance-count" data-tool="github-actions"
+                                                    value="1" min="1" max="10">
+                                                <button type="button" class="instance-btn increase"
+                                                    data-tool="github-actions">+</button>
                                             </div>
                                             <div class="instance-info">
-                                                <i class="fas fa-info-circle" data-tooltip="Number of self-hosted runners for parallel job execution"></i>
+                                                <i class="fas fa-info-circle"
+                                                    data-tooltip="Number of self-hosted runners for parallel job execution"></i>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="tool-option">
                                     <label class="tool-checkbox">
                                         <input type="checkbox" name="mainPipeline" value="jenkins">
@@ -753,17 +787,21 @@
                                         <div class="instance-config">
                                             <label class="instance-label">Instances:</label>
                                             <div class="instance-controls">
-                                                <button type="button" class="instance-btn decrease" data-tool="jenkins">-</button>
-                                                <input type="number" class="instance-count" data-tool="jenkins" value="1" min="1" max="5">
-                                                <button type="button" class="instance-btn increase" data-tool="jenkins">+</button>
+                                                <button type="button" class="instance-btn decrease"
+                                                    data-tool="jenkins">-</button>
+                                                <input type="number" class="instance-count" data-tool="jenkins"
+                                                    value="1" min="1" max="5">
+                                                <button type="button" class="instance-btn increase"
+                                                    data-tool="jenkins">+</button>
                                             </div>
                                             <div class="instance-info">
-                                                <i class="fas fa-info-circle" data-tooltip="Use multiple instances for different teams or high-availability setup"></i>
+                                                <i class="fas fa-info-circle"
+                                                    data-tooltip="Use multiple instances for different teams or high-availability setup"></i>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="tool-option">
                                     <label class="tool-checkbox">
                                         <input type="checkbox" name="mainPipeline" value="circleci">
@@ -809,17 +847,21 @@
                                         <div class="instance-config">
                                             <label class="instance-label">Instances:</label>
                                             <div class="instance-controls">
-                                                <button type="button" class="instance-btn decrease" data-tool="argocd">-</button>
-                                                <input type="number" class="instance-count" data-tool="argocd" value="1" min="1" max="3">
-                                                <button type="button" class="instance-btn increase" data-tool="argocd">+</button>
+                                                <button type="button" class="instance-btn decrease"
+                                                    data-tool="argocd">-</button>
+                                                <input type="number" class="instance-count" data-tool="argocd" value="1"
+                                                    min="1" max="3">
+                                                <button type="button" class="instance-btn increase"
+                                                    data-tool="argocd">+</button>
                                             </div>
                                             <div class="instance-info">
-                                                <i class="fas fa-info-circle" data-tooltip="Use multiple instances for different environments or HA setup"></i>
+                                                <i class="fas fa-info-circle"
+                                                    data-tooltip="Use multiple instances for different environments or HA setup"></i>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="tool-option">
                                     <label class="tool-checkbox">
                                         <input type="checkbox" name="cdTool" value="flux">
@@ -839,17 +881,21 @@
                                         <div class="instance-config">
                                             <label class="instance-label">Instances:</label>
                                             <div class="instance-controls">
-                                                <button type="button" class="instance-btn decrease" data-tool="flux">-</button>
-                                                <input type="number" class="instance-count" data-tool="flux" value="1" min="1" max="3">
-                                                <button type="button" class="instance-btn increase" data-tool="flux">+</button>
+                                                <button type="button" class="instance-btn decrease"
+                                                    data-tool="flux">-</button>
+                                                <input type="number" class="instance-count" data-tool="flux" value="1"
+                                                    min="1" max="3">
+                                                <button type="button" class="instance-btn increase"
+                                                    data-tool="flux">+</button>
                                             </div>
                                             <div class="instance-info">
-                                                <i class="fas fa-info-circle" data-tooltip="Use multiple instances for different clusters or namespaces"></i>
+                                                <i class="fas fa-info-circle"
+                                                    data-tooltip="Use multiple instances for different clusters or namespaces"></i>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="tool-option">
                                     <label class="tool-checkbox">
                                         <input type="checkbox" name="cdTool" value="spinnaker">
@@ -869,17 +915,21 @@
                                         <div class="instance-config">
                                             <label class="instance-label">Instances:</label>
                                             <div class="instance-controls">
-                                                <button type="button" class="instance-btn decrease" data-tool="spinnaker">-</button>
-                                                <input type="number" class="instance-count" data-tool="spinnaker" value="1" min="1" max="2">
-                                                <button type="button" class="instance-btn increase" data-tool="spinnaker">+</button>
+                                                <button type="button" class="instance-btn decrease"
+                                                    data-tool="spinnaker">-</button>
+                                                <input type="number" class="instance-count" data-tool="spinnaker"
+                                                    value="1" min="1" max="2">
+                                                <button type="button" class="instance-btn increase"
+                                                    data-tool="spinnaker">+</button>
                                             </div>
                                             <div class="instance-info">
-                                                <i class="fas fa-info-circle" data-tooltip="Use multiple instances for different cloud providers or regions"></i>
+                                                <i class="fas fa-info-circle"
+                                                    data-tooltip="Use multiple instances for different cloud providers or regions"></i>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="tool-option">
                                     <label class="tool-checkbox">
                                         <input type="checkbox" name="cdTool" value="tekton">
@@ -899,12 +949,16 @@
                                         <div class="instance-config">
                                             <label class="instance-label">Instances:</label>
                                             <div class="instance-controls">
-                                                <button type="button" class="instance-btn decrease" data-tool="tekton">-</button>
-                                                <input type="number" class="instance-count" data-tool="tekton" value="1" min="1" max="4">
-                                                <button type="button" class="instance-btn increase" data-tool="tekton">+</button>
+                                                <button type="button" class="instance-btn decrease"
+                                                    data-tool="tekton">-</button>
+                                                <input type="number" class="instance-count" data-tool="tekton" value="1"
+                                                    min="1" max="4">
+                                                <button type="button" class="instance-btn increase"
+                                                    data-tool="tekton">+</button>
                                             </div>
                                             <div class="instance-info">
-                                                <i class="fas fa-info-circle" data-tooltip="Use multiple instances for different pipeline controllers or namespaces"></i>
+                                                <i class="fas fa-info-circle"
+                                                    data-tooltip="Use multiple instances for different pipeline controllers or namespaces"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -944,12 +998,16 @@
                                         <div class="instance-config">
                                             <label class="instance-label">Instances:</label>
                                             <div class="instance-controls">
-                                                <button type="button" class="instance-btn decrease" data-tool="prometheus">-</button>
-                                                <input type="number" class="instance-count" data-tool="prometheus" value="1" min="1" max="10">
-                                                <button type="button" class="instance-btn increase" data-tool="prometheus">+</button>
+                                                <button type="button" class="instance-btn decrease"
+                                                    data-tool="prometheus">-</button>
+                                                <input type="number" class="instance-count" data-tool="prometheus"
+                                                    value="1" min="1" max="10">
+                                                <button type="button" class="instance-btn increase"
+                                                    data-tool="prometheus">+</button>
                                             </div>
                                             <div class="instance-info">
-                                                <i class="fas fa-info-circle" data-tooltip="Use multiple instances for HA setup or different purposes (e.g., application metrics vs infrastructure metrics)"></i>
+                                                <i class="fas fa-info-circle"
+                                                    data-tooltip="Use multiple instances for HA setup or different purposes (e.g., application metrics vs infrastructure metrics)"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -971,12 +1029,16 @@
                                         <div class="instance-config">
                                             <label class="instance-label">Instances:</label>
                                             <div class="instance-controls">
-                                                <button type="button" class="instance-btn decrease" data-tool="thanos">-</button>
-                                                <input type="number" class="instance-count" data-tool="thanos" value="1" min="1" max="6">
-                                                <button type="button" class="instance-btn increase" data-tool="thanos">+</button>
+                                                <button type="button" class="instance-btn decrease"
+                                                    data-tool="thanos">-</button>
+                                                <input type="number" class="instance-count" data-tool="thanos" value="1"
+                                                    min="1" max="6">
+                                                <button type="button" class="instance-btn increase"
+                                                    data-tool="thanos">+</button>
                                             </div>
                                             <div class="instance-info">
-                                                <i class="fas fa-info-circle" data-tooltip="Use multiple instances for different components (sidecar, store, query, compactor)"></i>
+                                                <i class="fas fa-info-circle"
+                                                    data-tooltip="Use multiple instances for different components (sidecar, store, query, compactor)"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -1006,12 +1068,16 @@
                                         <div class="instance-config">
                                             <label class="instance-label">Instances:</label>
                                             <div class="instance-controls">
-                                                <button type="button" class="instance-btn decrease" data-tool="grafana">-</button>
-                                                <input type="number" class="instance-count" data-tool="grafana" value="1" min="1" max="5">
-                                                <button type="button" class="instance-btn increase" data-tool="grafana">+</button>
+                                                <button type="button" class="instance-btn decrease"
+                                                    data-tool="grafana">-</button>
+                                                <input type="number" class="instance-count" data-tool="grafana"
+                                                    value="1" min="1" max="5">
+                                                <button type="button" class="instance-btn increase"
+                                                    data-tool="grafana">+</button>
                                             </div>
                                             <div class="instance-info">
-                                                <i class="fas fa-info-circle" data-tooltip="Use multiple instances for different teams or environments (dev/staging/prod dashboards)"></i>
+                                                <i class="fas fa-info-circle"
+                                                    data-tooltip="Use multiple instances for different teams or environments (dev/staging/prod dashboards)"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -1051,7 +1117,8 @@
                                         <input type="checkbox" name="loggingCollection" value="opentelemetry" checked>
                                         <div class="tool-info">
                                             <span class="tool-title">OpenTelemetry</span>
-                                            <span class="tool-desc">Observability data collection (traces, logs, metrics)</span>
+                                            <span class="tool-desc">Observability data collection (traces, logs,
+                                                metrics)</span>
                                         </div>
                                     </label>
                                     <div class="tool-config-row">
@@ -1065,12 +1132,16 @@
                                         <div class="instance-config">
                                             <label class="instance-label">Collectors:</label>
                                             <div class="instance-controls">
-                                                <button type="button" class="instance-btn decrease" data-tool="opentelemetry">-</button>
-                                                <input type="number" class="instance-count" data-tool="opentelemetry" value="1" min="1" max="6">
-                                                <button type="button" class="instance-btn increase" data-tool="opentelemetry">+</button>
+                                                <button type="button" class="instance-btn decrease"
+                                                    data-tool="opentelemetry">-</button>
+                                                <input type="number" class="instance-count" data-tool="opentelemetry"
+                                                    value="1" min="1" max="6">
+                                                <button type="button" class="instance-btn increase"
+                                                    data-tool="opentelemetry">+</button>
                                             </div>
                                             <div class="instance-info">
-                                                <i class="fas fa-info-circle" data-tooltip="Use multiple collectors for different data types or environments (traces, metrics, logs)"></i>
+                                                <i class="fas fa-info-circle"
+                                                    data-tooltip="Use multiple collectors for different data types or environments (traces, metrics, logs)"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -1092,12 +1163,16 @@
                                         <div class="instance-config">
                                             <label class="instance-label">Instances:</label>
                                             <div class="instance-controls">
-                                                <button type="button" class="instance-btn decrease" data-tool="loki">-</button>
-                                                <input type="number" class="instance-count" data-tool="loki" value="1" min="1" max="5">
-                                                <button type="button" class="instance-btn increase" data-tool="loki">+</button>
+                                                <button type="button" class="instance-btn decrease"
+                                                    data-tool="loki">-</button>
+                                                <input type="number" class="instance-count" data-tool="loki" value="1"
+                                                    min="1" max="5">
+                                                <button type="button" class="instance-btn increase"
+                                                    data-tool="loki">+</button>
                                             </div>
                                             <div class="instance-info">
-                                                <i class="fas fa-info-circle" data-tooltip="Use multiple instances for different log sources or environments"></i>
+                                                <i class="fas fa-info-circle"
+                                                    data-tooltip="Use multiple instances for different log sources or environments"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -1127,12 +1202,16 @@
                                         <div class="instance-config">
                                             <label class="instance-label">Instances:</label>
                                             <div class="instance-controls">
-                                                <button type="button" class="instance-btn decrease" data-tool="opensearch">-</button>
-                                                <input type="number" class="instance-count" data-tool="opensearch" value="1" min="1" max="7">
-                                                <button type="button" class="instance-btn increase" data-tool="opensearch">+</button>
+                                                <button type="button" class="instance-btn decrease"
+                                                    data-tool="opensearch">-</button>
+                                                <input type="number" class="instance-count" data-tool="opensearch"
+                                                    value="1" min="1" max="7">
+                                                <button type="button" class="instance-btn increase"
+                                                    data-tool="opensearch">+</button>
                                             </div>
                                             <div class="instance-info">
-                                                <i class="fas fa-info-circle" data-tooltip="Use multiple instances for cluster setup (master, data, ingest nodes)"></i>
+                                                <i class="fas fa-info-circle"
+                                                    data-tooltip="Use multiple instances for cluster setup (master, data, ingest nodes)"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -1154,12 +1233,16 @@
                                         <div class="instance-config">
                                             <label class="instance-label">Instances:</label>
                                             <div class="instance-controls">
-                                                <button type="button" class="instance-btn decrease" data-tool="elasticsearch">-</button>
-                                                <input type="number" class="instance-count" data-tool="elasticsearch" value="1" min="1" max="7">
-                                                <button type="button" class="instance-btn increase" data-tool="elasticsearch">+</button>
+                                                <button type="button" class="instance-btn decrease"
+                                                    data-tool="elasticsearch">-</button>
+                                                <input type="number" class="instance-count" data-tool="elasticsearch"
+                                                    value="1" min="1" max="7">
+                                                <button type="button" class="instance-btn increase"
+                                                    data-tool="elasticsearch">+</button>
                                             </div>
                                             <div class="instance-info">
-                                                <i class="fas fa-info-circle" data-tooltip="Use multiple instances for cluster setup (master, data, coordinating nodes)"></i>
+                                                <i class="fas fa-info-circle"
+                                                    data-tooltip="Use multiple instances for cluster setup (master, data, coordinating nodes)"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -1176,7 +1259,7 @@
                     <h3>Resource Planning</h3>
                     <p>Configure resource requirements and capacity planning</p>
                 </div>
-                
+
                 <div class="resource-config-flow">
                     <!-- Step 1: Team & Workload Configuration -->
                     <div class="resource-flow-section">
@@ -1241,7 +1324,8 @@
                             <!-- Auto Resource Calculation Mode -->
                             <div class="resource-section" id="autoResourceSection">
                                 <div class="auto-calc-info">
-                                    <p><i class="fas fa-info-circle"></i> Resources are automatically calculated based on your team size, workload, and selected tools.</p>
+                                    <p><i class="fas fa-info-circle"></i> Resources are automatically calculated based
+                                        on your team size, workload, and selected tools.</p>
                                     <button class="btn btn-secondary" id="recalculateBtn">
                                         <i class="fas fa-calculator"></i>
                                         Recalculate
@@ -1254,12 +1338,14 @@
                                 <div class="manual-config-warning">
                                     <div class="warning-box" id="resourceWarning" style="display: none;">
                                         <i class="fas fa-exclamation-triangle"></i>
-                                        <span id="warningMessage">Resource configuration is below recommended minimum!</span>
+                                        <span id="warningMessage">Resource configuration is below recommended
+                                            minimum!</span>
                                     </div>
                                 </div>
                                 <p class="manual-config-description">
                                     <i class="fas fa-info-circle"></i>
-                                    Configure resources for each selected tool individually. Only enabled tools are shown below.
+                                    Configure resources for each selected tool individually. Only enabled tools are
+                                    shown below.
                                 </p>
                             </div>
                         </div>
@@ -1388,7 +1474,7 @@
             <!-- Step 4: Cluster Configuration Panel -->
             <div class="panel cluster-panel" id="step4Panel">
                 <h3><i class="fas fa-server"></i> 클러스터 설정</h3>
-                
+
                 <div class="config-section">
                     <h4><i class="fas fa-cogs"></i> 파이프라인 클러스터</h4>
                     <div class="input-group">
@@ -1425,7 +1511,7 @@
             <!-- Step 5: Installation Panel -->
             <div class="panel install-panel" id="step5Panel">
                 <h3><i class="fas fa-download"></i> 파이프라인 설치</h3>
-                
+
                 <div class="install-summary">
                     <h4><i class="fas fa-list-check"></i> 설정 요약</h4>
                     <div class="summary-item">
@@ -1435,7 +1521,8 @@
                         <strong>Source Repository:</strong> <span id="installSummarySourceRepo">GitLab</span>
                     </div>
                     <div class="summary-item">
-                        <strong>Image Registry:</strong> <span id="installSummaryImageRegistry">GitLab Container Registry</span>
+                        <strong>Image Registry:</strong> <span id="installSummaryImageRegistry">GitLab Container
+                            Registry</span>
                     </div>
                     <div class="summary-item">
                         <strong>메인 파이프라인:</strong> <span id="installSummaryMainPipeline">GitLab CI/CD</span>
@@ -1460,277 +1547,145 @@
                     </div>
                     <div class="progress-text" id="progressText">설치 준비 중...</div>
                 </div>
-                </div>
+            </div>
+        </div>
+
+        <!-- Cluster Configurations Panel -->
+        <div class="panel clusters-panel" id="clustersPanel">
+            <div class="panel-header">
+                <h3>Cluster Configurations</h3>
+                <p>Configure Kubernetes clusters for pipeline and application deployment</p>
             </div>
 
-            <!-- Cluster Configurations Panel -->
-            <div class="panel clusters-panel" id="clustersPanel">
-                <div class="panel-header">
-                    <h3>Cluster Configurations</h3>
-                    <p>Configure Kubernetes clusters for pipeline and application deployment</p>
-                </div>
-                
-                <div class="cluster-config">
-                    <div class="config-card">
-                        <div class="card-header">
-                            <i class="fas fa-cogs"></i>
-                            <h4>Pipeline Cluster</h4>
-                        </div>
-                        <div class="card-content">
-                            <div class="cluster-form">
-                                <div class="input-group">
-                                    <label>Cluster Name</label>
-                                    <input type="text" id="pipelineClusterName" placeholder="pipeline-cluster" value="devops-cluster">
-                                </div>
-                                <div class="input-group">
-                                    <label>Namespace</label>
-                                    <input type="text" id="pipelineNamespace" placeholder="devops" value="nullus-system">
-                                </div>
-                                <div class="input-group">
-                                    <label>Kubeconfig</label>
-                                    <div class="file-upload">
-                                        <input type="file" id="pipelineKubeconfig" accept=".yaml,.yml,.config">
-                                        <button class="btn btn-secondary">
-                                            <i class="fas fa-upload"></i>
-                                            Upload Config
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="cluster-status">
-                                    <div class="status-indicator connected">
-                                        <i class="fas fa-check-circle"></i>
-                                        <span>Connected</span>
-                                    </div>
-                                    <div class="cluster-info">
-                                        <span>Kubernetes v1.28.2</span>
-                                        <span>3 nodes</span>
-                                    </div>
+            <div class="cluster-config">
+                <div class="config-card">
+                    <div class="card-header">
+                        <i class="fas fa-cogs"></i>
+                        <h4>Pipeline Cluster</h4>
+                    </div>
+                    <div class="card-content">
+                        <div class="cluster-form">
+                            <div class="input-group">
+                                <label>Cluster Name</label>
+                                <input type="text" id="pipelineClusterName" placeholder="pipeline-cluster"
+                                    value="devops-cluster">
+                            </div>
+                            <div class="input-group">
+                                <label>Namespace</label>
+                                <input type="text" id="pipelineNamespace" placeholder="devops" value="nullus-system">
+                            </div>
+                            <div class="input-group">
+                                <label>Kubeconfig</label>
+                                <div class="file-upload">
+                                    <input type="file" id="pipelineKubeconfig" accept=".yaml,.yml,.config">
+                                    <button class="btn btn-secondary">
+                                        <i class="fas fa-upload"></i>
+                                        Upload Config
+                                    </button>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-
-                    <div class="config-card">
-                        <div class="card-header">
-                            <i class="fas fa-bullseye"></i>
-                            <h4>Target Cluster</h4>
-                        </div>
-                        <div class="card-content">
-                            <div class="cluster-form">
-                                <div class="input-group">
-                                    <label>Cluster Name</label>
-                                    <input type="text" id="targetClusterName" placeholder="production-cluster" value="prod-cluster">
+                            <div class="cluster-status">
+                                <div class="status-indicator connected">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Connected</span>
                                 </div>
-                                <div class="input-group">
-                                    <label>Namespace</label>
-                                    <input type="text" id="targetNamespace" placeholder="default" value="production">
-                                </div>
-                                <div class="input-group">
-                                    <label>Kubeconfig</label>
-                                    <div class="file-upload">
-                                        <input type="file" id="targetKubeconfig" accept=".yaml,.yml,.config">
-                                        <button class="btn btn-secondary">
-                                            <i class="fas fa-upload"></i>
-                                            Upload Config
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="cluster-status">
-                                    <div class="status-indicator pending">
-                                        <i class="fas fa-clock"></i>
-                                        <span>Pending</span>
-                                    </div>
-                                    <div class="cluster-info">
-                                        <span>Configuration required</span>
-                                    </div>
+                                <div class="cluster-info">
+                                    <span>Kubernetes v1.28.2</span>
+                                    <span>3 nodes</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="cluster-validation">
-                    <h4>Cluster Validation</h4>
-                    <div class="validation-checks">
-                        <div class="check-item">
-                            <i class="fas fa-check text-success"></i>
-                            <span>Pipeline cluster connectivity</span>
-                        </div>
-                        <div class="check-item">
-                            <i class="fas fa-check text-success"></i>
-                            <span>Required permissions</span>
-                        </div>
-                        <div class="check-item">
-                            <i class="fas fa-times text-error"></i>
-                            <span>Target cluster connectivity</span>
-                        </div>
-                        <div class="check-item">
-                            <i class="fas fa-clock text-warning"></i>
-                            <span>Network policies</span>
+                <div class="config-card">
+                    <div class="card-header">
+                        <i class="fas fa-bullseye"></i>
+                        <h4>Target Cluster</h4>
+                    </div>
+                    <div class="card-content">
+                        <div class="cluster-form">
+                            <div class="input-group">
+                                <label>Cluster Name</label>
+                                <input type="text" id="targetClusterName" placeholder="production-cluster"
+                                    value="prod-cluster">
+                            </div>
+                            <div class="input-group">
+                                <label>Namespace</label>
+                                <input type="text" id="targetNamespace" placeholder="default" value="production">
+                            </div>
+                            <div class="input-group">
+                                <label>Kubeconfig</label>
+                                <div class="file-upload">
+                                    <input type="file" id="targetKubeconfig" accept=".yaml,.yml,.config">
+                                    <button class="btn btn-secondary">
+                                        <i class="fas fa-upload"></i>
+                                        Upload Config
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="cluster-status">
+                                <div class="status-indicator pending">
+                                    <i class="fas fa-clock"></i>
+                                    <span>Pending</span>
+                                </div>
+                                <div class="cluster-info">
+                                    <span>Configuration required</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            </div>
-            <!-- /config-panels -->
-            </div>
-            <!-- /config-section -->
 
-            <div id="installValuesYamlModal"
-                style="display:none;position:fixed;inset:0;background:rgba(15,23,42,0.6);z-index:1200;align-items:center;justify-content:center;padding:20px;">
-                <div style="width:min(760px,100%);max-height:85vh;background:#fff;border-radius:12px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 45px rgba(15,23,42,0.35);">
-                    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid #e5e7eb;">
-                        <h4 id="installValuesYamlModalTitle" style="margin:0;font-size:15px;font-weight:700;color:#111827;">values.yaml 편집</h4>
-                        <button type="button" onclick="closeInstallValuesYamlEditor()"
-                            style="border:0;background:transparent;color:#6b7280;font-size:18px;cursor:pointer;line-height:1;">&times;</button>
+            <div class="cluster-validation">
+                <h4>Cluster Validation</h4>
+                <div class="validation-checks">
+                    <div class="check-item">
+                        <i class="fas fa-check text-success"></i>
+                        <span>Pipeline cluster connectivity</span>
                     </div>
-                    <div style="padding:16px 18px;display:flex;flex-direction:column;gap:10px;flex:1;overflow:auto;">
-                        <p style="margin:0;font-size:13px;color:#4b5563;">Helm chart values.yaml 내용을 수정한 뒤 Apply를 누르세요.</p>
-                        <textarea id="installValuesYamlTextarea"
-                            style="width:100%;min-height:300px;resize:vertical;border:1px solid #d1d5db;border-radius:8px;padding:12px;font-size:13px;line-height:1.6;font-family:'Consolas','Monaco',monospace;color:#111827;"></textarea>
+                    <div class="check-item">
+                        <i class="fas fa-check text-success"></i>
+                        <span>Required permissions</span>
                     </div>
-                    <div style="display:flex;justify-content:flex-end;gap:8px;padding:12px 18px;border-top:1px solid #e5e7eb;background:#f9fafb;">
-                        <button type="button" class="btn btn-secondary" onclick="closeInstallValuesYamlEditor()">Cancel</button>
-                        <button type="button" class="btn" onclick="applyInstallValuesYamlEditor()"
-                            style="background:#2563eb;color:#fff;border:1px solid #1d4ed8;">Apply</button>
+                    <div class="check-item">
+                        <i class="fas fa-times text-error"></i>
+                        <span>Target cluster connectivity</span>
+                    </div>
+                    <div class="check-item">
+                        <i class="fas fa-clock text-warning"></i>
+                        <span>Network policies</span>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+    <!-- /config-panels -->
+</div>
+<!-- /config-section -->
 
-`;
-    while (el.firstChild) ws.appendChild(el.firstChild);
-})();
-
-var activeInstallValuesYamlCard = null;
-
-function ensureInstallCardResourceControls() {
-    var cards = document.querySelectorAll('#installResourceCompare .deployment-card');
-    cards.forEach(function (card) {
-        var existingBtn;
-        var docBtn;
-        var resourceRow;
-        var cpuInput;
-        var memoryInput;
-
-        if (!card.dataset.cpuValue) card.dataset.cpuValue = '500m';
-        if (!card.dataset.memoryValue) card.dataset.memoryValue = '512Mi';
-
-        var header = card.querySelector('.card-header');
-        existingBtn = card.querySelector('.values-editor-btn');
-        if (existingBtn && existingBtn.parentElement !== card) {
-            existingBtn.parentElement.removeChild(existingBtn);
-            existingBtn = null;
-        }
-
-        if (header && !existingBtn) {
-            card.style.position = 'relative';
-
-            docBtn = document.createElement('button');
-            docBtn.type = 'button';
-            docBtn.className = 'values-editor-btn';
-            docBtn.innerHTML = '<i class="fas fa-file-alt"></i> values.yaml';
-            docBtn.style.cssText = 'position:absolute;top:10px;right:12px;background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:8px;padding:5px 10px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;z-index:1;';
-            docBtn.onclick = function () { openInstallValuesYamlEditor(card); };
-            card.appendChild(docBtn);
-        }
-
-        var cardContent = card.querySelector('.card-content');
-        if (cardContent && !cardContent.querySelector('.card-resource-row')) {
-            resourceRow = document.createElement('div');
-            resourceRow.className = 'card-resource-row';
-            resourceRow.style.cssText = 'margin-top:14px;padding:12px;border:1px solid #e5e7eb;border-radius:8px;background:#f8fafc;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;';
-            resourceRow.innerHTML = '' +
-                '<label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#475569;">CPU' +
-                '<input type="text" class="card-cpu-input" value="' + card.dataset.cpuValue + '" placeholder="예: 500m" style="padding:8px 10px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;color:#111827;background:#fff;">' +
-                '</label>' +
-                '<label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#475569;">Memory' +
-                '<input type="text" class="card-memory-input" value="' + card.dataset.memoryValue + '" placeholder="예: 512Mi" style="padding:8px 10px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;color:#111827;background:#fff;">' +
-                '</label>';
-            cardContent.appendChild(resourceRow);
-
-            cpuInput = resourceRow.querySelector('.card-cpu-input');
-            memoryInput = resourceRow.querySelector('.card-memory-input');
-            if (cpuInput) {
-                cpuInput.addEventListener('input', function (e) {
-                    card.dataset.cpuValue = e.target.value.trim() || '500m';
-                });
-            }
-            if (memoryInput) {
-                memoryInput.addEventListener('input', function (e) {
-                    card.dataset.memoryValue = e.target.value.trim() || '512Mi';
-                });
-            }
-        }
-    });
-}
-
-function openInstallValuesYamlEditor(card) {
-    if (!card) return;
-    ensureInstallCardResourceControls();
-    activeInstallValuesYamlCard = card;
-
-    var cpuValue = card.dataset.cpuValue || '500m';
-    var memoryValue = card.dataset.memoryValue || '512Mi';
-    var title = card.querySelector('h4') ? card.querySelector('h4').textContent.trim() : 'Config Card';
-
-    var titleEl = document.getElementById('installValuesYamlModalTitle');
-    if (titleEl) titleEl.textContent = title + ' values.yaml 편집';
-
-    var textarea = document.getElementById('installValuesYamlTextarea');
-    if (textarea) {
-        textarea.value =
-            'resources:\n' +
-            '  requests:\n' +
-            '    cpu: "' + cpuValue + '"\n' +
-            '    memory: "' + memoryValue + '"\n' +
-            '  limits:\n' +
-            '    cpu: "' + cpuValue + '"\n' +
-            '    memory: "' + memoryValue + '"\n';
-    }
-
-    var modal = document.getElementById('installValuesYamlModal');
-    if (modal) modal.style.display = 'flex';
-}
-
-function closeInstallValuesYamlEditor() {
-    var modal = document.getElementById('installValuesYamlModal');
-    if (modal) modal.style.display = 'none';
-    activeInstallValuesYamlCard = null;
-}
-
-function applyInstallValuesYamlEditor() {
-    if (!activeInstallValuesYamlCard) return;
-
-    var textarea = document.getElementById('installValuesYamlTextarea');
-    if (!textarea) return;
-
-    var cpuMatches = textarea.value.match(/cpu\s*:\s*['\"]?([^\n'\"]+)/g) || [];
-    var memoryMatches = textarea.value.match(/memory\s*:\s*['\"]?([^\n'\"]+)/g) || [];
-
-    var cpuValue = activeInstallValuesYamlCard.dataset.cpuValue || '500m';
-    var memoryValue = activeInstallValuesYamlCard.dataset.memoryValue || '512Mi';
-
-    if (cpuMatches[0]) cpuValue = cpuMatches[0].replace(/cpu\s*:\s*['\"]?/, '').trim();
-    if (memoryMatches[0]) memoryValue = memoryMatches[0].replace(/memory\s*:\s*['\"]?/, '').trim();
-
-    activeInstallValuesYamlCard.dataset.cpuValue = cpuValue || '500m';
-    activeInstallValuesYamlCard.dataset.memoryValue = memoryValue || '512Mi';
-
-    var cpuInput = activeInstallValuesYamlCard.querySelector('.card-cpu-input');
-    var memoryInput = activeInstallValuesYamlCard.querySelector('.card-memory-input');
-    if (cpuInput) cpuInput.value = activeInstallValuesYamlCard.dataset.cpuValue;
-    if (memoryInput) memoryInput.value = activeInstallValuesYamlCard.dataset.memoryValue;
-
-    closeInstallValuesYamlEditor();
-    alert('values.yaml 변경사항이 적용되었습니다.');
-}
-
-document.addEventListener('click', function (e) {
-    var modal = document.getElementById('installValuesYamlModal');
-    if (modal && e.target === modal) {
-        closeInstallValuesYamlEditor();
-    }
-});
-
-window.closeInstallValuesYamlEditor = closeInstallValuesYamlEditor;
-window.applyInstallValuesYamlEditor = applyInstallValuesYamlEditor;
+<div id="installValuesYamlModal"
+    style="display:none;position:fixed;inset:0;background:rgba(15,23,42,0.6);z-index:1200;align-items:center;justify-content:center;padding:20px;">
+    <div
+        style="width:min(760px,100%);max-height:85vh;background:#fff;border-radius:12px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 45px rgba(15,23,42,0.35);">
+        <div
+            style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid #e5e7eb;">
+            <h4 id="installValuesYamlModalTitle" style="margin:0;font-size:15px;font-weight:700;color:#111827;">
+                values.yaml 편집</h4>
+            <button type="button" onclick="closeInstallValuesYamlEditor()"
+                style="border:0;background:transparent;color:#6b7280;font-size:18px;cursor:pointer;line-height:1;">&times;</button>
+        </div>
+        <div style="padding:16px 18px;display:flex;flex-direction:column;gap:10px;flex:1;overflow:auto;">
+            <p style="margin:0;font-size:13px;color:#4b5563;">Helm chart values.yaml 내용을 수정한 뒤 Apply를 누르세요.</p>
+            <textarea id="installValuesYamlTextarea"
+                style="width:100%;min-height:300px;resize:vertical;border:1px solid #d1d5db;border-radius:8px;padding:12px;font-size:13px;line-height:1.6;font-family:'Consolas','Monaco',monospace;color:#111827;"></textarea>
+        </div>
+        <div
+            style="display:flex;justify-content:flex-end;gap:8px;padding:12px 18px;border-top:1px solid #e5e7eb;background:#f9fafb;">
+            <button type="button" class="btn btn-secondary" onclick="closeInstallValuesYamlEditor()">Cancel</button>
+            <button type="button" class="btn" onclick="applyInstallValuesYamlEditor()"
+                style="background:#2563eb;color:#fff;border:1px solid #1d4ed8;">Apply</button>
+        </div>
+    </div>
+</div>
