@@ -1817,22 +1817,22 @@ function goBack() {
 
 // ── Page HTML lazy-load registry ──
 var PAGE_HTML_MAP = {
-    home: 'html/home.html',
-    list: 'html/stack-list.html',
-    install: 'html/stack-install.html',
-    templates: 'html/stack-template.html',
-    compatibility: 'html/stack-version.html',
-    cicdlist: 'html/cicd-list.html',
-    cicdtemplates: 'html/cicd-template.html',
-    cicdhistory: 'html/cicd-template.html',
-    developer: 'html/cicd-developer.html',
-    action: 'html/action.html',
-    monitoring: 'html/obs-dashboard.html',
-    alertlist: 'html/obs-alert-list.html',
-    alerthistory: 'html/obs-alert-history.html',
-    organization: 'html/org-organization.html',
-    users: 'html/org-users.html',
-    clusters: 'html/org-clusters.html'
+    home: 'html/pages/home.html',
+    list: 'html/pages/stack-list.html',
+    install: 'html/pages/stack-install.html',
+    templates: 'html/pages/stack-template.html',
+    compatibility: 'html/pages/stack-version.html',
+    cicdlist: 'html/pages/cicd-list.html',
+    cicdtemplates: 'html/pages/cicd-template.html',
+    cicdhistory: 'html/pages/cicd-template.html',
+    developer: 'html/pages/cicd-developer.html',
+    action: 'html/pages/action.html',
+    monitoring: 'html/pages/obs-dashboard.html',
+    alertlist: 'html/pages/obs-alert-list.html',
+    alerthistory: 'html/pages/obs-alert-history.html',
+    organization: 'html/pages/org-organization.html',
+    users: 'html/pages/org-users.html',
+    clusters: 'html/pages/org-clusters.html'
 }
 
 function loadPageHtml(pageName, callback) {
@@ -1859,7 +1859,7 @@ function loadPageHtml(pageName, callback) {
     }
 
     var requestCandidates = [htmlFile];
-    var pagesFallback = htmlFile.replace(/^html\//, 'pages/');
+    var pagesFallback = htmlFile.replace(/^html\/pages\//, 'pages/');
     if (pagesFallback !== htmlFile) requestCandidates.push(pagesFallback);
     requestCandidates.push('./' + htmlFile);
     if (pagesFallback !== htmlFile) requestCandidates.push('./' + pagesFallback);

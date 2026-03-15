@@ -1,9 +1,9 @@
 /* Entry point — imports in cascade order, total == original 7219 lines */
-@import url('styles/base.css');
-@import url('styles/layout.css');
-@import url('styles/buttons.css');
-@import url('styles/forms.css');
-@import url('styles/tables.css');
-@import url('styles/cards.css');
-@import url('styles/modal.css');
-@import url('styles/pages.css');
+@import url('styles/components/base.css');
+@import url('styles/components/layout.css');
+@import url('styles/components/buttons.css');
+@import url('styles/components/forms.css');
+@import url('styles/components/tables.css');
+@import url('styles/components/cards.css');
+@import url('styles/components/modal.css');
+@import url('styles/components/pages.css');
