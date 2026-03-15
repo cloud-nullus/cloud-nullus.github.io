@@ -1,53 +1,7 @@
 // ============================================
-// FEATURE 1: Role Switcher
+// FEATURE 1: Role Switcher  →  js/role-manager.js
+// initRoleSwitcher / applyRole are defined in role-manager.js
 // ============================================
-function initRoleSwitcher() {
-    document.querySelectorAll('.role-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const role = btn.dataset.role;
-            if (role === state.currentRole) return;
-            state.currentRole = role;
-            document.querySelectorAll('.role-btn').forEach(b => {
-                b.classList.remove('active');
-            });
-            btn.classList.add('active');
-            applyRole(role);
-        });
-    });
-}
-
-function applyRole(role) {
-    document.body.classList.remove('role-admin', 'role-devops', 'role-developer');
-    const adminPages = ['organization', 'users', 'clusters', 'home'];
-    const devopsOnlyPages = ['install', 'templates', 'list', 'history', 'clusters', 'organization', 'users', 'compatibility', 'monitoring', 'alertlist', 'alerthistory', 'cicdtemplates', 'cicdlist', 'cicdhistory'];
-    const developerPages = ['cicdtemplates', 'cicdlist', 'cicdhistory', 'developer', 'monitoring', 'alertlist', 'alerthistory'];
-
-    if (role === 'admin') {
-        document.body.classList.add('role-admin');
-        if (adminPages.includes(state.currentPage)) {
-            state.lastAdminPage = state.currentPage;
-        } else {
-            state.lastAdminPage = 'organization';
-        }
-        switchPage(state.lastAdminPage);
-    } else if (role === 'developer') {
-        document.body.classList.add('role-developer');
-        if (developerPages.includes(state.currentPage)) {
-            state.lastDeveloperPage = state.currentPage;
-        } else {
-            state.lastDeveloperPage = 'cicdlist';
-        }
-        switchPage(state.lastDeveloperPage);
-    } else {
-        document.body.classList.add('role-devops');
-        if (devopsOnlyPages.includes(state.currentPage)) {
-            state.lastDevopsPage = state.currentPage;
-        } else {
-            state.lastDevopsPage = 'list';
-        }
-        switchPage(state.lastDevopsPage);
-    }
-}
 
 // ============================================
 // FEATURE 2: Template Presets

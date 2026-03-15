@@ -1279,9 +1279,9 @@ body.light-mode .stage-bar-item.configured {
 
 /* Light: fixed pages */
 body.light-mode #organizationPage,
-body.light-mode #historyPage,
+body.light-mode #stackhistoryPage,
 body.light-mode #monitoringPage,
-body.light-mode #compatibilityPage,
+body.light-mode #versionPage,
 body.light-mode #usersPage,
 body.light-mode #cicdhistoryPage,
 body.light-mode #cicdtemplatesPage,
@@ -1292,9 +1292,9 @@ body.light-mode #cicdlistPage {
 
 /* Light: page-title-bars */
 body.light-mode .organization-page-title-bar,
-body.light-mode .history-page-title-bar,
+body.light-mode .stackhistory-page-title-bar,
 body.light-mode .monitoring-page-title-bar,
-body.light-mode .compatibility-page-title-bar,
+body.light-mode .version-page-title-bar,
 body.light-mode .users-page-title-bar,
 body.light-mode .cicdhistory-page-title-bar,
 body.light-mode .list-page-title-bar,
@@ -1935,8 +1935,8 @@ body::before {
 }
 
 /* DevSecOps List Page - hide install-page-header and main-workspace; listPage is outside main-workspace */
-body.pipeline-list-page .install-page-header,
-body.pipeline-list-page .main-workspace,
+body.stack-list-page .install-page-header,
+body.stack-list-page .main-workspace,
 body.templates-page .install-page-header,
 body.templates-page .main-workspace,
 body.developer-page .install-page-header,
@@ -1945,12 +1945,12 @@ body.clusters-page .install-page-header,
 body.clusters-page .main-workspace,
 body.organization-page .install-page-header,
 body.organization-page .main-workspace,
-body.history-page .install-page-header,
-body.history-page .main-workspace,
+body.stackhistory-page .install-page-header,
+body.stackhistory-page .main-workspace,
 body.monitoring-page .install-page-header,
 body.monitoring-page .main-workspace,
-body.compatibility-page .install-page-header,
-body.compatibility-page .main-workspace,
+body.version-page .install-page-header,
+body.version-page .main-workspace,
 body.users-page .install-page-header,
 body.users-page .main-workspace,
 body.cicdhistory-page .install-page-header,
@@ -1973,9 +1973,9 @@ body.home-page .main-workspace {
 /* New pages: hide title bars by default, show on active page */
 .list-page-title-bar,
 .organization-page-title-bar,
-.history-page-title-bar,
+.stackhistory-page-title-bar,
 .monitoring-page-title-bar,
-.compatibility-page-title-bar,
+.version-page-title-bar,
 .users-page-title-bar,
 .cicdhistory-page-title-bar,
 .cicdtemplates-page-title-bar,
@@ -1995,13 +1995,13 @@ body.home-page .main-workspace {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
-body.history-page .history-page-title-bar {
+body.stackhistory-page .stackhistory-page-title-bar {
     display: flex !important;
 }
 
 /* Match Stack List title area exactly to Stack Version title area */
-body.pipeline-list-page .list-page-title-bar,
-body.compatibility-page .compatibility-page-title-bar {
+body.stack-list-page .list-page-title-bar,
+body.version-page .version-page-title-bar {
     padding: 10px;
     min-height: 60px;
     box-sizing: border-box;
@@ -2010,8 +2010,8 @@ body.compatibility-page .compatibility-page-title-bar {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
-body.pipeline-list-page .list-page-title-bar .header-title-bar,
-body.compatibility-page .compatibility-page-title-bar .header-title-bar {
+body.stack-list-page .list-page-title-bar .header-title-bar,
+body.version-page .version-page-title-bar .header-title-bar {
     display: flex;
     align-items: center;
     gap: 16px;
@@ -2020,8 +2020,8 @@ body.compatibility-page .compatibility-page-title-bar .header-title-bar {
     justify-content: flex-start;
 }
 
-body.pipeline-list-page .list-page-title-bar .header-title-icon,
-body.compatibility-page .compatibility-page-title-bar .header-title-icon {
+body.stack-list-page .list-page-title-bar .header-title-icon,
+body.version-page .version-page-title-bar .header-title-icon {
     width: 48px;
     height: 48px;
     display: flex;
@@ -2035,8 +2035,8 @@ body.compatibility-page .compatibility-page-title-bar .header-title-icon {
     box-shadow: 0 0 12px rgba(255, 215, 0, 0.2);
 }
 
-body.pipeline-list-page .list-page-title-bar .header-title-text,
-body.compatibility-page .compatibility-page-title-bar .header-title-text {
+body.stack-list-page .list-page-title-bar .header-title-text,
+body.version-page .version-page-title-bar .header-title-text {
     margin: 0;
     font-size: 1.75rem;
     font-weight: 700;
@@ -2046,7 +2046,7 @@ body.compatibility-page .compatibility-page-title-bar .header-title-text {
 }
 
 /* Stack List Page: full overlay layout (listPage is outside main-workspace) */
-body.pipeline-list-page #listPage {
+body.stack-list-page #stacklistPage {
     display: flex !important;
     flex-direction: column !important;
     position: fixed !important;
@@ -2063,11 +2063,13 @@ body.pipeline-list-page #listPage {
 /* New pages: page-content visibility
    position: fixed + left: sidebar width ensures pages appear to the right of the sidebar */
 body.organization-page #organizationPage,
-body.history-page #historyPage,
+body.stackhistory-page #stackhistoryPage,
 body.monitoring-page #monitoringPage,
-body.compatibility-page #compatibilityPage,
+body.version-page #versionPage,
 body.users-page #usersPage,
 body.developer-page #developerPage,
+body.clusters-page #clustersPage,
+body.templates-page #templatesPage,
 body.cicdhistory-page #cicdhistoryPage,
 body.cicdtemplates-page #cicdtemplatesPage,
 body.cicdlist-page #cicdlistPage,
@@ -2088,9 +2090,9 @@ body.home-page #homePage {
 
 /* When sidebar is collapsed, pages shift left */
 body.sidebar-collapsed.organization-page #organizationPage,
-body.sidebar-collapsed.history-page #historyPage,
+body.sidebar-collapsed.stackhistory-page #stackhistoryPage,
 body.sidebar-collapsed.monitoring-page #monitoringPage,
-body.sidebar-collapsed.compatibility-page #compatibilityPage,
+body.sidebar-collapsed.version-page #versionPage,
 body.sidebar-collapsed.users-page #usersPage,
 body.sidebar-collapsed.cicdhistory-page #cicdhistoryPage,
 body.sidebar-collapsed.cicdtemplates-page #cicdtemplatesPage,
@@ -2099,7 +2101,7 @@ body.sidebar-collapsed.action-page #actionPage,
 body.sidebar-collapsed.alertlist-page #alertlistPage,
 body.sidebar-collapsed.alerthistory-page #alerthistoryPage,
 body.sidebar-collapsed.home-page #homePage,
-body.sidebar-collapsed.pipeline-list-page #listPage,
+body.sidebar-collapsed.stack-list-page #stacklistPage,
 body.sidebar-collapsed.templates-page #templatesPage,
 body.sidebar-collapsed.developer-page #developerPage,
 body.sidebar-collapsed.clusters-page #clustersPage {
@@ -2150,7 +2152,7 @@ body.role-admin .observability-nav-section {
     align-items: center;
 }
 
-body.sidebar-collapsed.pipeline-list-page .list-page-title-bar {
+body.sidebar-collapsed.stack-list-page .list-page-title-bar {
     left: 60px;
 }
 
@@ -3546,7 +3548,7 @@ body.developer-page #developerPage,
 body.clusters-page #clustersPage {
     position: fixed;
     top: 60px;
-    left: 250px;
+    left: var(--sidebar-width);
     right: 0;
     bottom: 0;
     background: #1a1d29;
@@ -4130,10 +4132,10 @@ body.clusters-page #clustersPage {
     color: #e2e8f0;
 }
 
-body.light-mode #listPage .config-card,
-body.light-mode #listPage .panel,
-body.light-mode #listPage .deployment-card,
-body.light-mode #listPage .tool-option {
+body.light-mode #stacklistPage .config-card,
+body.light-mode #stacklistPage .panel,
+body.light-mode #stacklistPage .deployment-card,
+body.light-mode #stacklistPage .tool-option {
     background: #ffffff;
     border-color: #d6dee9;
 }
@@ -4214,13 +4216,13 @@ body.light-mode #developerPage .developer-env-head strong {
     color: #111111;
 }
 
-body.light-mode #listPage .tool-option:hover {
+body.light-mode #stacklistPage .tool-option:hover {
     border-color: #2563eb;
     background: #f8fbff;
     box-shadow: none;
 }
 
-body.light-mode #listPage .tool-option:has(input[type="checkbox"]:checked) {
+body.light-mode #stacklistPage .tool-option:has(input[type="checkbox"]:checked) {
     border-color: #2563eb;
     background: linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(37, 99, 235, 0.06));
     box-shadow: none;
@@ -4422,9 +4424,9 @@ body.light-mode #listPage .tool-option:has(input[type="checkbox"]:checked) {
     color: #f8fafc;
 }
 
-body.role-developer .nav-item[data-page="install"],
-body.role-developer .nav-item[data-page="list"],
-body.role-developer .nav-item[data-page="history"],
+body.role-developer .nav-item[data-page="stackinstall"],
+body.role-developer .nav-item[data-page="stacklist"],
+body.role-developer .nav-item[data-page="stackhistory"],
 body.role-developer .nav-item[data-page="templates"] {
     display: none !important;
 }

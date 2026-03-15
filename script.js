@@ -116,7 +116,7 @@ const state = {
     currentTab: 'artifacts',
     currentPage: 'organization',
     lastAdminPage: 'organization',
-    lastDevopsPage: 'list',
+    lastDevopsPage: 'stacklist',
     lastDeveloperPage: 'cicdlist',
     tabs: ['artifacts', 'pipeline', 'monitoring', 'logging', 'resources', 'clusters'],
     currentRole: 'admin',
@@ -163,7 +163,7 @@ const state = {
 };
 
 // Exchange rates (approximate, for display)
-const currencyRates = { USD: 1, KRW: 1333, CNY: 7.1 };
+const currencyRates = { USD: 1, KRW: 1500, CNY: 7.1 };
 const currencySymbols = { USD: '$', KRW: '₩', CNY: '¥' };
 
 if (!window.PIPELINE_TEMPLATE_DATA) {
@@ -611,15 +611,10 @@ function setupEventListeners() {
     document.querySelectorAll('.nav-item').forEach(item => {
         item.addEventListener('click', () => {
             // Switch pages
-            const page = item.dataset.page;
+            const page = normalizePageName(item.dataset.page || '');
             if (page) {
-                const developerPages = ['cicdtemplates', 'cicdlist', 'cicdhistory', 'developer', 'monitoring', 'alertlist', 'alerthistory'];
-                if (state.currentRole === 'developer') {
-                    if (developerPages.includes(page)) {
-                        switchPage(page);
-                    } else {
-                        switchPage(state.lastDeveloperPage || 'cicdlist');
-                    }
+                if (!canAccessPage(state.currentRole, page)) {
+                    switchPage(getLastPage(state.currentRole));
                     return;
                 }
                 switchPage(page);
@@ -873,28 +868,47 @@ function getClusterData() {
 
 function renderClusterDetail(clusterId) {
     const data = getClusterData()[clusterId];
-    if (!data || !elements.clusterDetailContent || !elements.clusterDetailPlaceholder) return;
-    elements.clusterDetailPlaceholder.style.display = 'none';
-    elements.clusterDetailContent.style.display = 'block';
+    // 동적 주입 HTML 이므로 elements 캐시(null) 대신 매번 직접 조회
+    const placeholder = document.getElementById('clusterDetailPlaceholder');
+    const content = document.getElementById('clusterDetailContent');
+    if (!data || !content || !placeholder) return;
+
+    placeholder.style.display = 'none';
+    content.style.display = 'block';
+
     const titleEl = document.getElementById('clusterDetailTitle');
     if (titleEl) titleEl.textContent = data.name || clusterId;
-    if (elements.clusterPageName) elements.clusterPageName.value = data.name || '';
-    if (elements.clusterPageType) elements.clusterPageType.value = data.typeLabel || '';
-    if (elements.clusterPageNamespace) elements.clusterPageNamespace.value = data.namespace || (typeof i18n !== 'undefined' ? i18n.t('cluster.notConfigured') : 'Not configured');
-    if (elements.clusterPageEndpoint) elements.clusterPageEndpoint.value = data.endpoint || '';
-    if (elements.clusterPageAuth) elements.clusterPageAuth.value = data.auth || '';
-    if (elements.clusterPageOrgAccess) {
-        elements.clusterPageOrgAccess.className = 'cluster-org-tags';
-        elements.clusterPageOrgAccess.innerHTML = data.orgs && data.orgs.length
+
+    const nameEl = document.getElementById('clusterPageName');
+    if (nameEl) nameEl.value = data.name || '';
+
+    const typeEl = document.getElementById('clusterPageType');
+    if (typeEl) typeEl.value = data.typeLabel || '';
+
+    const nsEl = document.getElementById('clusterPageNamespace');
+    if (nsEl) nsEl.value = data.namespace || (typeof i18n !== 'undefined' ? i18n.t('cluster.notConfigured') : 'Not configured');
+
+    const epEl = document.getElementById('clusterPageEndpoint');
+    if (epEl) epEl.value = data.endpoint || '';
+
+    const authEl = document.getElementById('clusterPageAuth');
+    if (authEl) authEl.value = data.auth || '';
+
+    const orgEl = document.getElementById('clusterPageOrgAccess');
+    if (orgEl) {
+        orgEl.className = 'cluster-org-tags';
+        orgEl.innerHTML = data.orgs && data.orgs.length
             ? data.orgs.map(o => '<span class="org-tag">' + o + '</span>').join('')
-            : '<span class="org-empty">' + (typeof i18n !== 'undefined' ? 'No organization assigned' : 'No organization assigned') + '</span>';
+            : '<span class="org-empty">No organization assigned</span>';
     }
-    if (elements.clusterPageConnection) {
-        elements.clusterPageConnection.className = 'cluster-connection-status ' + (data.connected ? 'connected' : 'disconnected');
+
+    const connEl = document.getElementById('clusterPageConnection');
+    if (connEl) {
+        connEl.className = 'cluster-connection-status ' + (data.connected ? 'connected' : 'disconnected');
         const statusText = data.connected
             ? (typeof i18n !== 'undefined' ? i18n.t('cluster.connected') : 'Connected')
             : (typeof i18n !== 'undefined' ? i18n.t('cluster.notConfigured') : 'Not Configured');
-        elements.clusterPageConnection.innerHTML =
+        connEl.innerHTML =
             '<span class="status-dot"></span><span class="status-text">' + statusText + '</span>' +
             (data.statusMeta ? '<span class="status-meta">' + data.statusMeta + '</span>' : '') +
             (!data.connected ? '<button class="btn btn-primary btn-sm" style="margin-left:auto;" id="registerClusterBtn2"><i class="fas fa-plug"></i> Connect</button>' : '');
@@ -1759,15 +1773,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof initializePipelineListFeatures === 'function') initializePipelineListFeatures();
 
     // Set initial page state — use URL hash if present
-    const hashPage = location.hash.replace('#', '');
-    const defaultPage = state.currentRole === 'admin' ? 'organization' : (state.currentRole === 'developer' ? 'cicdlist' : 'list');
-    const initialPage = (hashPage && document.getElementById(hashPage + 'Page')) ? hashPage : defaultPage;
+    const hashPage = normalizePageName(location.hash.replace('#', ''));
+    const defaultPage = getDefaultPage(state.currentRole);
+    const inlinePages = window.INLINE_PAGE_HTML || {};
+    const initialPage = (hashPage && (PAGE_HTML_MAP[hashPage] || inlinePages[hashPage] || document.getElementById(hashPage + 'Page'))) ? hashPage : defaultPage;
     switchPage(initialPage, true); // true = skip history push on initial load
 });
 
 // Hash-based routing: handle browser back/forward and direct URL navigation
 window.addEventListener('hashchange', function () {
-    var page = location.hash.replace('#', '');
+    var page = normalizePageName(location.hash.replace('#', ''));
     if (page && page !== state.currentPage) {
         switchPage(page, true); // true = don't re-push to navHistory
     }
@@ -1816,15 +1831,24 @@ function goBack() {
 }
 
 // ── Page HTML lazy-load registry ──
+var PAGE_ALIAS_MAP = {
+    list: 'stacklist',
+    install: 'stackinstall',
+    compatibility: 'version',
+    history: 'stacklist',
+    stackhistory: 'stacklist',
+    cicdhistory: 'cicdlist',
+    'cicd-template': 'cicdtemplates'
+}
+
 var PAGE_HTML_MAP = {
     home: 'html/pages/home.html',
-    list: 'html/pages/stack-list.html',
-    install: 'html/pages/stack-install.html',
+    stacklist: 'html/pages/stack-list.html',
+    stackinstall: 'html/pages/stack-install.html',
     templates: 'html/pages/stack-template.html',
-    compatibility: 'html/pages/stack-version.html',
+    version: 'html/pages/stack-version.html',
     cicdlist: 'html/pages/cicd-list.html',
     cicdtemplates: 'html/pages/cicd-template.html',
-    cicdhistory: 'html/pages/cicd-template.html',
     developer: 'html/pages/cicd-developer.html',
     action: 'html/pages/action.html',
     monitoring: 'html/pages/obs-dashboard.html',
@@ -1835,7 +1859,12 @@ var PAGE_HTML_MAP = {
     clusters: 'html/pages/org-clusters.html'
 }
 
+function normalizePageName(pageName) {
+    return PAGE_ALIAS_MAP[pageName] || pageName
+}
+
 function loadPageHtml(pageName, callback) {
+    pageName = normalizePageName(pageName);
     var pageId = pageName + 'Page';
     var inlinePages = window.INLINE_PAGE_HTML || {};
     if (document.getElementById(pageId)) {
@@ -1913,19 +1942,16 @@ function loadPageHtml(pageName, callback) {
 // Page switching functionality
 // _noHistory: pass true to skip pushing current page to navHistory (used by goBack, hashchange, initial load)
 function switchPage(pageName, _noHistory) {
+    var previousPage = state.currentPage;
     var firstStack;
-    if (pageName === 'cicd-template') pageName = 'cicdtemplates';
+    pageName = normalizePageName(pageName);
 
     if (!_noHistory && state.currentPage && state.currentPage !== pageName) {
         navHistory.push(state.currentPage);
     }
     state.currentPage = pageName;
-    if (state.currentRole === 'admin' && ['organization', 'users', 'clusters', 'home'].includes(pageName)) {
-        state.lastAdminPage = pageName;
-    } else if (state.currentRole === 'devops' && pageName !== 'developer') {
-        state.lastDevopsPage = pageName;
-    } else if (state.currentRole === 'developer' && ['cicdtemplates', 'cicdlist', 'cicdhistory', 'developer', 'monitoring', 'alertlist', 'alerthistory'].includes(pageName)) {
-        state.lastDeveloperPage = pageName;
+    if (canAccessPage(state.currentRole, pageName)) {
+        setLastPage(state.currentRole, pageName);
     }
 
     // Update URL hash and back button immediately (before async load)
@@ -1939,35 +1965,40 @@ function switchPage(pageName, _noHistory) {
     }
 
     loadPageHtml(pageName, function () {
+        var targetPage = document.getElementById(pageName + 'Page');
+        if (!targetPage) {
+            console.error('Target page element not found for route:', pageName);
+            state.currentPage = previousPage;
+            if (previousPage && location.hash.replace('#', '') !== previousPage) {
+                history.replaceState(null, '', '#' + previousPage);
+            }
+            return;
+        }
+
         // Hide all pages
         document.querySelectorAll('.page-content').forEach(function (page) {
             page.classList.remove('active');
         });
 
         // Show selected page
-        var targetPage = document.getElementById(pageName + 'Page');
-        if (targetPage) {
-            targetPage.classList.add('active');
-        }
+        targetPage.classList.add('active');
 
         document.body.classList.remove(
-            'pipeline-list-page', 'templates-page', 'developer-page', 'clusters-page',
-            'organization-page', 'history-page', 'monitoring-page', 'compatibility-page', 'users-page',
-            'cicdhistory-page', 'cicdtemplates-page', 'cicdlist-page', 'action-page', 'home-page',
+            'stack-list-page', 'templates-page', 'developer-page', 'clusters-page',
+            'organization-page', 'monitoring-page', 'version-page', 'users-page',
+            'cicdtemplates-page', 'cicdlist-page', 'action-page', 'home-page',
             'alertlist-page', 'alerthistory-page'
         );
-        if (pageName === 'list') document.body.classList.add('pipeline-list-page');
+        if (pageName === 'stacklist') document.body.classList.add('stack-list-page');
         if (pageName === 'alertlist') document.body.classList.add('alertlist-page');
         if (pageName === 'alerthistory') document.body.classList.add('alerthistory-page');
         if (pageName === 'templates') document.body.classList.add('templates-page');
         if (pageName === 'developer') document.body.classList.add('developer-page');
         if (pageName === 'clusters') document.body.classList.add('clusters-page');
         if (pageName === 'organization') document.body.classList.add('organization-page');
-        if (pageName === 'history') document.body.classList.add('history-page');
         if (pageName === 'monitoring') document.body.classList.add('monitoring-page');
-        if (pageName === 'compatibility') document.body.classList.add('compatibility-page');
+        if (pageName === 'version') document.body.classList.add('version-page');
         if (pageName === 'users') document.body.classList.add('users-page');
-        if (pageName === 'cicdhistory') document.body.classList.add('cicdhistory-page');
         if (pageName === 'cicdtemplates') document.body.classList.add('cicdtemplates-page');
         if (pageName === 'cicdlist') document.body.classList.add('cicdlist-page');
         if (pageName === 'action') document.body.classList.add('action-page');
@@ -1985,7 +2016,7 @@ function switchPage(pageName, _noHistory) {
         if (pageName === 'clusters') {
             renderClusterRegistryPage();
         }
-        if (pageName === 'list') {
+        if (pageName === 'stacklist') {
             firstStack = document.querySelector('.stack-list-item.active');
             if (firstStack && typeof renderStackDetail === 'function') renderStackDetail(firstStack.dataset.stackId);
         }

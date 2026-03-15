@@ -419,7 +419,7 @@ pipeline {
                 script {
                     def scannerHome = tool 'SonarQube Scanner'
                     withSonarQubeEnv('SonarQube') {
-                        sh "${scannerHome}/bin/sonar-scanner"
+                        sh "\${scannerHome}/bin/sonar-scanner"
                     }
                 }
             }
@@ -429,7 +429,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    docker.build("${DOCKER_REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}")
+                    docker.build("\${DOCKER_REGISTRY}/\${IMAGE_NAME}:\${BUILD_NUMBER}")
                 }
             }
         }
@@ -441,7 +441,7 @@ pipeline {
                     steps {
                         sh """
                             docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \\
-                                aquasec/trivy image ${DOCKER_REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}
+                                aquasec/trivy image \${DOCKER_REGISTRY}/\${IMAGE_NAME}:\${BUILD_NUMBER}
                         """
                     }
                 }
@@ -477,15 +477,15 @@ pipeline {
                 script {
                     // Push to ECR
                     sh """
-                        aws ecr get-login-password --region region | docker login --username AWS --password-stdin ${DOCKER_REGISTRY}
-                        docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}
+                        aws ecr get-login-password --region region | docker login --username AWS --password-stdin \${DOCKER_REGISTRY}
+                        docker push \${DOCKER_REGISTRY}/\${IMAGE_NAME}:\${BUILD_NUMBER}
                     """
                     
                     // Trigger Spinnaker deployment
                     sh """
-                        curl -X POST ${SPINNAKER_WEBHOOK} \\
+                        curl -X POST \${SPINNAKER_WEBHOOK} \\
                             -H 'Content-Type: application/json' \\
-                            -d '{"parameters":{"image":"${DOCKER_REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}"}}'
+                            -d '{"parameters":{"image":"\${DOCKER_REGISTRY}/\${IMAGE_NAME}:\${BUILD_NUMBER}"}}'
                     """
                 }
             }
@@ -521,7 +521,7 @@ pipeline {
         }
         failure {
             emailext (
-                subject: "Pipeline Failed: ${env.JOB_NAME} - ${env.BUILD_NUMBER}",
+                subject: "Pipeline Failed: \${env.JOB_NAME} - \${env.BUILD_NUMBER}",
                 body: "The pipeline has failed. Please check the logs.",
                 to: "devops@company.com"
             )

@@ -115,11 +115,11 @@
             <div class="nav-section devsecops-nav-section">
                 <div class="nav-title sidebar-text" data-i18n="nav.devsecopsStack">DevSecOps Stack</div>
                 <ul class="nav-menu">
-                    <li class="nav-item" data-page="list" title="Stack 목록">
+                    <li class="nav-item" data-page="stacklist" title="Stack 목록">
                         <i class="fas fa-list"></i>
                         <span class="sidebar-text" data-i18n="nav.stackList">Stack 목록</span>
                     </li>
-                    <li class="nav-item" data-page="compatibility" title="Stack 버전 관리">
+                    <li class="nav-item" data-page="version" title="Stack 버전 관리">
                         <i class="fas fa-code-branch"></i>
                         <span class="sidebar-text" data-i18n="nav.stackVersion">Stack 버전 관리</span>
                     </li>
@@ -307,7 +307,7 @@
                 </div>
             </div>
 
-            <div class="history-page-title-bar">
+            <div class="stackhistory-page-title-bar">
                 <div class="header-title-bar">
                     <div class="header-title-icon"><i class="fas fa-history"></i></div>
                     <h1 class="header-title-text" data-i18n="history.stackHistory">DevSecOps Stack History</h1>
@@ -321,7 +321,7 @@
                 </div>
             </div>
 
-            <div class="compatibility-page-title-bar">
+            <div class="version-page-title-bar">
                 <div class="header-title-bar">
                     <div class="header-title-icon"><i class="fas fa-code-branch"></i></div>
                     <h1 class="header-title-text" data-i18n="pageTitle.stackVersion">DevSecOps Stack Version Management
@@ -585,14 +585,15 @@ deploy_production:
         <script src="js/pages/obs-alert-list.js"></script>
         <script src="js/pages/obs-alert-history.js"></script>
 
-        <script src="js/pages/stack-list.js"></script> <!--리팩토링-->
+        <script src="js/pages/stack-list.js"></script>
         <script src="js/pages/stack-install.js"></script>
         <script src="js/pages/stack-template.js"></script>
         <script src="js/pages/stack-version.js"></script>
 
-        <script src="js/pages/cicd-list.js"></script> <!--리팩토링-->
+        <script src="js/pages/cicd-list.js"></script>
         <script src="js/pages/cicd-template.js"></script>
         <script src="js/pages/cicd-developer.js"></script>
+        <script src="js/pages/action.js"></script>
 
         <script src="js/pages/obs-dashboard.js"></script>
 
@@ -600,13 +601,14 @@ deploy_production:
         <script src="js/pages/org-users.js"></script>
         <script src="js/pages/org-clusters.js"></script>
 
-        <script src="js/pages/action.js"></script>
         <script src="i18n.js"></script>
-        <script src="js/inline-pages.js"></script>
         <script src="js/data/pipeline-template-data.js"></script>
         <script src="js/data/k8s-template-data.js"></script>
-        <script src="script.js"></script>
+
+        <script src="js/inline-pages.js"></script>
+        <script src="js/role-manager.js"></script>
         <script src="js/init-core.js"></script>
+        <script src="script.js"></script>
         <script>
             // Enhanced Resource Configuration with Individual Tool Settings
             let toolResourceData = {};

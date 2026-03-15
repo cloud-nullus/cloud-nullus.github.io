@@ -4,7 +4,7 @@ function initTemplatesPageActions() {
             const preset = btn.dataset.preset;
             if (!preset) return;
             applyPreset(preset);
-            switchPage('install');
+            switchPage('stackinstall');
             showNotification(`DevSecOps template selected: ${preset}`, 'success');
         });
     });
