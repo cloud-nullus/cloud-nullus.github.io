@@ -179,3 +179,124 @@ document.addEventListener('click', function (e) {
 });
 
 ensureCardResourceControls();
+
+var rollbackTarget = null;
+
+function showDiff(fromVer, toVer) {
+    const key = `diff-${fromVer}-${toVer}`;
+    const el = document.getElementById(key);
+    if (!el) return;
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+function showDeployLogs(version) {
+    const modal = document.getElementById('deployLogsModal');
+    const content = document.getElementById('deployLogsContent');
+    if (!modal || !content) return;
+
+    const logsMap = {
+        'ns-v2': [
+            '<span style="color:#6ee7b7;">[2026-03-01 10:58:00] INFO</span>  Starting Nullus platform upgrade v0.2.0 → v0.2.1...',
+            '<span style="color:#6ee7b7;">[2026-03-01 10:59:10] INFO</span>  Applying CVE-2026-1234 security patch',
+            '<span style="color:#6ee7b7;">[2026-03-01 11:02:00] INFO</span>  Nullus core pod restarted successfully',
+            '<span style="color:#6ee7b7;">[2026-03-01 11:06:00] INFO</span>  Health check passed: nullus-core Running',
+            '<span style="color:#6ee7b7;">[2026-03-01 11:08:00] INFO</span>  Nullus v0.2.1 upgrade complete ✓'
+        ],
+        'ns-v1': [
+            '<span style="color:#6ee7b7;">[2026-02-20 09:58:00] INFO</span>  Starting Nullus platform initial install v0.2.0...',
+            '<span style="color:#6ee7b7;">[2026-02-20 10:02:00] INFO</span>  Helm install nullus-core complete',
+            '<span style="color:#6ee7b7;">[2026-02-20 10:08:00] INFO</span>  Database migration complete',
+            '<span style="color:#6ee7b7;">[2026-02-20 10:15:00] INFO</span>  Nullus v0.2.0 install complete ✓'
+        ],
+        v3: [
+            '<span style="color:#6ee7b7;">[2026-03-02 14:28:00] INFO</span>  Starting stack deployment v3...',
+            '<span style="color:#6ee7b7;">[2026-03-02 14:28:05] INFO</span>  Upgrading Grafana: 10.2 → 10.3',
+            '<span style="color:#6ee7b7;">[2026-03-02 14:35:20] INFO</span>  Helm upgrade grafana-stack complete',
+            '<span style="color:#6ee7b7;">[2026-03-02 14:35:30] INFO</span>  Health check passed: Grafana pod Running',
+            '<span style="color:#6ee7b7;">[2026-03-02 15:10:00] INFO</span>  Stack deployment v3 complete ✓'
+        ],
+        v2: [
+            '<span style="color:#6ee7b7;">[2026-02-28 09:10:00] INFO</span>  Starting stack deployment v2...',
+            '<span style="color:#6ee7b7;">[2026-02-28 09:12:00] INFO</span>  Installing MinIO storage backend',
+            '<span style="color:#6ee7b7;">[2026-02-28 09:30:00] INFO</span>  Helm install minio complete',
+            '<span style="color:#6ee7b7;">[2026-02-28 09:31:00] INFO</span>  Migrating storage config: S3 → MinIO',
+            '<span style="color:#6ee7b7;">[2026-02-28 10:08:00] INFO</span>  Stack deployment v2 complete ✓'
+        ],
+        v1: [
+            '<span style="color:#6ee7b7;">[2026-02-20 15:58:00] INFO</span>  Starting stack deployment v1...',
+            '<span style="color:#fca5a5;">[2026-02-20 16:05:00] ERROR</span> Argo CD pod CrashLoopBackOff: ImagePullBackOff',
+            '<span style="color:#fca5a5;">[2026-02-20 16:08:00] ERROR</span> Health check failed: argocd-server not ready',
+            '<span style="color:#fca5a5;">[2026-02-20 16:10:00] WARN</span>  Initiating auto-rollback...',
+            '<span style="color:#fca5a5;">[2026-02-20 16:12:00] INFO</span>  Rollback complete. Cluster restored to previous state.'
+        ]
+    };
+
+    const lines = logsMap[version] || ['No logs available.'];
+    content.innerHTML = lines.join('<br>');
+    modal.style.display = 'flex';
+}
+
+function confirmRollback(version) {
+    rollbackTarget = version;
+    const modal = document.getElementById('rollbackModal');
+    if (modal) modal.style.display = 'flex';
+}
+
+function executeRollback() {
+    const modal = document.getElementById('rollbackModal');
+    if (modal) modal.style.display = 'none';
+    showNotification(`Rolling back to ${rollbackTarget}... Auto-snapshot of current config saved.`, 'success');
+    rollbackTarget = null;
+}
+
+function filterStackList(value) {
+    const query = (value !== undefined ? value : (document.getElementById('stackListSearch')?.value || '')).toLowerCase();
+    const statusFilter = document.getElementById('stackListStatusFilter')?.value || 'all';
+    document.querySelectorAll('.stack-list-item').forEach(item => {
+        const name = (item.dataset.name || '').toLowerCase();
+        const status = (item.dataset.status || '').toLowerCase();
+        const matchName = name.includes(query);
+        const matchStatus = statusFilter === 'all' || status === statusFilter;
+        item.style.display = (matchName && matchStatus) ? '' : 'none';
+    });
+}
+
+var stackDataMap = {
+    'production-stack': { name: 'production-stack', tools: 'GitLab CI/CD · ArgoCD · Harbor', resources: '12 cores / 48 Gi', cdStatus: 'Synced', cost: '$380 / mo', cluster: 'prod-k8s' },
+    'development-stack': { name: 'development-stack', tools: 'GitHub Actions · Flux · Snyk', resources: '6 cores / 24 Gi', cdStatus: 'Syncing', cost: '$180 / mo', cluster: 'dev-k8s' },
+    'staging-environment': { name: 'staging-environment', tools: 'Jenkins · Spinnaker · SonarQube', resources: '8 cores / 32 Gi', cdStatus: 'OutOfSync', cost: '$240 / mo', cluster: 'staging-k8s' },
+    'microservices-platform': { name: 'microservices-platform', tools: 'GitLab CI/CD · Istio · Jaeger', resources: '16 cores / 64 Gi', cdStatus: 'Synced', cost: '$520 / mo', cluster: 'prod-k8s' },
+    'ml-ai-pipeline': { name: 'ml-ai-pipeline', tools: 'MLflow · Kubeflow · MinIO', resources: '24 cores / 96 Gi', cdStatus: 'Synced', cost: '$780 / mo', cluster: 'gpu-k8s' }
+};
+
+function renderStackDetail(stackId) {
+    var item = document.querySelector('[data-stack-id="' + stackId + '"]');
+    if (item && typeof selectStackItem === 'function') {
+        selectStackItem(item);
+    } else {
+        const placeholder = document.getElementById('stackDetailPlaceholder');
+        const content = document.getElementById('stackDetailContent');
+        const titleEl = document.getElementById('stackDetailTitle');
+        const data = stackDataMap[stackId];
+        if (!data || !placeholder || !content) return;
+        placeholder.style.display = 'none';
+        content.style.display = 'flex';
+        if (titleEl) titleEl.textContent = data.name;
+    }
+}
+
+function initStackListDetail() {
+    document.querySelectorAll('.stack-list-item').forEach(item => {
+        item.addEventListener('click', () => {
+            document.querySelectorAll('.stack-list-item').forEach(i => {
+                i.classList.remove('active');
+            });
+            item.classList.add('active');
+            renderStackDetail(item.dataset.stackId);
+        });
+    });
+    var first = document.querySelector('.stack-list-item.active');
+    if (first) renderStackDetail(first.dataset.stackId);
+}
+
+window.filterStackList = filterStackList;

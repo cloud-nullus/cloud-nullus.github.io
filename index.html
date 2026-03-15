@@ -1,407 +1,435 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nullus - DevSecOps Platform (proto4)</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-</head>
-<body>
-    <!-- Global Back Button -->
-    <button type="button" id="globalBackBtn" onclick="goBack()" data-i18n="common.back">
-        <i class="fas fa-arrow-left"></i> 뒤로
-    </button>
 
-    <!-- Deploy Script Preview Modal (direct child of body) -->
-    <div class="modal" id="deployScriptPreviewModal" style="display: none;">
-        <div class="modal-content modal-content--wide">
-            <div class="modal-header">
-                <h3 data-i18n="modal.previewDeployScript"><i class="fas fa-terminal"></i> Preview Deploy Script</h3>
-                <button type="button" class="modal-close" id="closeDeployScriptPreviewModal" aria-label="Close">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <p class="modal-description" data-i18n="modal.previewDeployScriptDesc">Generated script to deploy the configured DevSecOps stack to your cluster.</p>
-                <div class="deploy-script-preview-wrap">
-                    <pre class="deploy-script-preview"><code id="deployScriptPreviewContent"></code></pre>
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" id="copyDeployScriptBtn">
-                        <i class="fas fa-copy"></i>
-                        <span data-i18n="common.copyToClipboard">Copy to Clipboard</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Nullus - DevSecOps Platform (proto4)</title>
+        <link rel="stylesheet" href="styles.css">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    </head>
 
-    <!-- K8s Object Preview Modal -->
-    <div class="modal" id="k8sPreviewModal" style="display: none;">
-        <div class="modal-content modal-content--wide">
-            <div class="modal-header">
-                <h3 data-i18n="modal.k8sObjectPreview"><i class="fas fa-dharmachakra"></i> K8s Object Preview</h3>
-                <button type="button" class="modal-close" id="closeK8sPreviewModal" aria-label="Close">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <p class="modal-description" data-i18n="modal.k8sObjectPreviewDesc">Auto-generated Kubernetes manifests based on your current configuration.</p>
-                <div class="k8s-preview-tabs">
-                    <button type="button" class="k8s-tab active" data-k8s-tab="namespace" data-i18n="cluster.namespace">Namespace</button>
-                    <button type="button" class="k8s-tab" data-k8s-tab="deployments" data-i18n="modal.k8sDeployments">Deployments</button>
-                    <button type="button" class="k8s-tab" data-k8s-tab="services" data-i18n="modal.k8sServices">Services</button>
-                    <button type="button" class="k8s-tab" data-k8s-tab="ingress" data-i18n="modal.k8sIngress">Ingress</button>
-                </div>
-                <div class="k8s-preview-content">
-                    <div class="deploy-script-preview-wrap">
-                        <pre class="deploy-script-preview"><code id="k8sPreviewContent"></code></pre>
-                    </div>
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" id="copyK8sYamlBtn">
-                        <i class="fas fa-copy"></i>
-                        <span data-i18n="common.copyToClipboard">Copy to Clipboard</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <body>
+        <!-- Global Back Button -->
+        <button type="button" id="globalBackBtn" onclick="goBack()" aria-label="Back">
+            <i class="fas fa-arrow-left"></i>
+        </button>
 
-    <!-- Sidebar Navigation -->
-    <nav class="sidebar" id="mainSidebar">
-        <div class="sidebar-header">
-            <div class="sidebar-header-top">
-                <div class="logo" onclick="switchPage('home')" style="cursor:pointer;" title="Home">
-                    <i class="fas fa-cube"></i>
-                    <span class="sidebar-text">Nullus</span>
-                </div>
-                <button type="button" class="sidebar-toggle-btn" id="sidebarToggle" title="사이드바 접기/펼치기">
-                    <i class="fas fa-bars"></i>
-                </button>
-            </div>
-        <div class="role-switcher sidebar-text">
-            <div class="role-toggle role-toggle--three">
-                <button type="button" class="role-btn active" data-role="admin">
-                    <i class="fas fa-user-shield"></i>
-                    <span data-i18n="role.admin">Admin</span>
-                </button>
-                <button type="button" class="role-btn" data-role="devops">
-                    <i class="fas fa-hard-hat"></i>
-                    <span data-i18n="role.devops">DevOps</span>
-                </button>
-                <button type="button" class="role-btn" data-role="developer">
-                    <i class="fas fa-laptop-code"></i>
-                    <span data-i18n="role.developer">Developer</span>
-                </button>
-            </div>
-        </div>
-        </div>
-
-        <div class="nav-section devsecops-nav-section">
-            <div class="nav-title sidebar-text" data-i18n="nav.devsecopsStack">데브섹옵스 스택</div>
-            <ul class="nav-menu">
-                <li class="nav-item" data-page="list" title="스택 목록">
-                    <i class="fas fa-list"></i>
-                    <span class="sidebar-text" data-i18n="nav.stackList">스택 목록</span>
-                </li>
-                <li class="nav-item" data-page="compatibility" title="스택 버전 관리">
-                    <i class="fas fa-code-branch"></i>
-                    <span class="sidebar-text" data-i18n="nav.stackVersion">스택 버전 관리</span>
-                </li>
-            </ul>
-        </div>
-
-        <div class="nav-section cicd-nav-section">
-            <div class="nav-title sidebar-text" data-i18n="nav.cicd">CI/CD</div>
-            <ul class="nav-menu">
-                <li class="nav-item" data-page="cicdlist" title="CI/CD 목록">
-                    <i class="fas fa-th-list"></i>
-                    <span class="sidebar-text" data-i18n="nav.cicdList">CI/CD 목록</span>
-                </li>
-                <li class="nav-item developer-only-nav" data-page="developer" title="앱 배포">
-                    <i class="fas fa-rocket"></i>
-                    <span class="sidebar-text" data-i18n="nav.appDeploy">앱 배포</span>
-                </li>
-                <li class="nav-item" data-page="action" title="GitHub Actions">
-                    <i class="fab fa-github"></i>
-                    <span class="sidebar-text" data-i18n="nav.deployAutomation">배포 자동화</span>
-                </li>
-            </ul>
-        </div>
-
-        <div class="nav-section observability-nav-section">
-            <div class="nav-title sidebar-text" data-i18n="nav.observability">관측성</div>
-            <ul class="nav-menu">
-                <li class="nav-item" data-page="monitoring" title="모니터링 대시보드">
-                    <i class="fas fa-chart-line"></i>
-                    <span class="sidebar-text" data-i18n="nav.monitoring">모니터링 대시보드</span>
-                </li>
-                <li class="nav-item" data-page="alertlist" title="알림 규칙">
-                    <i class="fas fa-bell"></i>
-                    <span class="sidebar-text" data-i18n="nav.alertRule">알림 규칙</span>
-                </li>
-                <li class="nav-item" data-page="alerthistory" title="알림 이력">
-                    <i class="fas fa-history"></i>
-                    <span class="sidebar-text" data-i18n="nav.alertHistory">알림 이력</span>
-                </li>
-            </ul>
-        </div>
-
-        <div class="nav-section admin-nav-section">
-            <div class="nav-title sidebar-text" data-i18n="nav.admin">관리</div>
-            <ul class="nav-menu">
-                <li class="nav-item active" data-page="organization" title="조직">
-                    <i class="fas fa-building"></i>
-                    <span class="sidebar-text" data-i18n="nav.organization">조직</span>
-                </li>
-                <li class="nav-item" data-page="users" title="사용자 관리">
-                    <i class="fas fa-users-cog"></i>
-                    <span class="sidebar-text" data-i18n="nav.userManagement">사용자 관리</span>
-                </li>
-                <li class="nav-item" data-page="clusters" title="클러스터 관리">
-                    <i class="fas fa-server"></i>
-                    <span class="sidebar-text" data-i18n="nav.clusterManagement">클러스터 관리</span>
-                </li>
-            </ul>
-        </div>
-
-        <div class="nav-section user-nav-section">
-            <div class="nav-title sidebar-text" data-i18n="nav.user">사용자</div>
-            <ul class="nav-menu">
-                <li class="nav-item" title="로그아웃">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span class="sidebar-text" data-i18n="nav.logout">로그아웃</span>
-                </li>
-            </ul>
-        </div>
-    </nav>
-
-    <div class="main-content">
-        <!-- Language & Theme (fixed top-right) -->
-        <div class="top-right-controls">
-            <div class="lang-dropdown" id="langDropdown">
-                <button type="button" class="lang-btn" id="langBtn" title="Language / 언어" aria-label="Language">
-                    <i class="fas fa-globe"></i>
-                    <span id="langLabel">KO</span>
-                    <i class="fas fa-chevron-down fa-xs"></i>
-                </button>
-                <div class="lang-menu" id="langMenu">
-                    <button type="button" class="lang-option" data-lang="ko" data-i18n="common.langKorean">한국어</button>
-                    <button type="button" class="lang-option" data-lang="en" data-i18n="common.langEnglish">English</button>
-                    <button type="button" class="lang-option" data-lang="zh" data-i18n="common.langChinese">中文</button>
-                </div>
-            </div>
-            <button type="button" id="themeToggle" class="theme-toggle-btn" data-i18n-title="common.theme" title="라이트/다크 테마 전환">
-                <i class="fas fa-sun"></i>
-            </button>
-        </div>
-
-        <!-- Install Nullus Stack Page Header (title → pipeline stages → config steps → resource) -->
-        <div class="install-page-header">
-        <!-- 1. Page Title Bar: Icon + Title -->
-        <div class="progress-header progress-header--title-only">
-            <div class="header-title-bar">
-                <div class="header-title-icon">
-                    <i class="fas fa-cubes"></i>
-                </div>
-                <h1 class="header-title-text" data-i18n="install.title">DevSecOps Stack Install</h1>
-            </div>
-        </div>
-
-        <!-- 3. Config Steps: 1–6 Artifacts, Pipeline Tools, Monitoring, Logging, Resources, Cluster Configurations -->
-        <div class="progress-header progress-header--steps">
-            <div class="header-content">
-                <div class="progress-steps progress-steps--six">
-                    <div class="progress-step completed active" data-step="1">
-                        <div class="step-circle">1</div>
-                        <span data-i18n="install.artifacts">Artifacts</span>
-                    </div>
-                    <div class="progress-line"></div>
-                    <div class="progress-step" data-step="2">
-                        <div class="step-circle">2</div>
-                        <span data-i18n="install.pipelineTools">Pipeline Tools</span>
-                    </div>
-                    <div class="progress-line"></div>
-                    <div class="progress-step" data-step="3">
-                        <div class="step-circle">3</div>
-                        <span data-i18n="install.monitoringTools">Monitoring Tools</span>
-                    </div>
-                    <div class="progress-line"></div>
-                    <div class="progress-step" data-step="4">
-                        <div class="step-circle">4</div>
-                        <span data-i18n="install.loggingTools">Logging Tools</span>
-                    </div>
-                    <div class="progress-line"></div>
-                    <div class="progress-step" data-step="5">
-                        <div class="step-circle">5</div>
-                        <span data-i18n="install.resources">Resources</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        </div>
-        <!-- /install-page-header -->
-
-        <!-- DevSecOps Stack List Page Title Bar (shown when list page is active) -->
-        <div class="list-page-title-bar">
-            <div class="header-title-bar">
-                <div class="header-title-icon">
-                    <i class="fas fa-list"></i>
-                </div>
-                <h1 class="header-title-text" data-i18n="pageTitle.stackList">DevSecOps Stack List</h1>
-            </div>
-        </div>
-
-        <div class="templates-page-title-bar">
-            <div class="header-title-bar">
-                <div class="header-title-icon">
-                    <i class="fas fa-book-open"></i>
-                </div>
-                <h1 class="header-title-text" data-i18n="pageTitle.stackTemplate">DevSecOps Stack Template</h1>
-            </div>
-        </div>
-
-        <div class="developer-page-title-bar">
-            <div class="header-title-bar">
-                <div class="header-title-icon">
-                    <i class="fas fa-laptop-code"></i>
-                </div>
-                <h1 class="header-title-text" data-i18n="pageTitle.developerDeploy">Developer Self-Service Deploy</h1>
-            </div>
-        </div>
-
-        <div class="clusters-page-title-bar">
-            <div class="header-title-bar">
-                <div class="header-title-icon">
-                    <i class="fas fa-server"></i>
-                </div>
-                <h1 class="header-title-text" data-i18n="pageTitle.clusterManagement">Cluster Management</h1>
-            </div>
-        </div>
-
-        <div class="organization-page-title-bar">
-            <div class="header-title-bar">
-                <div class="header-title-icon"><i class="fas fa-building"></i></div>
-                <h1 class="header-title-text" data-i18n="pageTitle.organization">Organization</h1>
-            </div>
-        </div>
-
-        <div class="history-page-title-bar">
-            <div class="header-title-bar">
-                <div class="header-title-icon"><i class="fas fa-history"></i></div>
-                <h1 class="header-title-text" data-i18n="history.stackHistory">DevSecOps Stack History</h1>
-            </div>
-        </div>
-
-        <div class="monitoring-page-title-bar">
-            <div class="header-title-bar">
-                <div class="header-title-icon"><i class="fas fa-chart-line"></i></div>
-                <h1 class="header-title-text" data-i18n="pageTitle.monitoring">Monitoring Dashboard</h1>
-            </div>
-        </div>
-
-        <div class="compatibility-page-title-bar">
-            <div class="header-title-bar">
-                <div class="header-title-icon"><i class="fas fa-code-branch"></i></div>
-                <h1 class="header-title-text" data-i18n="pageTitle.stackVersion">DevSecOps Stack Version Management</h1>
-            </div>
-        </div>
-
-        <div class="cicdtemplates-page-title-bar">
-            <div class="header-title-bar">
-                <div class="header-title-icon"><i class="fas fa-code-branch"></i></div>
-                <h1 class="header-title-text" data-i18n="pageTitle.cicdTemplate">CI/CD Template</h1>
-            </div>
-        </div>
-
-        <div class="cicdlist-page-title-bar">
-            <div class="header-title-bar">
-                <div class="header-title-icon"><i class="fas fa-th-list"></i></div>
-                <h1 class="header-title-text" data-i18n="pageTitle.cicdList">CI/CD List</h1>
-            </div>
-        </div>
-
-        <div class="cicdhistory-page-title-bar">
-            <div class="header-title-bar">
-                <div class="header-title-icon"><i class="fas fa-stream"></i></div>
-                <h1 class="header-title-text" data-i18n="pageTitle.cicdHistory">CI/CD History</h1>
-            </div>
-        </div>
-
-        <div class="alertlist-page-title-bar">
-            <div class="header-title-bar">
-                <div class="header-title-icon"><i class="fas fa-bell"></i></div>
-                <h1 class="header-title-text" data-i18n="alert.rules">Alert Rules</h1>
-            </div>
-        </div>
-
-        <div class="alerthistory-page-title-bar">
-            <div class="header-title-bar">
-                <div class="header-title-icon"><i class="fas fa-history"></i></div>
-                <h1 class="header-title-text" data-i18n="alert.history">Alert History</h1>
-            </div>
-        </div>
-
-        <div class="users-page-title-bar">
-            <div class="header-title-bar">
-                <div class="header-title-icon"><i class="fas fa-users-cog"></i></div>
-                <h1 class="header-title-text" data-i18n="pageTitle.userManagement">User Management</h1>
-            </div>
-        </div>
-
-        <!-- Main Content Area -->
-        <div id="mainWorkspace"></div>
-
-        <!-- CI Config Editor Modal -->
-        <div class="modal" id="ciEditorModal" style="display: none;">
-            <div class="modal-content large">
+        <!-- Deploy Script Preview Modal (direct child of body) -->
+        <div class="modal" id="deployScriptPreviewModal" style="display: none;">
+            <div class="modal-content modal-content--wide">
                 <div class="modal-header">
-                    <h3 id="editorModalTitle" data-i18n="editor.editPipelineConfiguration">Edit Pipeline Configuration</h3>
-                    <button type="button" class="modal-close" id="closeCiEditorModal">
+                    <h3 data-i18n="modal.previewDeployScript"><i class="fas fa-terminal"></i> Preview Deploy Script</h3>
+                    <button type="button" class="modal-close" id="closeDeployScriptPreviewModal" aria-label="Close">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <div class="editor-container">
-                        <div class="editor-tabs">
-                            <div class="editor-tab active" data-tab="ci-config">
-                                <i class="fas fa-file-code"></i>
-                                <span id="configFileName">.gitlab-ci.yml</span>
+                    <p class="modal-description" data-i18n="modal.previewDeployScriptDesc">Generated script to deploy
+                        the configured DevSecOps stack to your cluster.</p>
+                    <div class="deploy-script-preview-wrap">
+                        <pre class="deploy-script-preview"><code id="deployScriptPreviewContent"></code></pre>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" id="copyDeployScriptBtn">
+                            <i class="fas fa-copy"></i>
+                            <span data-i18n="common.copyToClipboard">Copy to Clipboard</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- K8s Object Preview Modal -->
+        <div class="modal" id="k8sPreviewModal" style="display: none;">
+            <div class="modal-content modal-content--wide">
+                <div class="modal-header">
+                    <h3 data-i18n="modal.k8sObjectPreview"><i class="fas fa-dharmachakra"></i> K8s Object Preview</h3>
+                    <button type="button" class="modal-close" id="closeK8sPreviewModal" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="modal-description" data-i18n="modal.k8sObjectPreviewDesc">Auto-generated Kubernetes
+                        manifests based on your current configuration.</p>
+                    <div class="k8s-preview-tabs">
+                        <button type="button" class="k8s-tab active" data-k8s-tab="namespace"
+                            data-i18n="cluster.namespace">Namespace</button>
+                        <button type="button" class="k8s-tab" data-k8s-tab="deployments"
+                            data-i18n="modal.k8sDeployments">Deployments</button>
+                        <button type="button" class="k8s-tab" data-k8s-tab="services"
+                            data-i18n="modal.k8sServices">Services</button>
+                        <button type="button" class="k8s-tab" data-k8s-tab="ingress"
+                            data-i18n="modal.k8sIngress">Ingress</button>
+                    </div>
+                    <div class="k8s-preview-content">
+                        <div class="deploy-script-preview-wrap">
+                            <pre class="deploy-script-preview"><code id="k8sPreviewContent"></code></pre>
+                        </div>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" id="copyK8sYamlBtn">
+                            <i class="fas fa-copy"></i>
+                            <span data-i18n="common.copyToClipboard">Copy to Clipboard</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" id="mobileSidebarToggle" class="mobile-sidebar-toggle" aria-label="Open navigation">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div id="sidebarBackdrop" class="sidebar-backdrop" aria-hidden="true"></div>
+
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar" id="mainSidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-header-top">
+                    <div class="logo" onclick="switchPage('home')" style="cursor:pointer;" title="Home">
+                        <i class="fas fa-cube"></i>
+                        <span class="sidebar-text">Nullus</span>
+                    </div>
+                    <button type="button" class="sidebar-toggle-btn" id="sidebarToggle" title="사이드바 접기/펼치기">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+                <div class="role-switcher sidebar-text">
+                    <div class="role-toggle role-toggle--three">
+                        <button type="button" class="role-btn active" data-role="admin">
+                            <i class="fas fa-user-shield"></i>
+                            <span data-i18n="role.admin">Admin</span>
+                        </button>
+                        <button type="button" class="role-btn" data-role="devops">
+                            <i class="fas fa-hard-hat"></i>
+                            <span data-i18n="role.devops">DevOps</span>
+                        </button>
+                        <button type="button" class="role-btn" data-role="developer">
+                            <i class="fas fa-laptop-code"></i>
+                            <span data-i18n="role.developer">Developer</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nav-section devsecops-nav-section">
+                <div class="nav-title sidebar-text" data-i18n="nav.devsecopsStack">DevSecOps Stack</div>
+                <ul class="nav-menu">
+                    <li class="nav-item" data-page="list" title="Stack 목록">
+                        <i class="fas fa-list"></i>
+                        <span class="sidebar-text" data-i18n="nav.stackList">Stack 목록</span>
+                    </li>
+                    <li class="nav-item" data-page="compatibility" title="Stack 버전 관리">
+                        <i class="fas fa-code-branch"></i>
+                        <span class="sidebar-text" data-i18n="nav.stackVersion">Stack 버전 관리</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="nav-section cicd-nav-section">
+                <div class="nav-title sidebar-text" data-i18n="nav.cicd">CI/CD</div>
+                <ul class="nav-menu">
+                    <li class="nav-item" data-page="cicdlist" title="CI/CD 목록">
+                        <i class="fas fa-th-list"></i>
+                        <span class="sidebar-text" data-i18n="nav.cicdList">CI/CD 목록</span>
+                    </li>
+                    <li class="nav-item developer-only-nav" data-page="developer" title="앱 배포">
+                        <i class="fas fa-rocket"></i>
+                        <span class="sidebar-text" data-i18n="nav.appDeploy">앱 배포</span>
+                    </li>
+                    <li class="nav-item" data-page="action" title="GitHub Actions">
+                        <i class="fab fa-github"></i>
+                        <span class="sidebar-text" data-i18n="nav.deployAutomation">배포 자동화</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="nav-section observability-nav-section">
+                <div class="nav-title sidebar-text" data-i18n="nav.observability">관측성</div>
+                <ul class="nav-menu">
+                    <li class="nav-item" data-page="monitoring" title="모니터링 대시보드">
+                        <i class="fas fa-chart-line"></i>
+                        <span class="sidebar-text" data-i18n="nav.monitoring">모니터링 대시보드</span>
+                    </li>
+                    <li class="nav-item" data-page="alertlist" title="알림 규칙">
+                        <i class="fas fa-bell"></i>
+                        <span class="sidebar-text" data-i18n="nav.alertRule">알림 규칙</span>
+                    </li>
+                    <li class="nav-item" data-page="alerthistory" title="알림 이력">
+                        <i class="fas fa-history"></i>
+                        <span class="sidebar-text" data-i18n="nav.alertHistory">알림 이력</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="nav-section admin-nav-section">
+                <div class="nav-title sidebar-text" data-i18n="nav.admin">관리</div>
+                <ul class="nav-menu">
+                    <li class="nav-item active" data-page="organization" title="조직">
+                        <i class="fas fa-building"></i>
+                        <span class="sidebar-text" data-i18n="nav.organization">조직</span>
+                    </li>
+                    <li class="nav-item" data-page="users" title="사용자 관리">
+                        <i class="fas fa-users-cog"></i>
+                        <span class="sidebar-text" data-i18n="nav.userManagement">사용자 관리</span>
+                    </li>
+                    <li class="nav-item" data-page="clusters" title="클러스터 관리">
+                        <i class="fas fa-server"></i>
+                        <span class="sidebar-text" data-i18n="nav.clusterManagement">클러스터 관리</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="nav-section user-nav-section">
+                <div class="nav-title sidebar-text" data-i18n="nav.user">사용자</div>
+                <ul class="nav-menu">
+                    <li class="nav-item" title="로그아웃">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span class="sidebar-text" data-i18n="nav.logout">로그아웃</span>
+                    </li>
+                </ul>
+            </div>
+            <div id="sidebarResizeHandle" class="sidebar-resize-handle" title="Resize sidebar"></div>
+        </nav>
+
+        <div class="main-content">
+            <!-- Language & Theme (fixed top-right) -->
+            <div class="top-right-controls">
+                <div class="lang-dropdown" id="langDropdown">
+                    <button type="button" class="lang-btn" id="langBtn" title="Language / 언어" aria-label="Language">
+                        <i class="fas fa-globe"></i>
+                        <span id="langLabel">KO</span>
+                        <i class="fas fa-chevron-down fa-xs"></i>
+                    </button>
+                    <div class="lang-menu" id="langMenu">
+                        <button type="button" class="lang-option" data-lang="ko"
+                            data-i18n="common.langKorean">한국어</button>
+                        <button type="button" class="lang-option" data-lang="en"
+                            data-i18n="common.langEnglish">English</button>
+                        <button type="button" class="lang-option" data-lang="zh"
+                            data-i18n="common.langChinese">中文</button>
+                    </div>
+                </div>
+                <button type="button" id="themeToggle" class="theme-toggle-btn" data-i18n-title="common.theme"
+                    title="라이트/다크 테마 전환">
+                    <i class="fas fa-sun"></i>
+                </button>
+            </div>
+
+            <!-- Install Nullus Stack Page Header (title → pipeline stages → config steps → resource) -->
+            <div class="install-page-header">
+                <!-- 1. Page Title Bar: Icon + Title -->
+                <div class="progress-header progress-header--title-only">
+                    <div class="header-title-bar">
+                        <div class="header-title-icon">
+                            <i class="fas fa-cubes"></i>
+                        </div>
+                        <h1 class="header-title-text" data-i18n="install.title">DevSecOps Stack Install</h1>
+                    </div>
+                </div>
+
+                <!-- 3. Config Steps: 1–6 Artifacts, Pipeline Tools, Monitoring, Logging, Resources, Cluster Configurations -->
+                <div class="progress-header progress-header--steps">
+                    <div class="header-content">
+                        <div class="progress-steps progress-steps--six">
+                            <div class="progress-step completed active" data-step="1">
+                                <div class="step-circle">1</div>
+                                <span data-i18n="install.artifacts">Artifacts</span>
                             </div>
-                            <div class="editor-tab" data-tab="variables">
-                                <i class="fas fa-list"></i>
-                                <span data-i18n="editor.variables">Variables</span>
+                            <div class="progress-line"></div>
+                            <div class="progress-step" data-step="2">
+                                <div class="step-circle">2</div>
+                                <span data-i18n="install.pipelineTools">Pipeline Tools</span>
                             </div>
-                            <div class="editor-tab" data-tab="templates">
-                                <i class="fas fa-layer-group"></i>
-                                <span data-i18n="editor.templates">Templates</span>
+                            <div class="progress-line"></div>
+                            <div class="progress-step" data-step="3">
+                                <div class="step-circle">3</div>
+                                <span data-i18n="install.monitoringTools">Monitoring Tools</span>
+                            </div>
+                            <div class="progress-line"></div>
+                            <div class="progress-step" data-step="4">
+                                <div class="step-circle">4</div>
+                                <span data-i18n="install.loggingTools">Logging Tools</span>
+                            </div>
+                            <div class="progress-line"></div>
+                            <div class="progress-step" data-step="5">
+                                <div class="step-circle">5</div>
+                                <span data-i18n="install.resources">Resources</span>
                             </div>
                         </div>
-                        
-                        <div class="editor-content">
-                            <div class="editor-panel active" id="ciConfigPanel">
-                                <div class="code-editor">
-                                    <div class="editor-toolbar">
-                                        <button type="button" class="btn btn-secondary btn-sm">
-                                            <i class="fas fa-undo"></i>
-                                            <span data-i18n="editor.undo">Undo</span>
-                                        </button>
-                                        <button type="button" class="btn btn-secondary btn-sm">
-                                            <i class="fas fa-redo"></i>
-                                            <span data-i18n="editor.redo">Redo</span>
-                                        </button>
-                                        <button type="button" class="btn btn-secondary btn-sm">
-                                            <i class="fas fa-search"></i>
-                                            <span data-i18n="editor.find">Find</span>
-                                        </button>
-                                        <button type="button" class="btn btn-primary btn-sm" id="validateConfigBtn">
-                                            <i class="fas fa-check-circle"></i>
-                                            <span data-i18n="editor.validate">Validate</span>
-                                        </button>
-                                    </div>
-                                    <textarea id="ciConfigEditor" class="config-textarea">stages:
+                    </div>
+                </div>
+            </div>
+            <!-- /install-page-header -->
+
+            <!-- DevSecOps Stack List Page Title Bar (shown when list page is active) -->
+            <div class="list-page-title-bar">
+                <div class="header-title-bar">
+                    <div class="header-title-icon">
+                        <i class="fas fa-list"></i>
+                    </div>
+                    <h1 class="header-title-text" data-i18n="pageTitle.stackList">DevSecOps Stack List</h1>
+                </div>
+            </div>
+
+            <div class="templates-page-title-bar">
+                <div class="header-title-bar">
+                    <div class="header-title-icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <h1 class="header-title-text" data-i18n="pageTitle.stackTemplate">DevSecOps Stack Template</h1>
+                </div>
+            </div>
+
+            <div class="developer-page-title-bar">
+                <div class="header-title-bar">
+                    <div class="header-title-icon">
+                        <i class="fas fa-laptop-code"></i>
+                    </div>
+                    <h1 class="header-title-text" data-i18n="pageTitle.developerDeploy">Developer Self-Service Deploy
+                    </h1>
+                </div>
+            </div>
+
+            <div class="clusters-page-title-bar">
+                <div class="header-title-bar">
+                    <div class="header-title-icon">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <h1 class="header-title-text" data-i18n="pageTitle.clusterManagement">Cluster Management</h1>
+                </div>
+            </div>
+
+            <div class="organization-page-title-bar">
+                <div class="header-title-bar">
+                    <div class="header-title-icon"><i class="fas fa-building"></i></div>
+                    <h1 class="header-title-text" data-i18n="pageTitle.organization">Organization</h1>
+                </div>
+            </div>
+
+            <div class="history-page-title-bar">
+                <div class="header-title-bar">
+                    <div class="header-title-icon"><i class="fas fa-history"></i></div>
+                    <h1 class="header-title-text" data-i18n="history.stackHistory">DevSecOps Stack History</h1>
+                </div>
+            </div>
+
+            <div class="monitoring-page-title-bar">
+                <div class="header-title-bar">
+                    <div class="header-title-icon"><i class="fas fa-chart-line"></i></div>
+                    <h1 class="header-title-text" data-i18n="pageTitle.monitoring">Monitoring Dashboard</h1>
+                </div>
+            </div>
+
+            <div class="compatibility-page-title-bar">
+                <div class="header-title-bar">
+                    <div class="header-title-icon"><i class="fas fa-code-branch"></i></div>
+                    <h1 class="header-title-text" data-i18n="pageTitle.stackVersion">DevSecOps Stack Version Management
+                    </h1>
+                </div>
+            </div>
+
+            <div class="cicdtemplates-page-title-bar">
+                <div class="header-title-bar">
+                    <div class="header-title-icon"><i class="fas fa-code-branch"></i></div>
+                    <h1 class="header-title-text" data-i18n="pageTitle.cicdTemplate">CI/CD Template</h1>
+                </div>
+            </div>
+
+            <div class="cicdlist-page-title-bar">
+                <div class="header-title-bar">
+                    <div class="header-title-icon"><i class="fas fa-th-list"></i></div>
+                    <h1 class="header-title-text" data-i18n="pageTitle.cicdList">CI/CD List</h1>
+                </div>
+            </div>
+
+            <div class="action-page-title-bar">
+                <div class="header-title-bar">
+                    <div class="header-title-icon"><i class="fab fa-github"></i></div>
+                    <h1 class="header-title-text" data-i18n="nav.deployAutomation">Deploy Automation</h1>
+                </div>
+            </div>
+
+            <div class="cicdhistory-page-title-bar">
+                <div class="header-title-bar">
+                    <div class="header-title-icon"><i class="fas fa-stream"></i></div>
+                    <h1 class="header-title-text" data-i18n="pageTitle.cicdHistory">CI/CD History</h1>
+                </div>
+            </div>
+
+            <div class="alertlist-page-title-bar">
+                <div class="header-title-bar">
+                    <div class="header-title-icon"><i class="fas fa-bell"></i></div>
+                    <h1 class="header-title-text" data-i18n="alert.rules">Alert Rules</h1>
+                </div>
+            </div>
+
+            <div class="alerthistory-page-title-bar">
+                <div class="header-title-bar">
+                    <div class="header-title-icon"><i class="fas fa-history"></i></div>
+                    <h1 class="header-title-text" data-i18n="alert.history">Alert History</h1>
+                </div>
+            </div>
+
+            <div class="users-page-title-bar">
+                <div class="header-title-bar">
+                    <div class="header-title-icon"><i class="fas fa-users-cog"></i></div>
+                    <h1 class="header-title-text" data-i18n="pageTitle.userManagement">User Management</h1>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div id="mainWorkspace"></div>
+
+            <!-- CI Config Editor Modal -->
+            <div class="modal" id="ciEditorModal" style="display: none;">
+                <div class="modal-content large">
+                    <div class="modal-header">
+                        <h3 id="editorModalTitle" data-i18n="editor.editPipelineConfiguration">Edit Pipeline
+                            Configuration</h3>
+                        <button type="button" class="modal-close" id="closeCiEditorModal">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="editor-container">
+                            <div class="editor-tabs">
+                                <div class="editor-tab active" data-tab="ci-config">
+                                    <i class="fas fa-file-code"></i>
+                                    <span id="configFileName">.gitlab-ci.yml</span>
+                                </div>
+                                <div class="editor-tab" data-tab="variables">
+                                    <i class="fas fa-list"></i>
+                                    <span data-i18n="editor.variables">Variables</span>
+                                </div>
+                                <div class="editor-tab" data-tab="templates">
+                                    <i class="fas fa-layer-group"></i>
+                                    <span data-i18n="editor.templates">Templates</span>
+                                </div>
+                            </div>
+
+                            <div class="editor-content">
+                                <div class="editor-panel active" id="ciConfigPanel">
+                                    <div class="code-editor">
+                                        <div class="editor-toolbar">
+                                            <button type="button" class="btn btn-secondary btn-sm">
+                                                <i class="fas fa-undo"></i>
+                                                <span data-i18n="editor.undo">Undo</span>
+                                            </button>
+                                            <button type="button" class="btn btn-secondary btn-sm">
+                                                <i class="fas fa-redo"></i>
+                                                <span data-i18n="editor.redo">Redo</span>
+                                            </button>
+                                            <button type="button" class="btn btn-secondary btn-sm">
+                                                <i class="fas fa-search"></i>
+                                                <span data-i18n="editor.find">Find</span>
+                                            </button>
+                                            <button type="button" class="btn btn-primary btn-sm" id="validateConfigBtn">
+                                                <i class="fas fa-check-circle"></i>
+                                                <span data-i18n="editor.validate">Validate</span>
+                                            </button>
+                                        </div>
+                                        <textarea id="ciConfigEditor" class="config-textarea">stages:
   - build
   - test
   - security
@@ -470,288 +498,291 @@ deploy_production:
   when: manual
   only:
     - main</textarea>
-                                </div>
-                            </div>
-                            
-                            <div class="editor-panel" id="variablesPanel">
-                                <div class="variables-editor">
-                                    <div class="variables-header">
-                                        <h4 data-i18n="editor.pipelineVariables">Pipeline Variables</h4>
-                                        <button type="button" class="btn btn-primary btn-sm">
-                                            <i class="fas fa-plus"></i>
-                                            <span data-i18n="editor.addVariable">Add Variable</span>
-                                        </button>
-                                    </div>
-                                    <div class="variables-list">
-                                        <div class="variable-item">
-                                            <input type="text" placeholder="Variable name" value="DOCKER_DRIVER">
-                                            <input type="text" placeholder="Variable value" value="overlay2">
-                                            <button type="button" class="btn-icon delete">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </div>
-                                        <div class="variable-item">
-                                            <input type="text" placeholder="Variable name" value="NODE_VERSION">
-                                            <input type="text" placeholder="Variable value" value="16">
-                                            <button type="button" class="btn-icon delete">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            
-                            <div class="editor-panel" id="templatesPanel">
-                                <div class="templates-library">
-                                    <h4 data-i18n="editor.pipelineTemplates">Pipeline Templates</h4>
-                                    <div class="template-grid">
-                                        <div class="template-card" onclick="applyTemplate('node')">
-                                            <i class="fab fa-node-js"></i>
-                                            <h5 data-i18n="editor.templateNodejs">Node.js</h5>
-                                            <p data-i18n="editor.templateNodejsDesc">Standard Node.js CI/CD pipeline</p>
+
+                                <div class="editor-panel" id="variablesPanel">
+                                    <div class="variables-editor">
+                                        <div class="variables-header">
+                                            <h4 data-i18n="editor.pipelineVariables">Pipeline Variables</h4>
+                                            <button type="button" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-plus"></i>
+                                                <span data-i18n="editor.addVariable">Add Variable</span>
+                                            </button>
                                         </div>
-                                        <div class="template-card" onclick="applyTemplate('docker')">
-                                            <i class="fab fa-docker"></i>
-                                            <h5 data-i18n="editor.templateDocker">Docker</h5>
-                                            <p data-i18n="editor.templateDockerDesc">Docker build and push pipeline</p>
+                                        <div class="variables-list">
+                                            <div class="variable-item">
+                                                <input type="text" placeholder="Variable name" value="DOCKER_DRIVER">
+                                                <input type="text" placeholder="Variable value" value="overlay2">
+                                                <button type="button" class="btn-icon delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                            <div class="variable-item">
+                                                <input type="text" placeholder="Variable name" value="NODE_VERSION">
+                                                <input type="text" placeholder="Variable value" value="16">
+                                                <button type="button" class="btn-icon delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div class="template-card" onclick="applyTemplate('kubernetes')">
-                                            <i class="fas fa-dharmachakra"></i>
-                                            <h5 data-i18n="editor.templateKubernetes">Kubernetes</h5>
-                                            <p data-i18n="editor.templateKubernetesDesc">K8s deployment pipeline</p>
-                                        </div>
-                                        <div class="template-card" onclick="applyTemplate('python')">
-                                            <i class="fab fa-python"></i>
-                                            <h5 data-i18n="editor.templatePython">Python</h5>
-                                            <p data-i18n="editor.templatePythonDesc">Python testing and deployment</p>
+                                    </div>
+                                </div>
+
+                                <div class="editor-panel" id="templatesPanel">
+                                    <div class="templates-library">
+                                        <h4 data-i18n="editor.pipelineTemplates">Pipeline Templates</h4>
+                                        <div class="template-grid">
+                                            <div class="template-card" onclick="applyTemplate('node')">
+                                                <i class="fab fa-node-js"></i>
+                                                <h5 data-i18n="editor.templateNodejs">Node.js</h5>
+                                                <p data-i18n="editor.templateNodejsDesc">Standard Node.js CI/CD pipeline
+                                                </p>
+                                            </div>
+                                            <div class="template-card" onclick="applyTemplate('docker')">
+                                                <i class="fab fa-docker"></i>
+                                                <h5 data-i18n="editor.templateDocker">Docker</h5>
+                                                <p data-i18n="editor.templateDockerDesc">Docker build and push pipeline
+                                                </p>
+                                            </div>
+                                            <div class="template-card" onclick="applyTemplate('kubernetes')">
+                                                <i class="fas fa-dharmachakra"></i>
+                                                <h5 data-i18n="editor.templateKubernetes">Kubernetes</h5>
+                                                <p data-i18n="editor.templateKubernetesDesc">K8s deployment pipeline</p>
+                                            </div>
+                                            <div class="template-card" onclick="applyTemplate('python')">
+                                                <i class="fab fa-python"></i>
+                                                <h5 data-i18n="editor.templatePython">Python</h5>
+                                                <p data-i18n="editor.templatePythonDesc">Python testing and deployment
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" id="cancelCiEditor" data-i18n="common.cancel">Cancel</button>
-                    <button type="button" class="btn btn-secondary">
-                        <i class="fas fa-download"></i>
-                        <span data-i18n="common.download">Download</span>
-                    </button>
-                    <button type="button" class="btn btn-primary" id="saveCiConfig">
-                        <i class="fas fa-save"></i>
-                        <span data-i18n="editor.saveConfiguration">Save Configuration</span>
-                    </button>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="cancelCiEditor"
+                            data-i18n="common.cancel">Cancel</button>
+                        <button type="button" class="btn btn-secondary">
+                            <i class="fas fa-download"></i>
+                            <span data-i18n="common.download">Download</span>
+                        </button>
+                        <button type="button" class="btn btn-primary" id="saveCiConfig">
+                            <i class="fas fa-save"></i>
+                            <span data-i18n="editor.saveConfiguration">Save Configuration</span>
+                        </button>
+                    </div>
                 </div>
             </div>
+
         </div>
 
-    </div>
+        <!-- ── Page Content Scripts ── -->
+        <script src="js/home.js"></script>
+        <script src="js/page-reuse.js"></script>
 
-    <!-- ── Page Content Scripts ── -->
-    <script src="pages/home.js"></script>
+        <script src="js/obs-alert-list.js"></script>
+        <script src="js/obs-alert-history.js"></script>
 
-    <script src="pages/page-reuse.js"></script>
+        <script src="js/stack-list.js"></script> <!--리팩토링-->
+        <script src="js/stack-install.js"></script>
+        <script src="js/stack-template.js"></script>
+        <script src="js/stack-version.js"></script>
 
-    <script src="pages/obs-alert-list.js"></script>
-    <script src="pages/obs-alert-history.js"></script>
+        <script src="js/cicd-list.js"></script> <!--리팩토링-->
+        <script src="js/cicd-template.js"></script>
+        <script src="js/cicd-developer.js"></script>
 
-    <script src="pages/stack-list.js"></script> <!--리팩토링-->
-    <script src="pages/stack-install.js"></script>
-    <script src="pages/stack-template.js"></script>
-    <script src="pages/stack-version.js"></script>
+        <script src="js/obs-dashboard.js"></script>
 
-    <script src="pages/cicd-list.js"></script> <!--리팩토링-->
-    <script src="pages/cicd-template.js"></script>
-    <script src="pages/cicd-developer.js"></script>
+        <script src="js/org-organization.js"></script>
+        <script src="js/org-users.js"></script>
+        <script src="js/org-clusters.js"></script>
 
-    <script src="pages/obs-dashboard.js"></script>
+        <script src="js/action.js"></script>
+        <script src="i18n.js"></script>
+        <script src="script.js"></script>
+        <script>
+            // Enhanced Resource Configuration with Individual Tool Settings
+            let toolResourceData = {};
+            let selectedTools = {};
+            let isManualMode = false;
 
-    <script src="pages/org-organization.js"></script>
-    <script src="pages/org-users.js"></script>
-    <script src="pages/org-clusters.js"></script>
+            document.addEventListener('DOMContentLoaded', function () {
+                initializeResourceSystem();
 
-    <script src="pages/action.js"></script>
-    <script src="i18n.js"></script>
-    <script src="script.js"></script>
-    <script>
-        // Enhanced Resource Configuration with Individual Tool Settings
-        let toolResourceData = {};
-        let selectedTools = {};
-        let isManualMode = false;
+                // Instance control buttons
+                document.addEventListener('click', function (e) {
+                    if (e.target.classList.contains('instance-btn')) {
+                        const tool = e.target.getAttribute('data-tool');
+                        const input = document.querySelector(`.instance-count[data-tool="${tool}"]`);
+                        const currentValue = parseInt(input.value);
+                        const min = parseInt(input.getAttribute('min'));
+                        const max = parseInt(input.getAttribute('max'));
 
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeResourceSystem();
-            
-            // Instance control buttons
-            document.addEventListener('click', function(e) {
-                if (e.target.classList.contains('instance-btn')) {
-                    const tool = e.target.getAttribute('data-tool');
-                    const input = document.querySelector(`.instance-count[data-tool="${tool}"]`);
-                    const currentValue = parseInt(input.value);
-                    const min = parseInt(input.getAttribute('min'));
-                    const max = parseInt(input.getAttribute('max'));
+                        if (e.target.classList.contains('increase') && currentValue < max) {
+                            input.value = currentValue + 1;
+                        } else if (e.target.classList.contains('decrease') && currentValue > min) {
+                            input.value = currentValue - 1;
+                        }
 
-                    if (e.target.classList.contains('increase') && currentValue < max) {
-                        input.value = currentValue + 1;
-                    } else if (e.target.classList.contains('decrease') && currentValue > min) {
-                        input.value = currentValue - 1;
+                        updateSelectedTools();
+                        updateResourceCalculation();
+                        if (isManualMode) {
+                            generateIndividualToolResources();
+                        }
                     }
-                    
-                    updateSelectedTools();
-                    updateResourceCalculation();
-                    if (isManualMode) {
-                        generateIndividualToolResources();
-                    }
-                }
-            });
-
-            // Tool selection changes
-            document.addEventListener('change', function(e) {
-                if (e.target.type === 'checkbox' && e.target.name) {
-                    updateSelectedTools();
-                    updateResourceCalculation();
-                    if (isManualMode) {
-                        generateIndividualToolResources();
-                    }
-                }
-            });
-
-            // Resource mode toggle
-            const autoBtn = document.getElementById('autoResourceBtn');
-            const manualBtn = document.getElementById('manualResourceBtn');
-            const autoSection = document.getElementById('autoResourceSection');
-            const manualSection = document.getElementById('manualResourceSection');
-            const individualSection = document.getElementById('individualToolResourcesSection');
-
-            if (autoBtn && manualBtn) {
-                autoBtn.addEventListener('click', function() {
-                    isManualMode = false;
-                    autoBtn.classList.add('active');
-                    manualBtn.classList.remove('active');
-                    autoSection.classList.remove('hidden');
-                    manualSection.classList.add('hidden');
-                    if (individualSection) individualSection.classList.add('hidden');
-                    updateResourceCalculation();
-                    updateStepNumbers();
                 });
 
-                manualBtn.addEventListener('click', function() {
-                    isManualMode = true;
-                    manualBtn.classList.add('active');
-                    autoBtn.classList.remove('active');
-                    manualSection.classList.remove('hidden');
-                    autoSection.classList.add('hidden');
-                    if (individualSection) individualSection.classList.remove('hidden');
-                    updateSelectedTools();
-                    generateIndividualToolResources();
-                    updateStepNumbers();
+                // Tool selection changes
+                document.addEventListener('change', function (e) {
+                    if (e.target.type === 'checkbox' && e.target.name) {
+                        updateSelectedTools();
+                        updateResourceCalculation();
+                        if (isManualMode) {
+                            generateIndividualToolResources();
+                        }
+                    }
+                });
+
+                // Resource mode toggle
+                const autoBtn = document.getElementById('autoResourceBtn');
+                const manualBtn = document.getElementById('manualResourceBtn');
+                const autoSection = document.getElementById('autoResourceSection');
+                const manualSection = document.getElementById('manualResourceSection');
+                const individualSection = document.getElementById('individualToolResourcesSection');
+
+                if (autoBtn && manualBtn) {
+                    autoBtn.addEventListener('click', function () {
+                        isManualMode = false;
+                        autoBtn.classList.add('active');
+                        manualBtn.classList.remove('active');
+                        autoSection.classList.remove('hidden');
+                        manualSection.classList.add('hidden');
+                        if (individualSection) individualSection.classList.add('hidden');
+                        updateResourceCalculation();
+                        updateStepNumbers();
+                    });
+
+                    manualBtn.addEventListener('click', function () {
+                        isManualMode = true;
+                        manualBtn.classList.add('active');
+                        autoBtn.classList.remove('active');
+                        manualSection.classList.remove('hidden');
+                        autoSection.classList.add('hidden');
+                        if (individualSection) individualSection.classList.remove('hidden');
+                        updateSelectedTools();
+                        generateIndividualToolResources();
+                        updateStepNumbers();
+                    });
+                }
+
+                // Auto calculate button
+                const recalculateBtn = document.getElementById('recalculateBtn');
+                if (recalculateBtn) {
+                    recalculateBtn.addEventListener('click', function () {
+                        updateResourceCalculation();
+                    });
+                }
+            });
+
+            function initializeResourceSystem() {
+                updateSelectedTools();
+                updateResourceCalculation();
+            }
+
+            function updateSelectedTools() {
+                selectedTools = {};
+
+                // Get all checked tools
+                const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+                checkboxes.forEach(checkbox => {
+                    if (checkbox.name && checkbox.value) {
+                        const toolKey = checkbox.value;
+                        const instanceInput = document.querySelector(`.instance-count[data-tool="${toolKey}"], .instance-count[data-tool="${toolKey}-registry"], .instance-count[data-tool="${toolKey}-ci"]`);
+                        const instances = instanceInput ? parseInt(instanceInput.value) : 1;
+
+                        selectedTools[toolKey] = {
+                            name: getToolDisplayName(toolKey, checkbox.name),
+                            category: getToolCategory(checkbox.name),
+                            instances: instances,
+                            checkbox: checkbox
+                        };
+                    }
                 });
             }
 
-            // Auto calculate button
-            const recalculateBtn = document.getElementById('recalculateBtn');
-            if (recalculateBtn) {
-                recalculateBtn.addEventListener('click', function() {
-                    updateResourceCalculation();
-                });
+            function getToolDisplayName(toolKey, category) {
+                const toolNames = {
+                    'gitlab': 'GitLab',
+                    'nexus': 'Nexus Repository',
+                    'jfrog': 'JFrog Artifactory',
+                    'harbor': 'Harbor',
+                    'gitea': 'Gitea',
+                    'github': 'GitHub Actions',
+                    'jenkins': 'Jenkins',
+                    'argocd': 'Argo CD',
+                    'flux': 'Flux',
+                    'spinnaker': 'Spinnaker',
+                    'tekton': 'Tekton',
+                    'prometheus': 'Prometheus',
+                    'grafana': 'Grafana',
+                    'thanos': 'Thanos',
+                    'opentelemetry': 'OpenTelemetry',
+                    'loki': 'Loki',
+                    'opensearch': 'OpenSearch',
+                    'elasticsearch': 'Elasticsearch',
+                    'minio': 'MinIO',
+                    's3': 'AWS S3',
+                    'gcs': 'Google Cloud Storage',
+                    'azure': 'Azure Blob Storage',
+                    'dockerhub': 'Docker Hub',
+                    'ecr': 'Amazon ECR',
+                    'bitbucket': 'Bitbucket',
+                    'circleci': 'CircleCI'
+                };
+
+                return toolNames[toolKey] || toolKey.charAt(0).toUpperCase() + toolKey.slice(1);
             }
-        });
 
-        function initializeResourceSystem() {
-            updateSelectedTools();
-            updateResourceCalculation();
-        }
+            function getToolCategory(categoryName) {
+                const categories = {
+                    'packageRegistry': 'Package Registry',
+                    'sourceRepo': 'Source Repository',
+                    'imageRegistry': 'Container Registry',
+                    'storage': 'Storage Backend',
+                    'mainPipeline': 'CI/CD Platform',
+                    'cdTool': 'Continuous Deployment',
+                    'monitoringCollection': 'Monitoring Collection',
+                    'monitoringQuery': 'Monitoring Visualization',
+                    'loggingCollection': 'Logging Collection',
+                    'logging': 'Log Search',
+                    'loggingQuery': 'Log Analytics'
+                };
 
-        function updateSelectedTools() {
-            selectedTools = {};
-            
-            // Get all checked tools
-            const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-            checkboxes.forEach(checkbox => {
-                if (checkbox.name && checkbox.value) {
-                    const toolKey = checkbox.value;
-                    const instanceInput = document.querySelector(`.instance-count[data-tool="${toolKey}"], .instance-count[data-tool="${toolKey}-registry"], .instance-count[data-tool="${toolKey}-ci"]`);
-                    const instances = instanceInput ? parseInt(instanceInput.value) : 1;
-                    
-                    selectedTools[toolKey] = {
-                        name: getToolDisplayName(toolKey, checkbox.name),
-                        category: getToolCategory(checkbox.name),
-                        instances: instances,
-                        checkbox: checkbox
-                    };
-                }
-            });
-        }
+                return categories[categoryName] || 'DevOps Tool';
+            }
 
-        function getToolDisplayName(toolKey, category) {
-            const toolNames = {
-                'gitlab': 'GitLab',
-                'nexus': 'Nexus Repository',
-                'jfrog': 'JFrog Artifactory',
-                'harbor': 'Harbor',
-                'gitea': 'Gitea',
-                'github': 'GitHub Actions',
-                'jenkins': 'Jenkins',
-                'argocd': 'Argo CD',
-                'flux': 'Flux',
-                'spinnaker': 'Spinnaker',
-                'tekton': 'Tekton',
-                'prometheus': 'Prometheus',
-                'grafana': 'Grafana',
-                'thanos': 'Thanos',
-                'opentelemetry': 'OpenTelemetry',
-                'loki': 'Loki',
-                'opensearch': 'OpenSearch',
-                'elasticsearch': 'Elasticsearch',
-                'minio': 'MinIO',
-                's3': 'AWS S3',
-                'gcs': 'Google Cloud Storage',
-                'azure': 'Azure Blob Storage',
-                'dockerhub': 'Docker Hub',
-                'ecr': 'Amazon ECR',
-                'bitbucket': 'Bitbucket',
-                'circleci': 'CircleCI'
-            };
-            
-            return toolNames[toolKey] || toolKey.charAt(0).toUpperCase() + toolKey.slice(1);
-        }
+            function generateIndividualToolResources() {
+                const container = document.getElementById('individualToolResources');
+                if (!container) return;
 
-        function getToolCategory(categoryName) {
-            const categories = {
-                'packageRegistry': 'Package Registry',
-                'sourceRepo': 'Source Repository',
-                'imageRegistry': 'Container Registry',
-                'storage': 'Storage Backend',
-                'mainPipeline': 'CI/CD Platform',
-                'cdTool': 'Continuous Deployment',
-                'monitoringCollection': 'Monitoring Collection',
-                'monitoringQuery': 'Monitoring Visualization',
-                'loggingCollection': 'Logging Collection',
-                'logging': 'Log Search',
-                'loggingQuery': 'Log Analytics'
-            };
-            
-            return categories[categoryName] || 'DevOps Tool';
-        }
+                let html = '';
+                const categories = {};
 
-        function generateIndividualToolResources() {
-            const container = document.getElementById('individualToolResources');
-            if (!container) return;
+                // Group tools by category
+                Object.entries(selectedTools).forEach(([toolKey, tool]) => {
+                    if (!categories[tool.category]) {
+                        categories[tool.category] = [];
+                    }
+                    categories[tool.category].push({ toolKey, ...tool });
+                });
 
-            let html = '';
-            const categories = {};
-            
-            // Group tools by category
-            Object.entries(selectedTools).forEach(([toolKey, tool]) => {
-                if (!categories[tool.category]) {
-                    categories[tool.category] = [];
-                }
-                categories[tool.category].push({toolKey, ...tool});
-            });
-
-            // Generate HTML for each category
-            Object.entries(categories).forEach(([category, tools]) => {
-                html += `
+                // Generate HTML for each category
+                Object.entries(categories).forEach(([category, tools]) => {
+                    html += `
                     <div class="category-divider">
                         <h5 class="resource-section-title">
                             <i class="fas fa-${getCategoryIcon(category)}"></i>
@@ -759,12 +790,12 @@ deploy_production:
                         </h5>
                     </div>
                 `;
-                
-                tools.forEach(tool => {
-                    const recommended = getToolRecommendedResources(tool.toolKey, tool.instances);
-                    const current = toolResourceData[tool.toolKey] || recommended;
-                    
-                    html += `
+
+                    tools.forEach(tool => {
+                        const recommended = getToolRecommendedResources(tool.toolKey, tool.instances);
+                        const current = toolResourceData[tool.toolKey] || recommended;
+
+                        html += `
                         <div class="individual-tool-card">
                             <div class="tool-card-header">
                                 <div class="tool-info-header">
@@ -845,285 +876,286 @@ deploy_production:
                             </div>
                         </div>
                     `;
+                    });
                 });
-            });
 
-            container.innerHTML = html;
-            
-            // Add event listeners for resource inputs
-            container.querySelectorAll('.tool-resource-input').forEach(input => {
-                input.addEventListener('input', function() {
-                    const tool = this.getAttribute('data-tool');
-                    const resource = this.getAttribute('data-resource');
-                    const value = parseFloat(this.value) || 0;
-                    
-                    if (!toolResourceData[tool]) {
-                        toolResourceData[tool] = {};
-                    }
-                    toolResourceData[tool][resource] = value;
-                    
+                container.innerHTML = html;
+
+                // Add event listeners for resource inputs
+                container.querySelectorAll('.tool-resource-input').forEach(input => {
+                    input.addEventListener('input', function () {
+                        const tool = this.getAttribute('data-tool');
+                        const resource = this.getAttribute('data-resource');
+                        const value = parseFloat(this.value) || 0;
+
+                        if (!toolResourceData[tool]) {
+                            toolResourceData[tool] = {};
+                        }
+                        toolResourceData[tool][resource] = value;
+
+                        updateTotalResourcesFromManual();
+                        validateToolResource(this, tool, resource, value);
+                    });
+                });
+            }
+
+            function updateResourceCalculation() {
+                if (isManualMode) {
                     updateTotalResourcesFromManual();
-                    validateToolResource(this, tool, resource, value);
-                });
-            });
-        }
-
-        function updateResourceCalculation() {
-            if (isManualMode) {
-                updateTotalResourcesFromManual();
-                return;
-            }
-
-            // Get current workload configuration
-            const developerCount = parseInt(document.getElementById('developerCount')?.value || 10);
-            const runnerCount = parseInt(document.getElementById('runnerCount')?.value || 4);
-            const commitCount = parseInt(document.getElementById('commitCount')?.value || 50);
-            const buildFrequency = document.getElementById('buildFrequency')?.value || 'medium';
-
-            // Calculate base resources
-            let cpuMultiplier = 1;
-            let memoryMultiplier = 1;
-            let storageMultiplier = 1;
-
-            switch(buildFrequency) {
-                case 'low':
-                    cpuMultiplier = 0.7;
-                    memoryMultiplier = 0.8;
-                    break;
-                case 'high':
-                    cpuMultiplier = 1.5;
-                    memoryMultiplier = 1.3;
-                    storageMultiplier = 1.2;
-                    break;
-            }
-
-            // Base calculation
-            const baseCpu = Math.max(4, Math.ceil((developerCount * 0.5 + runnerCount * 2) * cpuMultiplier));
-            const baseMemory = Math.max(16, Math.ceil((developerCount * 2 + runnerCount * 4) * memoryMultiplier));
-            const baseStorage = Math.max(100, Math.ceil((commitCount * 2 + runnerCount * 50) * storageMultiplier));
-
-            // Calculate tool-specific resources
-            let totalCpu = baseCpu;
-            let totalMemory = baseMemory;
-            let totalStorage = baseStorage;
-            let totalCost = 0;
-
-            Object.entries(selectedTools).forEach(([toolKey, tool]) => {
-                const toolResources = getToolRecommendedResources(toolKey, tool.instances);
-                totalCpu += toolResources.cpu;
-                totalMemory += toolResources.memory;
-                totalStorage += toolResources.storage;
-                totalCost += toolResources.cost;
-            });
-
-            // Update displays
-            updateResourceDisplays(totalCpu, totalMemory, totalStorage, totalCost);
-            updateRecommendedResourceDisplays(totalCpu, totalMemory, totalStorage, totalCost);
-        }
-
-        function getToolRecommendedResources(toolKey, instances = 1) {
-            const baseResources = {
-                // Package Registry
-                'gitlab': { cpu: 1.0, memory: 2, storage: 20, cost: 25 },
-                'nexus': { cpu: 2.0, memory: 4, storage: 50, cost: 45 },
-                'jfrog': { cpu: 2.5, memory: 6, storage: 100, cost: 60 },
-                'harbor': { cpu: 1.5, memory: 3, storage: 30, cost: 35 },
-                
-                // Source Repository
-                'gitea': { cpu: 0.5, memory: 1, storage: 10, cost: 15 },
-                
-                // Pipeline Tools
-                'jenkins': { cpu: 2.0, memory: 4, storage: 20, cost: 40 },
-                'argocd': { cpu: 0.5, memory: 1, storage: 5, cost: 12 },
-                'flux': { cpu: 0.3, memory: 0.5, storage: 2, cost: 8 },
-                'spinnaker': { cpu: 4.0, memory: 8, storage: 40, cost: 80 },
-                'tekton': { cpu: 1.0, memory: 2, storage: 10, cost: 20 },
-                'github': { cpu: 1.0, memory: 2, storage: 10, cost: 20 },
-                
-                // Monitoring Tools
-                'prometheus': { cpu: 2.0, memory: 4, storage: 100, cost: 50 },
-                'grafana': { cpu: 1.0, memory: 2, storage: 10, cost: 25 },
-                'thanos': { cpu: 1.5, memory: 3, storage: 200, cost: 45 },
-                
-                // Logging Tools
-                'opentelemetry': { cpu: 1.0, memory: 2, storage: 20, cost: 25 },
-                'loki': { cpu: 1.5, memory: 3, storage: 50, cost: 35 },
-                'opensearch': { cpu: 3.0, memory: 6, storage: 100, cost: 70 },
-                'elasticsearch': { cpu: 3.0, memory: 6, storage: 100, cost: 70 },
-                
-                // Storage
-                'minio': { cpu: 1.0, memory: 2, storage: 500, cost: 30 }
-            };
-
-            const base = baseResources[toolKey] || { cpu: 1, memory: 2, storage: 10, cost: 20 };
-            
-            return {
-                cpu: Math.round((base.cpu * instances) * 10) / 10,
-                memory: Math.round((base.memory * instances) * 10) / 10,
-                storage: Math.round(base.storage * instances),
-                cost: Math.round(base.cost * instances)
-            };
-        }
-
-        function getCategoryIcon(category) {
-            const icons = {
-                'Package Registry': 'box',
-                'Source Repository': 'code-branch',
-                'Container Registry': 'docker',
-                'Storage Backend': 'database',
-                'CI/CD Platform': 'project-diagram',
-                'Continuous Deployment': 'rocket',
-                'Monitoring Collection': 'chart-line',
-                'Monitoring Visualization': 'chart-bar',
-                'Logging Collection': 'file-alt',
-                'Log Search': 'search',
-                'Log Analytics': 'analytics'
-            };
-            return icons[category] || 'cog';
-        }
-
-        function getToolIcon(toolKey) {
-            const icons = {
-                'gitlab': 'gitlab',
-                'github': 'github',
-                'jenkins': 'hammer',
-                'prometheus': 'fire',
-                'grafana': 'chart-line',
-                'nexus': 'archive',
-                'harbor': 'anchor',
-                'minio': 'cloud',
-                'elasticsearch': 'search',
-                'opensearch': 'search-plus'
-            };
-            return icons[toolKey] || 'cog';
-        }
-
-        function updateResourceDisplays(cpu, memory, storage, cost = null) {
-            const elements = {
-                'calculatedCpu': cpu,
-                'calculatedMemory': memory,
-                'calculatedStorage': storage,
-                'headerCpuCount': cpu + ' cores',
-                'headerMemoryCount': memory + ' Gi'
-            };
-
-            Object.entries(elements).forEach(([id, value]) => {
-                const element = document.getElementById(id);
-                if (element) {
-                    element.textContent = value;
-                }
-            });
-
-            // Calculate or use provided cost
-            const monthlyCost = cost || Math.ceil((cpu * 10 + memory * 5 + storage * 0.1));
-            const costElement = document.getElementById('calculatedCost');
-            if (costElement) {
-                costElement.textContent = '$' + monthlyCost;
-            }
-
-            updateInstallResourceCompareInline(cpu, memory, storage);
-        }
-
-        function updateInstallResourceCompareInline(cpu, memory, storage) {
-            const available = { cpu: 32, memory: 128, storage: 1200 };
-            const remaining = {
-                cpu: available.cpu - cpu,
-                memory: available.memory - memory,
-                storage: available.storage - storage
-            };
-
-            const setText = (id, value) => {
-                const element = document.getElementById(id);
-                if (element) element.textContent = String(value);
-            };
-
-            setText('availableCpu', available.cpu);
-            setText('availableMemory', available.memory);
-            setText('availableStorage', available.storage);
-            setText('requiredCpu', cpu);
-            setText('requiredMemory', memory);
-            setText('requiredStorage', storage);
-            setText('remainingCpu', remaining.cpu);
-            setText('remainingMemory', remaining.memory);
-            setText('remainingStorage', remaining.storage);
-
-            const card = document.getElementById('remainingCompareCard');
-            if (card) {
-                const over = remaining.cpu < 0 || remaining.memory < 0 || remaining.storage < 0;
-                card.classList.toggle('is-over', over);
-            }
-        }
-
-        function updateRecommendedResourceDisplays(cpu, memory, storage, cost) {
-            const elements = {
-                'recommendedCpuTotal': cpu,
-                'recommendedMemoryTotal': memory,
-                'recommendedStorageTotal': storage,
-                'recommendedCostTotal': '$' + cost
-            };
-
-            Object.entries(elements).forEach(([id, value]) => {
-                const element = document.getElementById(id);
-                if (element) {
-                    element.textContent = value;
-                }
-            });
-        }
-
-        function updateTotalResourcesFromManual() {
-            let totalCpu = 0;
-            let totalMemory = 0;
-            let totalStorage = 0;
-            let totalCost = 0;
-
-            Object.entries(selectedTools).forEach(([toolKey, tool]) => {
-                const resources = toolResourceData[toolKey] || getToolRecommendedResources(toolKey, tool.instances);
-                totalCpu += resources.cpu || 0;
-                totalMemory += resources.memory || 0;
-                totalStorage += resources.storage || 0;
-                totalCost += resources.cost || 0;
-            });
-
-            updateResourceDisplays(totalCpu, totalMemory, totalStorage, totalCost);
-        }
-
-        function validateToolResource(input, toolKey, resource, value) {
-            const recommended = getToolRecommendedResources(toolKey, selectedTools[toolKey]?.instances || 1);
-            const recommendedValue = recommended[resource];
-            
-            input.classList.remove('warning', 'error');
-            
-            if (value < recommendedValue * 0.5) {
-                input.classList.add('error');
-            } else if (value < recommendedValue * 0.7) {
-                input.classList.add('warning');
-            }
-        }
-
-        function updateStepNumbers() {
-            const sections = document.querySelectorAll('.resource-flow-section');
-            const individualSection = document.getElementById('individualToolResourcesSection');
-            
-            let stepNumber = 1;
-            
-            sections.forEach(section => {
-                if (section === individualSection && isManualMode === false) {
-                    // Skip individual tool resources section in auto mode
                     return;
                 }
-                
-                const stepNumberElement = section.querySelector('.step-number');
-                if (stepNumberElement) {
-                    stepNumberElement.textContent = stepNumber;
-                    stepNumber++;
-                }
-            });
-        }
 
-        // Initialize on page load
-        window.addEventListener('load', function() {
-            updateResourceCalculation();
-        });
-    </script>
-</body>
+                // Get current workload configuration
+                const developerCount = parseInt(document.getElementById('developerCount')?.value || 10);
+                const runnerCount = parseInt(document.getElementById('runnerCount')?.value || 4);
+                const commitCount = parseInt(document.getElementById('commitCount')?.value || 50);
+                const buildFrequency = document.getElementById('buildFrequency')?.value || 'medium';
+
+                // Calculate base resources
+                let cpuMultiplier = 1;
+                let memoryMultiplier = 1;
+                let storageMultiplier = 1;
+
+                switch (buildFrequency) {
+                    case 'low':
+                        cpuMultiplier = 0.7;
+                        memoryMultiplier = 0.8;
+                        break;
+                    case 'high':
+                        cpuMultiplier = 1.5;
+                        memoryMultiplier = 1.3;
+                        storageMultiplier = 1.2;
+                        break;
+                }
+
+                // Base calculation
+                const baseCpu = Math.max(4, Math.ceil((developerCount * 0.5 + runnerCount * 2) * cpuMultiplier));
+                const baseMemory = Math.max(16, Math.ceil((developerCount * 2 + runnerCount * 4) * memoryMultiplier));
+                const baseStorage = Math.max(100, Math.ceil((commitCount * 2 + runnerCount * 50) * storageMultiplier));
+
+                // Calculate tool-specific resources
+                let totalCpu = baseCpu;
+                let totalMemory = baseMemory;
+                let totalStorage = baseStorage;
+                let totalCost = 0;
+
+                Object.entries(selectedTools).forEach(([toolKey, tool]) => {
+                    const toolResources = getToolRecommendedResources(toolKey, tool.instances);
+                    totalCpu += toolResources.cpu;
+                    totalMemory += toolResources.memory;
+                    totalStorage += toolResources.storage;
+                    totalCost += toolResources.cost;
+                });
+
+                // Update displays
+                updateResourceDisplays(totalCpu, totalMemory, totalStorage, totalCost);
+                updateRecommendedResourceDisplays(totalCpu, totalMemory, totalStorage, totalCost);
+            }
+
+            function getToolRecommendedResources(toolKey, instances = 1) {
+                const baseResources = {
+                    // Package Registry
+                    'gitlab': { cpu: 1.0, memory: 2, storage: 20, cost: 25 },
+                    'nexus': { cpu: 2.0, memory: 4, storage: 50, cost: 45 },
+                    'jfrog': { cpu: 2.5, memory: 6, storage: 100, cost: 60 },
+                    'harbor': { cpu: 1.5, memory: 3, storage: 30, cost: 35 },
+
+                    // Source Repository
+                    'gitea': { cpu: 0.5, memory: 1, storage: 10, cost: 15 },
+
+                    // Pipeline Tools
+                    'jenkins': { cpu: 2.0, memory: 4, storage: 20, cost: 40 },
+                    'argocd': { cpu: 0.5, memory: 1, storage: 5, cost: 12 },
+                    'flux': { cpu: 0.3, memory: 0.5, storage: 2, cost: 8 },
+                    'spinnaker': { cpu: 4.0, memory: 8, storage: 40, cost: 80 },
+                    'tekton': { cpu: 1.0, memory: 2, storage: 10, cost: 20 },
+                    'github': { cpu: 1.0, memory: 2, storage: 10, cost: 20 },
+
+                    // Monitoring Tools
+                    'prometheus': { cpu: 2.0, memory: 4, storage: 100, cost: 50 },
+                    'grafana': { cpu: 1.0, memory: 2, storage: 10, cost: 25 },
+                    'thanos': { cpu: 1.5, memory: 3, storage: 200, cost: 45 },
+
+                    // Logging Tools
+                    'opentelemetry': { cpu: 1.0, memory: 2, storage: 20, cost: 25 },
+                    'loki': { cpu: 1.5, memory: 3, storage: 50, cost: 35 },
+                    'opensearch': { cpu: 3.0, memory: 6, storage: 100, cost: 70 },
+                    'elasticsearch': { cpu: 3.0, memory: 6, storage: 100, cost: 70 },
+
+                    // Storage
+                    'minio': { cpu: 1.0, memory: 2, storage: 500, cost: 30 }
+                };
+
+                const base = baseResources[toolKey] || { cpu: 1, memory: 2, storage: 10, cost: 20 };
+
+                return {
+                    cpu: Math.round((base.cpu * instances) * 10) / 10,
+                    memory: Math.round((base.memory * instances) * 10) / 10,
+                    storage: Math.round(base.storage * instances),
+                    cost: Math.round(base.cost * instances)
+                };
+            }
+
+            function getCategoryIcon(category) {
+                const icons = {
+                    'Package Registry': 'box',
+                    'Source Repository': 'code-branch',
+                    'Container Registry': 'docker',
+                    'Storage Backend': 'database',
+                    'CI/CD Platform': 'project-diagram',
+                    'Continuous Deployment': 'rocket',
+                    'Monitoring Collection': 'chart-line',
+                    'Monitoring Visualization': 'chart-bar',
+                    'Logging Collection': 'file-alt',
+                    'Log Search': 'search',
+                    'Log Analytics': 'analytics'
+                };
+                return icons[category] || 'cog';
+            }
+
+            function getToolIcon(toolKey) {
+                const icons = {
+                    'gitlab': 'gitlab',
+                    'github': 'github',
+                    'jenkins': 'hammer',
+                    'prometheus': 'fire',
+                    'grafana': 'chart-line',
+                    'nexus': 'archive',
+                    'harbor': 'anchor',
+                    'minio': 'cloud',
+                    'elasticsearch': 'search',
+                    'opensearch': 'search-plus'
+                };
+                return icons[toolKey] || 'cog';
+            }
+
+            function updateResourceDisplays(cpu, memory, storage, cost = null) {
+                const elements = {
+                    'calculatedCpu': cpu,
+                    'calculatedMemory': memory,
+                    'calculatedStorage': storage,
+                    'headerCpuCount': cpu + ' cores',
+                    'headerMemoryCount': memory + ' Gi'
+                };
+
+                Object.entries(elements).forEach(([id, value]) => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.textContent = value;
+                    }
+                });
+
+                // Calculate or use provided cost
+                const monthlyCost = cost || Math.ceil((cpu * 10 + memory * 5 + storage * 0.1));
+                const costElement = document.getElementById('calculatedCost');
+                if (costElement) {
+                    costElement.textContent = '$' + monthlyCost;
+                }
+
+                updateInstallResourceCompareInline(cpu, memory, storage);
+            }
+
+            function updateInstallResourceCompareInline(cpu, memory, storage) {
+                const available = { cpu: 32, memory: 128, storage: 1200 };
+                const remaining = {
+                    cpu: available.cpu - cpu,
+                    memory: available.memory - memory,
+                    storage: available.storage - storage
+                };
+
+                const setText = (id, value) => {
+                    const element = document.getElementById(id);
+                    if (element) element.textContent = String(value);
+                };
+
+                setText('availableCpu', available.cpu);
+                setText('availableMemory', available.memory);
+                setText('availableStorage', available.storage);
+                setText('requiredCpu', cpu);
+                setText('requiredMemory', memory);
+                setText('requiredStorage', storage);
+                setText('remainingCpu', remaining.cpu);
+                setText('remainingMemory', remaining.memory);
+                setText('remainingStorage', remaining.storage);
+
+                const card = document.getElementById('remainingCompareCard');
+                if (card) {
+                    const over = remaining.cpu < 0 || remaining.memory < 0 || remaining.storage < 0;
+                    card.classList.toggle('is-over', over);
+                }
+            }
+
+            function updateRecommendedResourceDisplays(cpu, memory, storage, cost) {
+                const elements = {
+                    'recommendedCpuTotal': cpu,
+                    'recommendedMemoryTotal': memory,
+                    'recommendedStorageTotal': storage,
+                    'recommendedCostTotal': '$' + cost
+                };
+
+                Object.entries(elements).forEach(([id, value]) => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.textContent = value;
+                    }
+                });
+            }
+
+            function updateTotalResourcesFromManual() {
+                let totalCpu = 0;
+                let totalMemory = 0;
+                let totalStorage = 0;
+                let totalCost = 0;
+
+                Object.entries(selectedTools).forEach(([toolKey, tool]) => {
+                    const resources = toolResourceData[toolKey] || getToolRecommendedResources(toolKey, tool.instances);
+                    totalCpu += resources.cpu || 0;
+                    totalMemory += resources.memory || 0;
+                    totalStorage += resources.storage || 0;
+                    totalCost += resources.cost || 0;
+                });
+
+                updateResourceDisplays(totalCpu, totalMemory, totalStorage, totalCost);
+            }
+
+            function validateToolResource(input, toolKey, resource, value) {
+                const recommended = getToolRecommendedResources(toolKey, selectedTools[toolKey]?.instances || 1);
+                const recommendedValue = recommended[resource];
+
+                input.classList.remove('warning', 'error');
+
+                if (value < recommendedValue * 0.5) {
+                    input.classList.add('error');
+                } else if (value < recommendedValue * 0.7) {
+                    input.classList.add('warning');
+                }
+            }
+
+            function updateStepNumbers() {
+                const sections = document.querySelectorAll('.resource-flow-section');
+                const individualSection = document.getElementById('individualToolResourcesSection');
+
+                let stepNumber = 1;
+
+                sections.forEach(section => {
+                    if (section === individualSection && isManualMode === false) {
+                        // Skip individual tool resources section in auto mode
+                        return;
+                    }
+
+                    const stepNumberElement = section.querySelector('.step-number');
+                    if (stepNumberElement) {
+                        stepNumberElement.textContent = stepNumber;
+                        stepNumber++;
+                    }
+                });
+            }
+
+            // Initialize on page load
+            window.addEventListener('load', function () {
+                updateResourceCalculation();
+            });
+        </script>
+    </body>
+
 </html>

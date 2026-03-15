@@ -47,3 +47,18 @@ function selectCicdItem(item) {
     var defaultTab = document.querySelector('.stack-inner-tab[data-ctab="info"]');
     if (defaultTab) switchCicdTab(defaultTab, 'info');
 }
+
+function filterCicdList(value) {
+    const query = (value !== undefined ? value : (document.getElementById('cicdListSearch')?.value || '')).toLowerCase();
+    const statusFilter = document.getElementById('cicdListStatusFilter')?.value || 'all';
+
+    document.querySelectorAll('.cicd-list-card').forEach(card => {
+        const name = (card.dataset.name || '').toLowerCase();
+        const status = (card.dataset.status || '').toLowerCase();
+        const matchName = name.includes(query);
+        const matchStatus = statusFilter === 'all' || status === statusFilter;
+        card.style.display = (matchName && matchStatus) ? '' : 'none';
+    });
+}
+
+window.filterCicdList = filterCicdList;

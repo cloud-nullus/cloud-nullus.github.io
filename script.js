@@ -440,7 +440,7 @@ function setupEventListeners() {
     if (elements.quickDeployBtn) {
         elements.quickDeployBtn.addEventListener('click', startQuickDeployment);
     }
-    
+
     if (elements.sidebarDeployBtn) {
         elements.sidebarDeployBtn.addEventListener('click', startQuickDeployment);
     }
@@ -555,11 +555,11 @@ function switchTab(tabName) {
     }
     const validTabs = ['artifacts', 'pipeline', 'monitoring', 'logging', 'resources'];
     if (!validTabs.includes(tabName)) return;
-    
+
     state.currentTab = tabName;
     updateUI();
     updateProgressSteps();
-    
+
     // If switching to clusters tab, update cluster status
     updateClusterStatus();
 }
@@ -574,25 +574,25 @@ function updateProgressSteps() {
         'resources': 5,
         'clusters': 6
     };
-    
+
     const currentStepNumber = stepMapping[state.currentTab];
     const progressSteps = document.querySelectorAll('.progress-step');
     const progressLines = document.querySelectorAll('.progress-line');
-    
+
     progressSteps.forEach((step, index) => {
         const stepNumber = index + 1;
         step.classList.remove('completed', 'active');
-        
+
         if (stepNumber < currentStepNumber) {
             step.classList.add('completed');
         } else if (stepNumber === currentStepNumber) {
             step.classList.add('active');
         }
     });
-    
+
     progressLines.forEach((line, index) => {
         line.classList.remove('completed', 'active');
-        
+
         if (index + 1 < currentStepNumber) {
             line.classList.add('completed');
         } else if (index + 1 === currentStepNumber) {
@@ -701,20 +701,20 @@ function saveClusterConfiguration() {
     const pipelineNamespace = document.getElementById('modalPipelineNamespace')?.value || '';
     const appClusterName = document.getElementById('modalTargetClusterName')?.value || '';
     const appNamespace = document.getElementById('modalTargetNamespace')?.value || '';
-    
+
     // Update state
     state.config.pipelineClusterName = pipelineClusterName;
     state.config.pipelineNamespace = pipelineNamespace;
     state.config.appClusterName = appClusterName;
     state.config.appNamespace = appNamespace;
-    
+
     // Update cluster status in sidebar
     updateClusterStatus();
     renderClusterRegistryPage();
-    
+
     // Close modal
     closeClusterModal();
-    
+
     // Show success notification
     showNotification('Cluster configuration saved successfully!', 'success');
 }
@@ -810,7 +810,7 @@ function updateClusterStatus() {
     const appClusterName = state.config.appClusterName || '';
     const appNamespace = state.config.appNamespace || '';
     const hasKubeconfig = true;
-    
+
     // Update main cluster status
     if (elements.appClusterStatus) {
         if (appClusterName && appNamespace && hasKubeconfig) {
@@ -824,7 +824,7 @@ function updateClusterStatus() {
             elements.appClusterStatus.innerHTML = '<i class="fas fa-clock"></i><span>Not configured</span>';
         }
     }
-    
+
     // Update sidebar cluster status
     if (elements.sidebarAppClusterStatus) {
         if (appClusterName && appNamespace && hasKubeconfig) {
@@ -838,7 +838,7 @@ function updateClusterStatus() {
             elements.sidebarAppClusterStatus.innerHTML = '<i class="fas fa-clock"></i><span>Not configured</span>';
         }
     }
-    
+
     // Update sidebar deploy checklist
     if (elements.sidebarClusterCheck) {
         if (appClusterName && appNamespace && hasKubeconfig) {
@@ -849,7 +849,7 @@ function updateClusterStatus() {
             elements.sidebarClusterCheck.innerHTML = '<i class="fas fa-times"></i><span>Clusters</span>';
         }
     }
-    
+
     // Update deploy button states
     const isReady = !!(appClusterName && appNamespace);
     if (elements.quickDeployBtn) {
@@ -863,12 +863,12 @@ function updateClusterStatus() {
 function startQuickDeployment() {
     if (elements.deploymentProgressCard) {
         elements.deploymentProgressCard.style.display = 'block';
-        
+
         // Hide deploy button
         if (elements.quickDeployBtn) {
             elements.quickDeployBtn.style.display = 'none';
         }
-        
+
         // Start deployment simulation
         simulateDeployment();
     }
@@ -878,7 +878,7 @@ function simulateDeployment() {
     const progressFill = document.getElementById('sidebarProgressFill');
     const progressText = document.getElementById('sidebarProgressText');
     const deploymentLogs = document.getElementById('sidebarDeploymentLogs');
-    
+
     const steps = [
         { text: 'Validating configuration...', progress: 10 },
         { text: 'Setting up repositories...', progress: 25 },
@@ -886,16 +886,16 @@ function simulateDeployment() {
         { text: 'Configuring clusters...', progress: 75 },
         { text: 'Deployment complete!', progress: 100 }
     ];
-    
+
     let currentStep = 0;
-    
+
     const interval = setInterval(() => {
         if (currentStep < steps.length) {
             const step = steps[currentStep];
-            
+
             if (progressFill) progressFill.style.width = step.progress + '%';
             if (progressText) progressText.textContent = step.text;
-            
+
             // Add log entry
             if (deploymentLogs) {
                 const logEntry = document.createElement('div');
@@ -907,18 +907,18 @@ function simulateDeployment() {
                 deploymentLogs.appendChild(logEntry);
                 deploymentLogs.scrollTop = deploymentLogs.scrollHeight;
             }
-            
+
             if (step.progress === 100) {
                 clearInterval(interval);
                 showNotification('Pipeline deployed successfully!', 'success');
-                
+
                 // Update progress card header
                 const progressHeader = elements.deploymentProgressCard?.querySelector('.card-header h4');
                 if (progressHeader) {
                     progressHeader.innerHTML = '<i class="fas fa-check-circle text-success"></i> Deployment Complete';
                 }
             }
-            
+
             currentStep++;
         }
     }, 1500);
@@ -928,7 +928,7 @@ function showNotification(message, type = 'info') {
     const notification = document.createElement('div');
     const iconClass = type === 'success' ? 'fa-check-circle' : 'fa-info-circle';
     const bgColor = type === 'success' ? '#10b981' : '#3b82f6';
-    
+
     notification.innerHTML = `
         <div style="
             position: fixed;
@@ -950,7 +950,7 @@ function showNotification(message, type = 'info') {
             </div>
         </div>
     `;
-    
+
     const style = document.createElement('style');
     style.textContent = `
         @keyframes slideInRight {
@@ -960,7 +960,7 @@ function showNotification(message, type = 'info') {
     `;
     document.head.appendChild(style);
     document.body.appendChild(notification);
-    
+
     setTimeout(() => {
         document.body.removeChild(notification);
         document.head.removeChild(style);
@@ -971,7 +971,7 @@ function showNotification(message, type = 'info') {
 function showStageDetails(stageName) {
     // Create a modal or side panel to show stage-specific configuration
     console.log(`Configuring ${stageName} stage`);
-    
+
     // Update stage status
     const stage = document.querySelector(`[data-stage="${stageName}"]`);
     if (stage) {
@@ -1028,7 +1028,7 @@ function calculateResources() {
     state.resources.cpu = Math.ceil((baseCpu + developerCpu + runnerCpu) * frequencyMultiplier);
     state.resources.memory = Math.ceil((baseMemory + developerMemory + runnerMemory) * frequencyMultiplier);
     state.resources.storage = baseStorage + commitStorage + (runners * 50); // 50 Gi per runner
-    
+
     // Cost calculation (rough estimate)
     const cpuCost = state.resources.cpu * 15; // $15 per CPU core
     const memoryCost = state.resources.memory * 2; // $2 per Gi memory
@@ -1045,13 +1045,13 @@ function calculateResources() {
 // Update resource calculation display
 function updateResourceCalculation() {
     calculateResources();
-    
+
     // Update enhanced header resource displays
     if (elements.headerCpuCount) elements.headerCpuCount.textContent = `${state.resources.cpu} cores`;
     if (elements.headerMemoryCount) elements.headerMemoryCount.textContent = `${state.resources.memory} Gi`;
     if (elements.headerStorageCount) elements.headerStorageCount.textContent = `${state.resources.storage} Gi`;
     if (elements.headerCostCount) elements.headerCostCount.textContent = formatCost(state.resources.cost);
-    
+
     // Update detailed resource displays
     if (elements.calculatedCpu) elements.calculatedCpu.textContent = state.resources.cpu;
     if (elements.calculatedMemory) elements.calculatedMemory.textContent = state.resources.memory;
@@ -1099,7 +1099,7 @@ function updateHeaderStatus() {
             statusIndicator.textContent = 'Not configured';
         }
     }
-    
+
     // Update Pipeline Tools status
     if (elements.headerPipelineStatus) {
         const hasPipelineTools = (state.config.pipelineTools?.cicd?.tool || state.config.pipelineTools?.cd?.tool);
@@ -1112,14 +1112,14 @@ function updateHeaderStatus() {
             statusIndicator.textContent = 'Not configured';
         }
     }
-    
+
     // Update Resources status (always calculated)
     if (elements.headerResourcesStatus) {
         const statusIndicator = elements.headerResourcesStatus.querySelector('.status-indicator');
         statusIndicator.className = 'status-indicator completed';
         statusIndicator.textContent = 'Calculated';
     }
-    
+
     // Update Clusters status
     if (elements.headerClustersStatus) {
         const hasClusters = state.config.clusters?.appClusterName && state.config.clusters?.appKubeconfig;
@@ -1137,7 +1137,7 @@ function updateHeaderStatus() {
 // Update configuration summary
 function updateSummary() {
     updateHeaderStatus();
-    
+
     const summaryElements = {
         summaryPackageRegistry: document.getElementById('summaryPackageRegistry'),
         summarySourceRepo: document.getElementById('summarySourceRepo'),
@@ -1226,12 +1226,12 @@ function startDeployment() {
     const progressFill = document.getElementById('deployProgressFill');
     const progressText = document.getElementById('deployProgressText');
     const deploymentLogs = document.getElementById('deploymentLogs');
-    
+
     if (!deployBtn || !deploymentProgress) return;
-    
+
     deployBtn.style.display = 'none';
     deploymentProgress.style.display = 'block';
-    
+
     const deploymentSteps = [
         { text: 'Initializing deployment...', progress: 5, logs: ['Starting deployment process', 'Validating configuration'] },
         { text: 'Setting up artifact repositories...', progress: 15, logs: ['Configuring GitLab Package Registry', 'Setting up container registry'] },
@@ -1242,16 +1242,16 @@ function startDeployment() {
         { text: 'Finalizing configuration...', progress: 95, logs: ['Running validation tests', 'Setting up webhooks'] },
         { text: 'Deployment completed successfully!', progress: 100, logs: ['All components deployed', 'Pipeline is ready for use'] }
     ];
-    
+
     let currentStep = 0;
-    
+
     const deployInterval = setInterval(() => {
         if (currentStep < deploymentSteps.length) {
             const step = deploymentSteps[currentStep];
-            
+
             if (progressText) progressText.textContent = step.text;
             if (progressFill) progressFill.style.width = step.progress + '%';
-            
+
             // Add logs
             if (deploymentLogs && step.logs) {
                 step.logs.forEach(logMessage => {
@@ -1267,19 +1267,19 @@ function startDeployment() {
                     deploymentLogs.scrollTop = deploymentLogs.scrollHeight;
                 });
             }
-            
+
             if (step.progress === 100) {
                 if (progressText) {
                     progressText.innerHTML = '<i class="fas fa-check-circle"></i> Deployment completed successfully!';
                     progressText.style.color = '#10b981';
                 }
                 clearInterval(deployInterval);
-                
+
                 setTimeout(() => {
                     showDeploymentSuccess();
                 }, 1000);
             }
-            
+
             currentStep++;
         }
     }, 2000);
@@ -1310,7 +1310,7 @@ function showDeploymentSuccess() {
             </div>
         </div>
     `;
-    
+
     const style = document.createElement('style');
     style.textContent = `
         @keyframes slideIn {
@@ -1320,7 +1320,7 @@ function showDeploymentSuccess() {
     `;
     document.head.appendChild(style);
     document.body.appendChild(notification);
-    
+
     setTimeout(() => {
         document.body.removeChild(notification);
         document.head.removeChild(style);
@@ -1331,7 +1331,7 @@ function showDeploymentSuccess() {
 function startInstallation() {
     elements.installBtn.style.display = 'none';
     elements.installProgress.style.display = 'block';
-    
+
     const steps = [
         { text: '설치 준비 중...', progress: 10 },
         { text: '아티팩트 레지스트리 구성 중...', progress: 20 },
@@ -1341,27 +1341,27 @@ function startInstallation() {
         { text: '설정 검증 중...', progress: 95 },
         { text: '설치 완료!', progress: 100 }
     ];
-    
+
     let currentStepIndex = 0;
-    
+
     const installInterval = setInterval(() => {
         if (currentStepIndex < steps.length) {
             const step = steps[currentStepIndex];
             elements.progressText.textContent = step.text;
             elements.progressFill.style.width = step.progress + '%';
-            
+
             if (step.progress === 100) {
                 elements.progressText.innerHTML = '<i class="fas fa-check-circle"></i> 설치가 성공적으로 완료되었습니다!';
                 elements.progressText.style.color = '#28a745';
                 elements.progressText.style.fontWeight = 'bold';
                 clearInterval(installInterval);
-                
+
                 // Show success animation
                 setTimeout(() => {
                     showSuccessMessage();
                 }, 1000);
             }
-            
+
             currentStepIndex++;
         }
     }, 1500);
@@ -1399,7 +1399,7 @@ function showSuccessMessage() {
             z-index: 999;
         "></div>
     `;
-    
+
     // Add success animation CSS
     const style = document.createElement('style');
     style.textContent = `
@@ -1410,9 +1410,9 @@ function showSuccessMessage() {
         }
     `;
     document.head.appendChild(style);
-    
+
     document.body.appendChild(successDiv);
-    
+
     // Remove success message after 3 seconds
     setTimeout(() => {
         document.body.removeChild(successDiv);
@@ -1435,22 +1435,22 @@ function addInteractiveEffects() {
                 animation: ripple 0.6s linear;
                 pointer-events: none;
             `;
-            
+
             const rect = stage.getBoundingClientRect();
             const size = Math.max(rect.width, rect.height);
             ripple.style.width = ripple.style.height = size + 'px';
             ripple.style.left = (rect.width / 2 - size / 2) + 'px';
             ripple.style.top = (rect.height / 2 - size / 2) + 'px';
-            
+
             stage.style.position = 'relative';
             stage.appendChild(ripple);
-            
+
             setTimeout(() => {
                 stage.removeChild(ripple);
             }, 600);
         });
     });
-    
+
     // Add ripple animation CSS
     const rippleStyle = document.createElement('style');
     rippleStyle.textContent = `
@@ -1477,14 +1477,14 @@ function addBackgroundEffect() {
         z-index: -1;
     `;
     document.body.appendChild(canvas);
-    
+
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    
+
     const particles = [];
     const particleCount = 50;
-    
+
     for (let i = 0; i < particleCount; i++) {
         particles.push({
             x: Math.random() * canvas.width,
@@ -1495,28 +1495,28 @@ function addBackgroundEffect() {
             opacity: Math.random() * 0.5 + 0.2
         });
     }
-    
+
     function animate() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
+
         particles.forEach(particle => {
             particle.x += particle.vx;
             particle.y += particle.vy;
-            
+
             if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -1;
             if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -1;
-            
+
             ctx.beginPath();
             ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
             ctx.fillStyle = `rgba(255, 255, 255, ${particle.opacity})`;
             ctx.fill();
         });
-        
+
         requestAnimationFrame(animate);
     }
-    
+
     animate();
-    
+
     window.addEventListener('resize', () => {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
@@ -1528,11 +1528,11 @@ function handleToolSelection(checkbox) {
     const toolName = checkbox.name;
     const toolValue = checkbox.value;
     const isChecked = checkbox.checked;
-    
+
     // Find the version dropdown for this tool
     const toolOption = checkbox.closest('.tool-option');
     const versionDropdown = toolOption?.querySelector('.version-dropdown');
-    
+
     if (versionDropdown) {
         versionDropdown.disabled = !isChecked;
         if (isChecked) {
@@ -1548,7 +1548,7 @@ function handleToolSelection(checkbox) {
             delete state.config[toolName];
         }
     }
-    
+
     updatePipelineStages();
     updateSummary();
 }
@@ -1558,7 +1558,7 @@ document.addEventListener('change', (e) => {
     if (e.target.classList.contains('version-dropdown')) {
         const toolOption = e.target.closest('.tool-option');
         const checkbox = toolOption?.querySelector('input[type="checkbox"]');
-        
+
         if (checkbox && checkbox.checked) {
             const toolName = checkbox.name;
             const toolValue = checkbox.value;
@@ -1594,7 +1594,7 @@ function addInteractiveEffects() {
         card.addEventListener('mouseenter', () => {
             card.style.borderColor = '#60a5fa';
         });
-        
+
         card.addEventListener('mouseleave', () => {
             card.style.borderColor = '#2d3748';
         });
@@ -1620,7 +1620,7 @@ function addInteractiveEffects() {
 document.addEventListener('DOMContentLoaded', () => {
     init();
     addInteractiveEffects();
-    
+
     // Add initial animation to pipeline stages
     setTimeout(() => {
         document.querySelectorAll('.stage').forEach((stage, index) => {
@@ -1628,7 +1628,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 stage.style.opacity = '0';
                 stage.style.transform = 'translateY(20px)';
                 stage.style.transition = 'all 0.3s ease';
-                
+
                 setTimeout(() => {
                     stage.style.opacity = '1';
                     stage.style.transform = 'translateY(0)';
@@ -1636,10 +1636,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }, index * 100);
         });
     }, 300);
-    
+
     // Initialize DevSecOps List features
     if (typeof initializePipelineListFeatures === 'function') initializePipelineListFeatures();
-    
+
     // Set initial page state — use URL hash if present
     const hashPage = location.hash.replace('#', '');
     const defaultPage = state.currentRole === 'admin' ? 'organization' : (state.currentRole === 'developer' ? 'cicdlist' : 'list');
@@ -1648,7 +1648,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Hash-based routing: handle browser back/forward and direct URL navigation
-window.addEventListener('hashchange', function() {
+window.addEventListener('hashchange', function () {
     var page = location.hash.replace('#', '');
     if (page && page !== state.currentPage) {
         switchPage(page, true); // true = don't re-push to navHistory
@@ -1697,6 +1697,101 @@ function goBack() {
     }
 }
 
+// ── Page HTML lazy-load registry ──
+var PAGE_HTML_MAP = {
+    home: 'html/home.html',
+    list: 'html/stack-list.html',
+    install: 'html/stack-install.html',
+    templates: 'html/stack-template.html',
+    compatibility: 'html/stack-version.html',
+    cicdlist: 'html/cicd-list.html',
+    cicdtemplates: 'html/cicd-template.html',
+    cicdhistory: 'html/cicd-template.html',
+    developer: 'html/cicd-developer.html',
+    action: 'html/action.html',
+    monitoring: 'html/obs-dashboard.html',
+    alertlist: 'html/obs-alert-list.html',
+    alerthistory: 'html/obs-alert-history.html',
+    organization: 'html/org-organization.html',
+    users: 'html/org-users.html',
+    clusters: 'html/org-clusters.html'
+}
+
+function loadPageHtml(pageName, callback) {
+    var pageId = pageName + 'Page';
+    var inlinePages = window.INLINE_PAGE_HTML || {};
+    if (document.getElementById(pageId)) {
+        callback();
+        return;
+    }
+
+    if (inlinePages[pageName]) {
+        const inlineWs = document.getElementById('mainWorkspace');
+        const inlineEl = document.createElement('div');
+        inlineEl.innerHTML = inlinePages[pageName];
+        while (inlineEl.firstChild) inlineWs.appendChild(inlineEl.firstChild);
+        callback();
+        return;
+    }
+
+    var htmlFile = PAGE_HTML_MAP[pageName];
+    if (!htmlFile) {
+        callback();
+        return;
+    }
+
+    var requestCandidates = [htmlFile];
+    var pagesFallback = htmlFile.replace(/^html\//, 'html/');
+    if (pagesFallback !== htmlFile) requestCandidates.push(pagesFallback);
+    requestCandidates.push('./' + htmlFile);
+    if (pagesFallback !== htmlFile) requestCandidates.push('./' + pagesFallback);
+
+    function appendPageHtml(html) {
+        var ws = document.getElementById('mainWorkspace');
+        var el = document.createElement('div');
+        el.innerHTML = html;
+        while (el.firstChild) ws.appendChild(el.firstChild);
+    }
+
+    function showPageLoadError() {
+        var ws = document.getElementById('mainWorkspace');
+        if (!ws) return;
+        ws.innerHTML =
+            '<div class="page-content active" style="padding:24px;">' +
+            '<div class="pipeline-card" style="padding:20px;border:1px solid #ef4444;">' +
+            '<h3 style="margin:0 0 8px;">Failed to load page content</h3>' +
+            '<p style="margin:0;color:#64748b;line-height:1.6;">' +
+            'Cannot fetch <code>' + htmlFile + '</code>. If you opened this file directly, run a local web server and open via <code>http://localhost</code>.' +
+            '</p>' +
+            '</div>' +
+            '</div>';
+    }
+
+    function fetchWithFallback(index) {
+        if (index >= requestCandidates.length) {
+            console.error('Failed to load page HTML:', pageName, requestCandidates);
+            showPageLoadError();
+            callback();
+            return;
+        }
+
+        fetch(requestCandidates[index], { cache: 'no-store' })
+            .then(function (r) {
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                return r.text();
+            })
+            .then(function (html) {
+                appendPageHtml(html);
+                callback();
+            })
+            .catch(function () {
+                fetchWithFallback(index + 1);
+            });
+    }
+
+    fetchWithFallback(0);
+}
+
 // Page switching functionality
 // _noHistory: pass true to skip pushing current page to navHistory (used by goBack, hashchange, initial load)
 function switchPage(pageName, _noHistory) {
@@ -1715,68 +1810,77 @@ function switchPage(pageName, _noHistory) {
         state.lastDeveloperPage = pageName;
     }
 
-    // Hide all pages
-    document.querySelectorAll('.page-content').forEach(page => {
-        page.classList.remove('active');
-    });
-    
-    // Show selected page
-    const targetPage = document.getElementById(pageName + 'Page');
-    if (targetPage) {
-        targetPage.classList.add('active');
-    }
-    
-    document.body.classList.remove(
-        'pipeline-list-page', 'templates-page', 'developer-page', 'clusters-page',
-        'organization-page', 'history-page', 'monitoring-page', 'compatibility-page', 'users-page',
-        'cicdhistory-page', 'cicdtemplates-page', 'cicdlist-page', 'home-page',
-        'alertlist-page', 'alerthistory-page'
-    );
-    if (pageName === 'list') document.body.classList.add('pipeline-list-page');
-    if (pageName === 'alertlist') document.body.classList.add('alertlist-page');
-    if (pageName === 'alerthistory') document.body.classList.add('alerthistory-page');
-    if (pageName === 'templates') document.body.classList.add('templates-page');
-    if (pageName === 'developer') document.body.classList.add('developer-page');
-    if (pageName === 'clusters') document.body.classList.add('clusters-page');
-    if (pageName === 'organization') document.body.classList.add('organization-page');
-    if (pageName === 'history') document.body.classList.add('history-page');
-    if (pageName === 'monitoring') document.body.classList.add('monitoring-page');
-    if (pageName === 'compatibility') document.body.classList.add('compatibility-page');
-    if (pageName === 'users') document.body.classList.add('users-page');
-    if (pageName === 'cicdhistory') document.body.classList.add('cicdhistory-page');
-    if (pageName === 'cicdtemplates') document.body.classList.add('cicdtemplates-page');
-    if (pageName === 'cicdlist') document.body.classList.add('cicdlist-page');
-    if (pageName === 'home') document.body.classList.add('home-page');
-
-    // Update sidebar active state
-    document.querySelectorAll('.nav-item').forEach(item => {
-        item.classList.remove('active');
-    });
-
-    const activeNavItem = document.querySelector(`[data-page="${pageName}"]`);
-    if (activeNavItem) {
-        activeNavItem.classList.add('active');
-    }
-
-    if (pageName === 'clusters') {
-        renderClusterRegistryPage();
-    }
-    if (pageName === 'list') {
-        firstStack = document.querySelector('.stack-list-item.active');
-        if (firstStack && typeof renderStackDetail === 'function') renderStackDetail(firstStack.dataset.stackId);
-    }
-    if (pageName === 'monitoring') {
-        renderMonitoringBars();
-    }
-    // Update URL hash (without triggering hashchange listener)
+    // Update URL hash and back button immediately (before async load)
     if (location.hash.replace('#', '') !== pageName) {
         history.replaceState(null, '', '#' + pageName);
     }
-    // Update back button visibility
     updateBackBtn();
     placeBackBtnNearTitle();
-    // Re-apply i18n when switching pages (ensures install page etc. get translated)
-    if (typeof i18n !== 'undefined' && i18n.apply) i18n.apply();
+    if (window.matchMedia('(max-width: 1200px)').matches) {
+        document.body.classList.remove('mobile-sidebar-open');
+    }
+
+    loadPageHtml(pageName, function () {
+        // Hide all pages
+        document.querySelectorAll('.page-content').forEach(function (page) {
+            page.classList.remove('active');
+        });
+
+        // Show selected page
+        var targetPage = document.getElementById(pageName + 'Page');
+        if (targetPage) {
+            targetPage.classList.add('active');
+        }
+
+        document.body.classList.remove(
+            'pipeline-list-page', 'templates-page', 'developer-page', 'clusters-page',
+            'organization-page', 'history-page', 'monitoring-page', 'compatibility-page', 'users-page',
+            'cicdhistory-page', 'cicdtemplates-page', 'cicdlist-page', 'action-page', 'home-page',
+            'alertlist-page', 'alerthistory-page'
+        );
+        if (pageName === 'list') document.body.classList.add('pipeline-list-page');
+        if (pageName === 'alertlist') document.body.classList.add('alertlist-page');
+        if (pageName === 'alerthistory') document.body.classList.add('alerthistory-page');
+        if (pageName === 'templates') document.body.classList.add('templates-page');
+        if (pageName === 'developer') document.body.classList.add('developer-page');
+        if (pageName === 'clusters') document.body.classList.add('clusters-page');
+        if (pageName === 'organization') document.body.classList.add('organization-page');
+        if (pageName === 'history') document.body.classList.add('history-page');
+        if (pageName === 'monitoring') document.body.classList.add('monitoring-page');
+        if (pageName === 'compatibility') document.body.classList.add('compatibility-page');
+        if (pageName === 'users') document.body.classList.add('users-page');
+        if (pageName === 'cicdhistory') document.body.classList.add('cicdhistory-page');
+        if (pageName === 'cicdtemplates') document.body.classList.add('cicdtemplates-page');
+        if (pageName === 'cicdlist') document.body.classList.add('cicdlist-page');
+        if (pageName === 'action') document.body.classList.add('action-page');
+        if (pageName === 'home') document.body.classList.add('home-page');
+
+        // Update sidebar active state
+        document.querySelectorAll('.nav-item').forEach(function (item) {
+            item.classList.remove('active');
+        });
+        var activeNavItem = document.querySelector('[data-page="' + pageName + '"]');
+        if (activeNavItem) {
+            activeNavItem.classList.add('active');
+        }
+
+        if (pageName === 'clusters') {
+            renderClusterRegistryPage();
+        }
+        if (pageName === 'list') {
+            firstStack = document.querySelector('.stack-list-item.active');
+            if (firstStack && typeof renderStackDetail === 'function') renderStackDetail(firstStack.dataset.stackId);
+        }
+        if (pageName === 'monitoring') {
+            renderMonitoringBars();
+        }
+
+        updateBackBtn();
+        placeBackBtnNearTitle();
+
+        // Re-apply i18n when switching pages
+        if (typeof i18n !== 'undefined' && i18n.apply) i18n.apply();
+    });
 }
 
 // CI Editor functions
@@ -1784,17 +1888,17 @@ function editPipelineConfig(pipelineName) {
     const modal = document.getElementById('ciEditorModal');
     const modalTitle = document.getElementById('editorModalTitle');
     const configFileName = document.getElementById('configFileName');
-    
+
     if (modal && modalTitle && configFileName) {
         modalTitle.textContent = `Edit ${pipelineName} Configuration`;
-        
+
         // Set appropriate config file name based on pipeline
         if (pipelineName.includes('github') || pipelineName === 'api-service-pipeline') {
             configFileName.textContent = '.github/workflows/ci.yml';
         } else {
             configFileName.textContent = '.gitlab-ci.yml';
         }
-        
+
         modal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
     }
@@ -1806,13 +1910,13 @@ function editStackConfig(stackName) {
     const modalTitle = document.getElementById('editorModalTitle');
     const configFileName = document.getElementById('configFileName');
     const configEditor = document.getElementById('configEditor');
-    
+
     if (modal && modalTitle && configFileName && configEditor) {
         modalTitle.textContent = `Edit ${stackName} Pipeline`;
-        
+
         // Determine CI/CD platform and config file based on stack
         let fileName, configContent;
-        
+
         if (stackName === 'Production DevSecOps Stack') {
             fileName = '.gitlab-ci.yml';
             configContent = generateGitLabDevSecOpsConfig();
@@ -1835,10 +1939,10 @@ function editStackConfig(stackName) {
             fileName = '.gitlab-ci.yml';
             configContent = generateGitLabDevSecOpsConfig();
         }
-        
+
         configFileName.textContent = fileName;
         configEditor.value = configContent;
-        
+
         modal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
     }
@@ -1857,12 +1961,12 @@ function switchEditorTab(tabName) {
     document.querySelectorAll('.editor-tab').forEach(tab => {
         tab.classList.toggle('active', tab.dataset.tab === tabName);
     });
-    
+
     // Update panels
     document.querySelectorAll('.editor-panel').forEach(panel => {
         panel.classList.remove('active');
     });
-    
+
     const targetPanel = document.getElementById(tabName.replace('-', '') + 'Panel');
     if (targetPanel) {
         targetPanel.classList.add('active');
@@ -1871,23 +1975,23 @@ function switchEditorTab(tabName) {
 
 function validateConfiguration() {
     const configText = document.getElementById('ciConfigEditor')?.value;
-    
+
     if (!configText) {
         showNotification('No configuration to validate', 'warning');
         return;
     }
-    
+
     // Simple YAML validation simulation
     try {
         // Basic validation checks
         if (!configText.includes('stages:')) {
             throw new Error('Missing required "stages" section');
         }
-        
+
         if (!configText.includes('script:')) {
             throw new Error('No jobs with scripts found');
         }
-        
+
         showNotification('Configuration is valid!', 'success');
     } catch (error) {
         showNotification(`Validation error: ${error.message}`, 'error');
@@ -1896,15 +2000,15 @@ function validateConfiguration() {
 
 function saveCiConfiguration() {
     const configText = document.getElementById('ciConfigEditor')?.value;
-    
+
     if (!configText) {
         showNotification('No configuration to save', 'warning');
         return;
     }
-    
+
     // Simulate saving
     showNotification('Configuration saved successfully!', 'success');
-    
+
     setTimeout(() => {
         closeCiEditor();
     }, 1000);
@@ -1913,7 +2017,7 @@ function saveCiConfiguration() {
 function applyTemplate(templateType) {
     const editor = document.getElementById('ciConfigEditor');
     if (!editor) return;
-    
+
     const templates = {
         node: `stages:
   - install
@@ -1963,7 +2067,7 @@ deploy_job:
     - npm run deploy
   only:
     - main`,
-        
+
         docker: `stages:
   - build
   - test
@@ -2009,7 +2113,7 @@ deploy_container:
     - docker-compose up -d
   only:
     - main`,
-        
+
         kubernetes: `stages:
   - build
   - test
@@ -2063,7 +2167,7 @@ deploy_to_production:
   when: manual
   only:
     - main`,
-        
+
         python: `stages:
   - test
   - build
@@ -2115,11 +2219,11 @@ deploy_package:
   only:
     - tags`
     };
-    
+
     if (templates[templateType]) {
         editor.value = templates[templateType];
         showNotification(`${templateType.charAt(0).toUpperCase() + templateType.slice(1)} template applied!`, 'success');
-        
+
         // Switch back to config tab
         switchEditorTab('ci-config');
     }
@@ -2983,29 +3087,29 @@ if __name__ == "__main__":
 function initializePipelineListFeatures() {
     const searchInput = document.querySelector('.search-box input');
     const pipelineCards = document.querySelectorAll('.devsecops-stack');
-    
+
     if (searchInput) {
-        searchInput.addEventListener('input', function(e) {
+        searchInput.addEventListener('input', function (e) {
             const searchTerm = e.target.value.toLowerCase();
-            
+
             pipelineCards.forEach(card => {
                 const title = card.querySelector('.stack-title')?.textContent.toLowerCase() || '';
                 const description = card.querySelector('.stack-description')?.textContent.toLowerCase() || '';
                 const tools = Array.from(card.querySelectorAll('.tool-tag span'))
                     .map(span => span.textContent.toLowerCase()).join(' ');
-                
-                const isMatch = title.includes(searchTerm) || 
-                               description.includes(searchTerm) || 
-                               tools.includes(searchTerm);
-                
+
+                const isMatch = title.includes(searchTerm) ||
+                    description.includes(searchTerm) ||
+                    tools.includes(searchTerm);
+
                 card.style.display = isMatch ? 'block' : 'none';
             });
-            
+
             // Update results count
-            const visibleCards = Array.from(pipelineCards).filter(card => 
+            const visibleCards = Array.from(pipelineCards).filter(card =>
                 card.style.display !== 'none'
             ).length;
-            
+
             updateSearchResults(visibleCards, pipelineCards.length);
         });
     }
@@ -3021,7 +3125,7 @@ function updateSearchResults(visible, total) {
             listHeader.appendChild(resultsInfo);
         }
     }
-    
+
     if (visible === total) {
         resultsInfo.textContent = '';
     } else {
@@ -3031,10 +3135,10 @@ function updateSearchResults(visible, total) {
 
 function filterByStatus(status) {
     const pipelineCards = document.querySelectorAll('.devsecops-stack');
-    
+
     pipelineCards.forEach(card => {
         const cardStatus = card.querySelector('.stack-status')?.textContent.toLowerCase().trim();
-        
+
         if (status === 'all' || cardStatus.includes(status.toLowerCase())) {
             card.style.display = 'block';
         } else {
@@ -3046,29 +3150,29 @@ function filterByStatus(status) {
 function sortStacks(criteria) {
     const pipelineGrid = document.querySelector('.pipeline-grid');
     const cards = Array.from(document.querySelectorAll('.devsecops-stack'));
-    
+
     cards.sort((a, b) => {
         switch (criteria) {
             case 'name':
                 const nameA = a.querySelector('.stack-title')?.textContent || '';
                 const nameB = b.querySelector('.stack-title')?.textContent || '';
                 return nameA.localeCompare(nameB);
-            
+
             case 'status':
                 const statusA = a.querySelector('.stack-status')?.textContent || '';
                 const statusB = b.querySelector('.stack-status')?.textContent || '';
                 return statusA.localeCompare(statusB);
-            
+
             case 'cost':
                 const costA = parseInt(a.querySelector('.metric-item:last-child span')?.textContent.replace(/[^0-9]/g, '') || '0');
                 const costB = parseInt(b.querySelector('.metric-item:last-child span')?.textContent.replace(/[^0-9]/g, '') || '0');
                 return costB - costA; // Descending order
-            
+
             default:
                 return 0;
         }
     });
-    
+
     // Re-append sorted cards
     cards.forEach(card => pipelineGrid.appendChild(card));
 }
@@ -3076,20 +3180,20 @@ function sortStacks(criteria) {
 function toggleDropdown(dropdownId) {
     const dropdown = document.getElementById(dropdownId);
     const allDropdowns = document.querySelectorAll('.dropdown-menu');
-    
+
     // Close all other dropdowns
     allDropdowns.forEach(menu => {
         if (menu.id !== dropdownId) {
             menu.classList.remove('show');
         }
     });
-    
+
     // Toggle current dropdown
     dropdown.classList.toggle('show');
 }
 
 // Close dropdowns when clicking outside
-document.addEventListener('click', function(event) {
+document.addEventListener('click', function (event) {
     if (!event.target.matches('.dropdown-toggle')) {
         const dropdowns = document.querySelectorAll('.dropdown-menu');
         dropdowns.forEach(dropdown => {
@@ -3585,382 +3689,6 @@ spec:
 ${rules}`;
 }
 
-function initTemplatesPageActions() {
-    document.querySelectorAll('.apply-devops-template-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const preset = btn.dataset.preset;
-            if (!preset) return;
-            applyPreset(preset);
-            switchPage('install');
-            showNotification(`DevSecOps template selected: ${preset}`, 'success');
-        });
-    });
-
-    const searchInput = document.getElementById('templateSearchInput');
-    if (searchInput) {
-        searchInput.addEventListener('input', () => {
-            const q = searchInput.value.trim().toLowerCase();
-            document.querySelectorAll('#templatesPage .template-admin-card').forEach(card => {
-                const text = card.textContent?.toLowerCase() || '';
-                card.style.display = text.includes(q) ? '' : 'none';
-            });
-        });
-    }
-}
-
-function initDeveloperExperience() {
-    const templateCards = document.querySelectorAll('.developer-template-card');
-    templateCards.forEach(card => {
-        card.addEventListener('click', () => {
-            templateCards.forEach(c => c.classList.remove('selected'));
-            card.classList.add('selected');
-            state.developer.selectedTemplate = card.dataset.template;
-            if (elements.devSelectedTemplate) {
-                elements.devSelectedTemplate.value = card.querySelector('h3')?.textContent || '';
-            }
-            updateDeveloperReview();
-        });
-    });
-
-    [
-        elements.devAppName,
-        elements.devRepoUrl,
-        elements.devTargetCluster,
-        elements.devNamespace,
-        elements.devCpuRequest,
-        elements.devMemoryRequest
-    ].forEach(input => {
-        if (!input) return;
-        input.addEventListener('input', () => {
-            syncDeveloperFormState();
-            updateDeveloperReview();
-        });
-        input.addEventListener('change', () => {
-            syncDeveloperFormState();
-            updateDeveloperReview();
-        });
-    });
-
-    if (elements.addDevEnvVarBtn) {
-        elements.addDevEnvVarBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            addDeveloperEnvVar();
-        });
-    }
-
-    if (elements.developerEnvRows) {
-        elements.developerEnvRows.addEventListener('click', (e) => {
-            if (!e.target.closest('.remove-dev-env')) return;
-            const row = e.target.closest('.developer-env-row');
-            const idx = Number(row?.dataset.index || -1);
-            if (idx >= 0) {
-                state.developer.envVars.splice(idx, 1);
-                renderDeveloperEnvRows();
-                updateDeveloperReview();
-            }
-        });
-
-        elements.developerEnvRows.addEventListener('input', (e) => {
-            const row = e.target.closest('.developer-env-row');
-            const idx = Number(row?.dataset.index || -1);
-            if (idx < 0 || !state.developer.envVars[idx]) return;
-            if (e.target.classList.contains('dev-env-key')) state.developer.envVars[idx].key = e.target.value;
-            if (e.target.classList.contains('dev-env-value')) state.developer.envVars[idx].value = e.target.value;
-            if (e.target.classList.contains('dev-env-secret')) state.developer.envVars[idx].secret = e.target.checked;
-            updateDeveloperReview();
-        });
-
-        elements.developerEnvRows.addEventListener('change', (e) => {
-            if (!e.target.classList.contains('dev-env-secret')) return;
-            const row = e.target.closest('.developer-env-row');
-            const idx = Number(row?.dataset.index || -1);
-            if (idx >= 0 && state.developer.envVars[idx]) {
-                state.developer.envVars[idx].secret = e.target.checked;
-                updateDeveloperReview();
-            }
-        });
-    }
-
-    if (elements.developerPreviewBtn) {
-        elements.developerPreviewBtn.addEventListener('click', () => {
-            syncDeveloperFormState();
-            renderDeveloperManifestPreview();
-        });
-    }
-
-    if (elements.developerDeployBtn) {
-        elements.developerDeployBtn.addEventListener('click', () => {
-            syncDeveloperFormState();
-            if (!validateDeveloperDeploy()) return;
-            showNotification(`Deploy started: ${state.developer.appName} -> ${state.developer.cluster}/${state.developer.namespace}`, 'success');
-        });
-    }
-
-    if (!state.developer.envVars.length) {
-        addDeveloperEnvVar('APP_ENV', 'staging', false);
-    }
-
-    syncDeveloperFormState();
-    updateDeveloperReview();
-}
-
-function syncDeveloperFormState() {
-    state.developer.appName = elements.devAppName?.value?.trim() || '';
-    state.developer.repoUrl = elements.devRepoUrl?.value?.trim() || '';
-    state.developer.cluster = elements.devTargetCluster?.value || '';
-    state.developer.namespace = elements.devNamespace?.value?.trim() || '';
-    state.developer.cpuRequest = Number(elements.devCpuRequest?.value || 500);
-    state.developer.memoryRequest = Number(elements.devMemoryRequest?.value || 512);
-    state.developer.enableDb = !!elements.devEnableDb?.checked;
-    state.developer.enableRedis = !!elements.devEnableRedis?.checked;
-    state.developer.enableQueue = !!elements.devEnableQueue?.checked;
-}
-
-function addDeveloperEnvVar(key = '', value = '', secret = false) {
-    state.developer.envVars.push({ key, value, secret });
-    renderDeveloperEnvRows();
-    updateDeveloperReview();
-}
-
-function renderDeveloperEnvRows() {
-    if (!elements.developerEnvRows) return;
-    elements.developerEnvRows.innerHTML = '';
-    state.developer.envVars.forEach((env, idx) => {
-        const row = document.createElement('div');
-        row.className = 'developer-env-row';
-        row.dataset.index = String(idx);
-        row.innerHTML = `
-            <input class="dev-env-key" type="text" placeholder="KEY" value="${escapeHtml(env.key)}">
-            <input class="dev-env-value" type="text" placeholder="value" value="${escapeHtml(env.value)}">
-            <label><input class="dev-env-secret" type="checkbox" ${env.secret ? 'checked' : ''}> Secret</label>
-            <button class="btn btn-secondary btn-sm remove-dev-env" type="button"><i class="fas fa-trash"></i></button>
-        `;
-        elements.developerEnvRows.appendChild(row);
-    });
-}
-
-function updateDeveloperReview() {
-    if (!elements.developerReviewBox) return;
-    const infra = [
-        state.developer.enableDb ? 'PostgreSQL' : null,
-        state.developer.enableRedis ? 'Redis' : null,
-        state.developer.enableQueue ? 'Queue' : null
-    ].filter(Boolean);
-    const safeEnv = state.developer.envVars
-        .filter(e => e.key)
-        .map(e => `${e.key}=${e.secret ? '***' : (e.value || '')}`)
-        .join(', ');
-
-    elements.developerReviewBox.innerHTML = `
-        <strong>Review</strong><br>
-        Template: ${escapeHtml(elements.devSelectedTemplate?.value || '')}<br>
-        App: ${escapeHtml(state.developer.appName || '-') }<br>
-        Target: ${escapeHtml(state.developer.cluster || '-')} / ${escapeHtml(state.developer.namespace || '-')}<br>
-        Resources: CPU ${state.developer.cpuRequest}m, Memory ${state.developer.memoryRequest}Mi<br>
-        Infra: ${infra.length ? infra.join(', ') : 'none'}<br>
-        Env: ${safeEnv || 'none'}
-    `;
-}
-
-function renderDeveloperManifestPreview() {
-    const name = state.developer.appName || 'sample-app';
-    const ns = state.developer.namespace || 'apps';
-    const cpu = state.developer.cpuRequest;
-    const memory = state.developer.memoryRequest;
-    const slug = name.toLowerCase().replace(/[^a-z0-9-]/g, '-');
-
-    const env = state.developer.envVars
-        .filter(v => v.key)
-        .map(v => `            - name: ${v.key}\n              value: ${v.secret ? '"***"' : `"${(v.value || '').replace(/"/g, '\\"')}"`}`)
-        .join('\n');
-
-    const yaml = `apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: ${slug}
-  namespace: ${ns}
-  labels:
-    app.kubernetes.io/managed-by: nullus
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: ${slug}
-  template:
-    metadata:
-      labels:
-        app: ${slug}
-    spec:
-      containers:
-        - name: ${slug}
-          image: ${slug}:latest
-          resources:
-            requests:
-              cpu: "${cpu}m"
-              memory: "${memory}Mi"
-${env ? `          env:\n${env}\n` : ''}---
-apiVersion: v1
-kind: Service
-metadata:
-  name: ${slug}-svc
-  namespace: ${ns}
-spec:
-  selector:
-    app: ${slug}
-  ports:
-    - port: 80
-      targetPort: 8080`;
-
-    const modal = document.getElementById('k8sPreviewModal');
-    const content = document.getElementById('k8sPreviewContent');
-    if (!modal || !content) return;
-    content.textContent = yaml;
-    modal.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-    showNotification('Developer manifest preview generated', 'info');
-}
-
-function validateDeveloperDeploy() {
-    if (!state.developer.selectedTemplate) {
-        showNotification('Choose a template first', 'error');
-        return false;
-    }
-    if (!state.developer.appName) {
-        showNotification('App name is required', 'error');
-        return false;
-    }
-    if (!state.developer.cluster || !state.developer.namespace) {
-        showNotification('Target cluster and namespace are required', 'error');
-        return false;
-    }
-    return true;
-}
-
-function escapeHtml(text) {
-    return String(text || '')
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#39;');
-}
-
-// ============================================
-// 기능 0: Organization 저장 (데모)
-// ============================================
-function saveOrganization() {
-    const name = document.getElementById('orgName')?.value;
-    showNotification(`Organization "${name}" saved successfully.`, 'success');
-}
-
-// ============================================
-// 기능 4+6: Deployment History helpers
-// ============================================
-let rollbackTarget = null;
-
-function showDiff(fromVer, toVer) {
-    const key = `diff-${fromVer}-${toVer}`;
-    const el = document.getElementById(key);
-    if (!el) return;
-    el.style.display = el.style.display === 'none' ? 'block' : 'none';
-}
-
-function showDeployLogs(version) {
-    const modal = document.getElementById('deployLogsModal');
-    const content = document.getElementById('deployLogsContent');
-    if (!modal || !content) return;
-
-    const logsMap = {
-        // Nullus Stack logs
-        'ns-v2': [
-            '<span style="color:#6ee7b7;">[2026-03-01 10:58:00] INFO</span>  Starting Nullus platform upgrade v0.2.0 → v0.2.1...',
-            '<span style="color:#6ee7b7;">[2026-03-01 10:59:10] INFO</span>  Applying CVE-2026-1234 security patch',
-            '<span style="color:#6ee7b7;">[2026-03-01 11:02:00] INFO</span>  Nullus core pod restarted successfully',
-            '<span style="color:#6ee7b7;">[2026-03-01 11:06:00] INFO</span>  Health check passed: nullus-core Running',
-            '<span style="color:#6ee7b7;">[2026-03-01 11:08:00] INFO</span>  Nullus v0.2.1 upgrade complete ✓',
-        ],
-        'ns-v1': [
-            '<span style="color:#6ee7b7;">[2026-02-20 09:58:00] INFO</span>  Starting Nullus platform initial install v0.2.0...',
-            '<span style="color:#6ee7b7;">[2026-02-20 10:02:00] INFO</span>  Helm install nullus-core complete',
-            '<span style="color:#6ee7b7;">[2026-02-20 10:08:00] INFO</span>  Database migration complete',
-            '<span style="color:#6ee7b7;">[2026-02-20 10:15:00] INFO</span>  Nullus v0.2.0 install complete ✓',
-        ],
-        // DevSecOps Stack logs
-        v3: [
-            '<span style="color:#6ee7b7;">[2026-03-02 14:28:00] INFO</span>  Starting stack deployment v3...',
-            '<span style="color:#6ee7b7;">[2026-03-02 14:28:05] INFO</span>  Upgrading Grafana: 10.2 → 10.3',
-            '<span style="color:#6ee7b7;">[2026-03-02 14:35:20] INFO</span>  Helm upgrade grafana-stack complete',
-            '<span style="color:#6ee7b7;">[2026-03-02 14:35:30] INFO</span>  Health check passed: Grafana pod Running',
-            '<span style="color:#6ee7b7;">[2026-03-02 15:10:00] INFO</span>  Stack deployment v3 complete ✓',
-        ],
-        v2: [
-            '<span style="color:#6ee7b7;">[2026-02-28 09:10:00] INFO</span>  Starting stack deployment v2...',
-            '<span style="color:#6ee7b7;">[2026-02-28 09:12:00] INFO</span>  Installing MinIO storage backend',
-            '<span style="color:#6ee7b7;">[2026-02-28 09:30:00] INFO</span>  Helm install minio complete',
-            '<span style="color:#6ee7b7;">[2026-02-28 09:31:00] INFO</span>  Migrating storage config: S3 → MinIO',
-            '<span style="color:#6ee7b7;">[2026-02-28 10:08:00] INFO</span>  Stack deployment v2 complete ✓',
-        ],
-        v1: [
-            '<span style="color:#6ee7b7;">[2026-02-20 15:58:00] INFO</span>  Starting stack deployment v1...',
-            '<span style="color:#fca5a5;">[2026-02-20 16:05:00] ERROR</span> Argo CD pod CrashLoopBackOff: ImagePullBackOff',
-            '<span style="color:#fca5a5;">[2026-02-20 16:08:00] ERROR</span> Health check failed: argocd-server not ready',
-            '<span style="color:#fca5a5;">[2026-02-20 16:10:00] WARN</span>  Initiating auto-rollback...',
-            '<span style="color:#fca5a5;">[2026-02-20 16:12:00] INFO</span>  Rollback complete. Cluster restored to previous state.',
-        ],
-    };
-
-    const lines = logsMap[version] || ['No logs available.'];
-    content.innerHTML = lines.join('<br>');
-    modal.style.display = 'flex';
-}
-
-function confirmRollback(version) {
-    rollbackTarget = version;
-    const modal = document.getElementById('rollbackModal');
-    if (modal) modal.style.display = 'flex';
-}
-
-function executeRollback() {
-    const modal = document.getElementById('rollbackModal');
-    if (modal) modal.style.display = 'none';
-    showNotification(`Rolling back to ${rollbackTarget}... Auto-snapshot of current config saved.`, 'success');
-    rollbackTarget = null;
-}
-
-// ============================================
-// 기능 7: Monitoring bar chart rendering
-// ============================================
-function renderMonitoringBars() {
-    const bars = document.querySelectorAll('#monitoringPage [data-bar]');
-    bars.forEach(bar => {
-        bar.style.height = bar.getAttribute('data-bar');
-    });
-}
-
-// ============================================
-// 기능 9: User role update (데모)
-// ============================================
-function updateUserRole(selectEl, userId) {
-    showNotification(`Role updated for user ${userId}: ${selectEl.value}`, 'success');
-}
-
-// ============================================
-// 기능 5: Developer template category filter
-// ============================================
-function filterDevTemplates(category, btn) {
-    // Update active button
-    document.querySelectorAll('.template-category-btn').forEach(b => b.classList.remove('active'));
-    if (btn) btn.classList.add('active');
-
-    document.querySelectorAll('#developerTemplateGrid .developer-template-card').forEach(card => {
-        if (category === 'all' || card.dataset.type === category) {
-            card.style.display = '';
-        } else {
-            card.style.display = 'none';
-        }
-    });
-}
-
 // ============================================
 // Initialize all new features
 // ============================================
@@ -4011,17 +3739,120 @@ function filterDevTemplates(category, btn) {
 // Sidebar collapse/expand toggle
 function initSidebarToggle() {
     const toggleBtn = document.getElementById('sidebarToggle');
+    const mobileToggleBtn = document.getElementById('mobileSidebarToggle');
+    const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+    const sidebar = document.getElementById('mainSidebar');
+    const sidebarResizeHandle = document.getElementById('sidebarResizeHandle');
     if (!toggleBtn) return;
 
     const STORAGE_KEY = 'nullus_sidebar_collapsed';
-    // Restore saved state
-    if (localStorage.getItem(STORAGE_KEY) === 'true') {
-        document.body.classList.add('sidebar-collapsed');
+    const SIDEBAR_WIDTH_KEY = 'nullus_sidebar_width';
+    const SIDEBAR_MIN = 220;
+    const SIDEBAR_MAX = 420;
+
+    const isMobileViewport = () => window.matchMedia('(max-width: 1200px)').matches;
+    const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+    const applySidebarWidth = (rawWidth) => {
+        if (!rawWidth) return;
+        const width = clamp(parseInt(rawWidth, 10), SIDEBAR_MIN, SIDEBAR_MAX);
+        if (Number.isNaN(width)) return;
+        document.documentElement.style.setProperty('--sidebar-width', `${width}px`);
+        localStorage.setItem(SIDEBAR_WIDTH_KEY, String(width));
+    };
+    const restoreDesktopState = () => {
+        if (isMobileViewport()) {
+            document.body.classList.remove('sidebar-collapsed');
+            return;
+        }
+        document.body.classList.remove('sidebar-collapsed');
+    };
+    const closeMobileSidebar = () => {
+        document.body.classList.remove('mobile-sidebar-open');
+        if (mobileToggleBtn) {
+            mobileToggleBtn.setAttribute('aria-expanded', 'false');
+        }
+        if (sidebarBackdrop) {
+            sidebarBackdrop.setAttribute('aria-hidden', 'true');
+        }
+    };
+    const toggleMobileSidebar = () => {
+        const willOpen = !document.body.classList.contains('mobile-sidebar-open');
+        document.body.classList.toggle('mobile-sidebar-open', willOpen);
+        if (mobileToggleBtn) {
+            mobileToggleBtn.setAttribute('aria-expanded', String(willOpen));
+        }
+        if (sidebarBackdrop) {
+            sidebarBackdrop.setAttribute('aria-hidden', String(!willOpen));
+        }
+    };
+
+    const savedSidebarWidth = localStorage.getItem(SIDEBAR_WIDTH_KEY);
+    if (savedSidebarWidth) {
+        applySidebarWidth(savedSidebarWidth);
+    }
+
+    restoreDesktopState();
+
+    if (mobileToggleBtn) {
+        mobileToggleBtn.setAttribute('aria-expanded', 'false');
+        mobileToggleBtn.addEventListener('click', toggleMobileSidebar);
+    }
+    if (sidebarBackdrop) {
+        sidebarBackdrop.addEventListener('click', closeMobileSidebar);
+    }
+
+    if (sidebarResizeHandle && sidebar) {
+        let isResizing = false;
+        const startResize = (event) => {
+            if (isMobileViewport()) return;
+            isResizing = true;
+            document.body.classList.add('sidebar-resizing');
+            event.preventDefault();
+        };
+        const onResize = (event) => {
+            if (!isResizing || isMobileViewport()) return;
+            applySidebarWidth(event.clientX);
+        };
+        const stopResize = () => {
+            if (!isResizing) return;
+            isResizing = false;
+            document.body.classList.remove('sidebar-resizing');
+        };
+
+        sidebarResizeHandle.addEventListener('mousedown', startResize);
+        document.addEventListener('mousemove', onResize);
+        document.addEventListener('mouseup', stopResize);
+        sidebarResizeHandle.addEventListener('touchstart', (event) => {
+            if (!event.touches || !event.touches[0]) return;
+            if (isMobileViewport()) return;
+            isResizing = true;
+            document.body.classList.add('sidebar-resizing');
+            event.preventDefault();
+        }, { passive: false });
+        document.addEventListener('touchmove', (event) => {
+            if (!isResizing || !event.touches || !event.touches[0] || isMobileViewport()) return;
+            applySidebarWidth(event.touches[0].clientX);
+            event.preventDefault();
+        }, { passive: false });
+        document.addEventListener('touchend', stopResize);
     }
 
     toggleBtn.addEventListener('click', () => {
+        if (isMobileViewport()) {
+            toggleMobileSidebar();
+            return;
+        }
         document.body.classList.toggle('sidebar-collapsed');
         localStorage.setItem(STORAGE_KEY, document.body.classList.contains('sidebar-collapsed'));
+    });
+
+    window.addEventListener('resize', () => {
+        if (!isMobileViewport()) {
+            closeMobileSidebar();
+            restoreDesktopState();
+        } else {
+            document.body.classList.remove('sidebar-collapsed');
+        }
     });
 }
 window.initSidebarToggle = initSidebarToggle;
@@ -4070,109 +3901,3 @@ function initI18n() {
 }
 window.initI18n = initI18n;
 
-// 클러스터 목록+상세 패널 (CLU_010_020, CLU_010_030)
-function initClusterListDetail() {
-    document.querySelectorAll('.cluster-list-item').forEach(item => {
-        item.addEventListener('click', () => {
-            document.querySelectorAll('.cluster-list-item').forEach(i => i.classList.remove('active'));
-            item.classList.add('active');
-            renderClusterDetail(item.dataset.clusterId);
-        });
-    });
-    document.addEventListener('click', (e) => {
-        if (e.target.closest('#registerClusterBtn2')) {
-            e.preventDefault();
-            if (typeof openClusterModal === 'function') openClusterModal();
-        }
-    });
-}
-
-// CI/CD History filter
-function filterCicdHistory() {
-    const typeFilter = document.getElementById('cicdHistoryTypeFilter')?.value || 'all';
-    const statusFilter = document.getElementById('cicdHistoryStatusFilter')?.value || 'all';
-
-    document.querySelectorAll('.cicd-history-item').forEach(item => {
-        const matchType = typeFilter === 'all' || item.dataset.type === typeFilter;
-        const matchStatus = statusFilter === 'all' || item.dataset.status === statusFilter;
-        item.style.display = (matchType && matchStatus) ? '' : 'none';
-    });
-}
-window.filterCicdHistory = filterCicdHistory;
-
-// CI/CD Template filter
-function filterCicdTemplates(value) {
-    const query = (value || '').toLowerCase();
-    document.querySelectorAll('.cicd-template-card').forEach(card => {
-        const name = (card.dataset.name || '').toLowerCase();
-        card.style.display = name.includes(query) ? '' : 'none';
-    });
-}
-window.filterCicdTemplates = filterCicdTemplates;
-
-// Stack List filter
-function filterStackList(value) {
-    const query = (value !== undefined ? value : (document.getElementById('stackListSearch')?.value || '')).toLowerCase();
-    const statusFilter = document.getElementById('stackListStatusFilter')?.value || 'all';
-    document.querySelectorAll('.stack-list-item').forEach(item => {
-        const name = (item.dataset.name || '').toLowerCase();
-        const status = (item.dataset.status || '').toLowerCase();
-        const matchName = name.includes(query);
-        const matchStatus = statusFilter === 'all' || status === statusFilter;
-        item.style.display = (matchName && matchStatus) ? '' : 'none';
-    });
-}
-
-var stackDataMap = {
-    'production-stack': { name: 'production-stack', tools: 'GitLab CI/CD · ArgoCD · Harbor', resources: '12 cores / 48 Gi', cdStatus: 'Synced', cost: '$380 / mo', cluster: 'prod-k8s' },
-    'development-stack': { name: 'development-stack', tools: 'GitHub Actions · Flux · Snyk', resources: '6 cores / 24 Gi', cdStatus: 'Syncing', cost: '$180 / mo', cluster: 'dev-k8s' },
-    'staging-environment': { name: 'staging-environment', tools: 'Jenkins · Spinnaker · SonarQube', resources: '8 cores / 32 Gi', cdStatus: 'OutOfSync', cost: '$240 / mo', cluster: 'staging-k8s' },
-    'microservices-platform': { name: 'microservices-platform', tools: 'GitLab CI/CD · Istio · Jaeger', resources: '16 cores / 64 Gi', cdStatus: 'Synced', cost: '$520 / mo', cluster: 'prod-k8s' },
-    'ml-ai-pipeline': { name: 'ml-ai-pipeline', tools: 'MLflow · Kubeflow · MinIO', resources: '24 cores / 96 Gi', cdStatus: 'Synced', cost: '$780 / mo', cluster: 'gpu-k8s' }
-};
-
-function renderStackDetail(stackId) {
-    // Delegate to new tab-based stack detail (defined in pages/stack-list.js)
-    var item = document.querySelector('[data-stack-id="' + stackId + '"]');
-    if (item && typeof selectStackItem === 'function') {
-        selectStackItem(item);
-    } else {
-        // Fallback: just show content panel
-        var placeholder = document.getElementById('stackDetailPlaceholder');
-        var content = document.getElementById('stackDetailContent');
-        var titleEl = document.getElementById('stackDetailTitle');
-        var data = stackDataMap[stackId];
-        if (!data || !placeholder || !content) return;
-        placeholder.style.display = 'none';
-        content.style.display = 'flex';
-        if (titleEl) titleEl.textContent = data.name;
-    }
-}
-
-function initStackListDetail() {
-    document.querySelectorAll('.stack-list-item').forEach(item => {
-        item.addEventListener('click', () => {
-            document.querySelectorAll('.stack-list-item').forEach(i => i.classList.remove('active'));
-            item.classList.add('active');
-            renderStackDetail(item.dataset.stackId);
-        });
-    });
-    var first = document.querySelector('.stack-list-item.active');
-    if (first) renderStackDetail(first.dataset.stackId);
-}
-window.filterStackList = filterStackList;
-
-// CI/CD List filter
-function filterCicdList(value) {
-    const query = (value !== undefined ? value : (document.getElementById('cicdListSearch')?.value || '')).toLowerCase();
-    const statusFilter = document.getElementById('cicdListStatusFilter')?.value || 'all';
-
-    document.querySelectorAll('.cicd-list-card').forEach(card => {
-        const name = (card.dataset.name || '').toLowerCase();
-        const status = (card.dataset.status || '').toLowerCase();
-        const matchName = name.includes(query);
-        const matchStatus = statusFilter === 'all' || status === statusFilter;
-        card.style.display = (matchName && matchStatus) ? '' : 'none';
-    });
-}
-window.filterCicdList = filterCicdList;

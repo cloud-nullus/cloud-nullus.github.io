@@ -5,7 +5,7 @@
 const i18n = {
     locale: localStorage.getItem('nullus_locale') || 'ko',
     autoIndex: null,
-    t: function(key) {
+    t: function (key) {
         const keys = key.split('.');
         let val = this.messages[this.locale];
         for (const k of keys) {
@@ -13,14 +13,14 @@ const i18n = {
         }
         return val ?? key;
     },
-    setLocale: function(lang) {
+    setLocale: function (lang) {
         this.locale = lang;
         localStorage.setItem('nullus_locale', lang);
         this.apply();
         const label = document.getElementById('langLabel');
         if (label) label.textContent = (lang === 'zh' ? 'ZH' : lang.toUpperCase());
     },
-    apply: function() {
+    apply: function () {
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
             const val = this.t(key);
@@ -47,7 +47,7 @@ const i18n = {
         });
         this.applyAutoLabels();
     },
-    buildAutoIndex: function() {
+    buildAutoIndex: function () {
         const index = new Map();
         const walk = (obj, path, locale) => {
             if (!obj || typeof obj !== 'object') return;
@@ -71,7 +71,7 @@ const i18n = {
         });
         return index;
     },
-    applyAutoLabels: function() {
+    applyAutoLabels: function () {
         if (!this.autoIndex) {
             this.autoIndex = this.buildAutoIndex();
         }
@@ -551,20 +551,20 @@ const i18n = {
         },
         ko: {
             nav: {
-                devsecopsStack: '데브섹옵스 스택',
-                stackTemplate: '스택 템플릿',
-                stackInstall: '스택 설치',
-                stackList: '스택 목록',
-                stackHistory: '스택 이력',
-                stackVersion: '스택 버전 관리',
+                devsecopsStack: 'DevSecOps Stack',
+                stackTemplate: 'Stack Template',
+                stackInstall: 'Stack Install',
+                stackList: 'Stack List',
+                stackHistory: 'Stack History',
+                stackVersion: 'Stack Version Management',
                 cicd: 'CI/CD',
-                cicdTemplate: 'CI/CD 템플릿',
-                cicdList: 'CI/CD 목록',
-                cicdHistory: 'CI/CD 이력',
-                observability: '관측성',
-                monitoring: '모니터링 대시보드',
-                alertRule: '알림 규칙',
-                alertHistory: '알림 이력',
+                cicdTemplate: 'CI/CD Template',
+                cicdList: 'CI/CD List',
+                cicdHistory: 'CI/CD History',
+                observability: 'Observability',
+                monitoring: 'Monitoring Dashboard',
+                alertRule: 'Alert Rule',
+                alertHistory: 'Alert History',
                 admin: '관리',
                 organization: '조직',
                 userManagement: '사용자 관리',
