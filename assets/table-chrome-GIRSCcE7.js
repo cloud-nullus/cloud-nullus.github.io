@@ -1,0 +1,1 @@
+var e=`bg-[var(--color-surface-sunken)]`,t=`h-[var(--table-header-height)] whitespace-nowrap px-[var(--table-cell-px)] text-left text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--color-text-secondary)]`;export{t as n,e as t};
