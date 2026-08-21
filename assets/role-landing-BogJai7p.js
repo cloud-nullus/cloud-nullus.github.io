@@ -1,0 +1,1 @@
+var e={admin:`/admin/organization`,devops:`/stack/templates`,developer:`/cicd/developer-deploy`};function t(t){return t?e[t]??`/`:`/`}export{t};
